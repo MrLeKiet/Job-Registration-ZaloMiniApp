@@ -2,7 +2,8 @@ import api from "@/api/axiosInstance";
 
 export async function getJobList(filters = {}) {
   try {
-    const params = {};
+    const defaultParams = { rowIndex: 0, pageSize: 5 };
+    const params = { ...defaultParams };
     Object.keys(filters).forEach(key => {
       if (filters[key] !== "") {
         params[key] = filters[key];

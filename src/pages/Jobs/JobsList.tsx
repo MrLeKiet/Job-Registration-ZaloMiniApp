@@ -1,8 +1,8 @@
 import Card from "@/components/Card";
 import Skeleton from "@/components/Skeleton";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import JobsFilter from "./JobsFilter";
-import React, { useState } from "react";
 import { useJobsList } from "./useJobsList";
 
 const JobsList = () => {
@@ -11,7 +11,7 @@ const JobsList = () => {
     ward: "",
     age: "",
     gender: "",
-    search: "",
+    keyword: "",
     salary: "",
     workingTime: "",
   });
@@ -20,7 +20,19 @@ const JobsList = () => {
   const navigate = useNavigate();
 
   const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    if (key === "keyword") {
+      setFilters({
+        job: "",
+        ward: "",
+        age: "",
+        gender: "",
+        keyword: value,
+        salary: "",
+        workingTime: "",
+      });
+    } else {
+      setFilters(prev => ({ ...prev, [key]: value }));
+    }
   };
 
   function onCardClick(job: any): void {

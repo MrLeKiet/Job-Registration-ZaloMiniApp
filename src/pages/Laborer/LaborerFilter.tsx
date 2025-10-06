@@ -1,8 +1,9 @@
 
+
 import MultiSelectPanel from "@/components/MultiSelectPanel";
 import { useSettings, useWards } from "./useLaborerList";
 
-const LaborerFilter = ({ filters, onFilterChange }: any) => {
+const LaborerFilter = ({ filters, onFilterChange }: { filters: any, onFilterChange: (key: string, value: string) => void }) => {
     const { settings } = useSettings();
     const { wards } = useWards();
     const selects = [
@@ -32,7 +33,13 @@ const LaborerFilter = ({ filters, onFilterChange }: any) => {
         },
     ];
     return (
-        <MultiSelectPanel selects={selects} values={filters} onChange={onFilterChange} />
+        <div className="flex flex-col gap-2 sticky top-0 z-30 bg-white p-2 shadow-sm">
+            <div className="flex gap-2">
+                <div className="w-full">
+                    <MultiSelectPanel selects={selects} values={filters} onChange={onFilterChange} />
+                </div>
+            </div>
+        </div>
     );
 };
 
