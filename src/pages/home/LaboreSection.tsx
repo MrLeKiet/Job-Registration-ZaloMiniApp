@@ -18,7 +18,7 @@ const LaborerSection: React.FC = () => {
     };
 
     if (loading) return (
-        <div >
+        <div className="mx-2">
             <div className="font-lg font-bold mb-1 text-primary">ỨNG VIÊN MỚI NHẤT</div>
             <div className="flex flex-col gap-2">
                 {Array.from({ length: 3 }).map((_, i) => {
@@ -40,7 +40,7 @@ const LaborerSection: React.FC = () => {
     if (error) return <div>Lỗi: {String(error)}</div>;
     const isEmpty = !Array.isArray(laborers) || laborers.length === 0;
     return (
-        <div>
+        <div className="mx-2">
             <div className="font-lg font-bold mb-1 text-primary">ỨNG VIÊN MỚI NHẤT</div>
             <div className="flex flex-col gap-2">
                 {isEmpty ? (

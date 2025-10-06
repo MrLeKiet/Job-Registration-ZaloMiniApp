@@ -18,7 +18,7 @@ const JobListSection: React.FC = () => {
     };
 
     if (loading) return (
-        <div>
+        <div className="mx-2">
             <div className="font-lg font-bold mb-1 text-primary">VIỆC LÀM MỚI NHẤT</div>
             <div className="flex flex-col gap-2">
                 {Array.from({ length: 4 }).map((_, i) => {
@@ -40,7 +40,7 @@ const JobListSection: React.FC = () => {
     if (error) return <p>Có lỗi xảy ra khi tải dữ liệu.</p>;
     const isEmpty = !Array.isArray(jobs) || jobs.length === 0;
     return (
-        <div>
+        <div className="mx-2">
             <div className="font-lg font-bold mb-1 text-primary">VIỆC LÀM MỚI NHẤT</div>
             <div className="flex flex-col gap-2">
                 {isEmpty ? (

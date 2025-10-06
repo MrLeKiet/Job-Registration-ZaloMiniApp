@@ -7,7 +7,7 @@ const HotNewsSection: React.FC = () => {
     const { news, loading, error } = useHotNews();
     const navigate = useNavigate();
     if (loading) return (
-        <div>
+        <div className="mx-2">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap text-primary font-lg font-bold">
                     THÔNG BÁO MỚI NHẤT
@@ -50,7 +50,7 @@ const HotNewsSection: React.FC = () => {
     }
     const isEmpty = !Array.isArray(news) || news.length === 0;
     return (
-        <div>
+        <div className="mx-2">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap text-primary font-lg font-bold">
                     THÔNG BÁO MỚI NHẤT
