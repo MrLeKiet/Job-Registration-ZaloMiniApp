@@ -14,7 +14,7 @@ const RecruitmentForeignersSection: React.FC = () => {
         loading
     } = useRecruitmentJobs();
 
-    let content;
+    let content: React.ReactNode;
     if (loading) {
         content = (
             <div>
