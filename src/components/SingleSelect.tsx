@@ -1,5 +1,5 @@
 import { NavbarVisibilityContext } from "@/layouts/MainLayout";
-import { ChevronDown, Square, SquareCheck, Tally1 } from "lucide-react";
+import { ChevronDown, ChevronUp, Square, SquareCheck } from "lucide-react";
 import React from "react";
 
 export type SingleSelectProps = {
@@ -40,32 +40,43 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
     };
 
     const handleSelect = (option: string) => {
-        setInternal(option);
-        onChange(option);
+        if (internal === option) {
+            setInternal("");
+            onChange("");
+        } else {
+            setInternal(option);
+            onChange(option);
+        }
     };
 
     return (
         <>
             <button
                 type="button"
-                className={`bg-white h-12 w-full flex items-center rounded-lg justify-between px-3 border-transparent text-base font-medium transition focus:outline-none`}
-                onClick={handleOpen}
+                className={`bg-white h-8 w-full flex items-center rounded-lg justify-between px-3 border border-gray-300 text-sm transition focus:outline-none focus:ring`}
+                onClick={open ? handleClose : handleOpen}
                 tabIndex={0}
                 aria-haspopup="listbox"
                 aria-expanded={open}
                 onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        handleOpen();
+                        open ? handleClose() : handleOpen();
                     }
                 }}
             >
-                <span className={value ? "" : "text-gray-400"}>
-                    {value ? options.find((o) => o.value === value)?.label : placeholder}
+                <span
+                    className={`${value ? "" : "text-gray-400"} whitespace-nowrap overflow-hidden text-ellipsis w-full block text-left`}
+                    style={{ maxWidth: '100%' }}
+                >
+                    {value ? (() => {
+                        const label = options.find((o) => o.value === value)?.label || "";
+                        const maxLen = 18;
+                        return label.length > maxLen ? label.slice(0, maxLen) + "..." : label;
+                    })() : placeholder}
                 </span>
                 <span className="ml-2 flex items-center text-gray-400">
-                    <Tally1 size={18} />
-                    <ChevronDown size={18} />
+                    {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </span>
             </button>
             <button

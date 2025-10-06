@@ -1,11 +1,12 @@
-import { Briefcase, Edit, Newspaper, User } from "lucide-react";
+import { Briefcase, Edit, Users, User, House } from "lucide-react";
 import React from "react";
 import { useLocation, useNavigate } from "zmp-ui";
 
 const NAV_ITEMS = [
-    { label: "Tìm việc", icon: <Briefcase size={24} />, path: "/home" },
-    { label: "Đăng tuyển", icon: <Edit size={24} />, path: "/jobs" },
-    { label: "Tin tức", icon: <Newspaper size={24} />, path: "/news" },
+    { label: "Trang chủ", icon: <House size={24} />, path: "/home" },
+    { label: "Ứng viên", icon: <Users size={24} />, path: "/laborer" },
+    { label: "Việc làm", icon: <Briefcase size={24} />, path: "/jobs" },
+    { label: "Đăng tuyển", icon: <Edit size={24} />, path: "/enterprise" },
     { label: "Tài khoản", icon: <User size={24} />, path: "/profile" },
 ];
 
