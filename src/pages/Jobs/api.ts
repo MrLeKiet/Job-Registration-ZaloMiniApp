@@ -15,3 +15,23 @@ export async function getJobList(filters = {}) {
     return [];
   }
 }
+
+export async function getSettings() {
+    try {
+        const res = await api.get("/Settings");
+    return res.data?.Data || {};
+    } catch (error) {
+        console.error("Error fetching settings:", error);
+        return {};
+    }
+}
+
+export async function getWards() {
+    try {
+        const res = await api.get("/Wards");
+        return res.data?.Data?.Data || [];
+    } catch (error) {
+        console.error("Error fetching wards:", error);
+        return [];
+    }
+}
