@@ -8,7 +8,6 @@ import ReturnHeader from "../components/ReturnHeader";
 const MAIN_ROUTES = [
     "/",
     "/home",
-    "/news",
     "/profile",
     "/enterprise",
     "/jobs",
@@ -19,6 +18,7 @@ const RETURN_ROUTES = [
     "/jobs/",
     "/laborer/",
     "/register",
+    "/news",
     "/auth",
     "/profile/edit"
 ];
@@ -59,7 +59,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     {isReturn ? <ReturnHeader /> : <Header />}
                 </div>
                 <div
-                    className="bg-[#E6F0FA] flex-1 flex flex-col gap-4 overflow-y-auto"
+                    className="bg-white flex-1 flex flex-col overflow-y-auto"
                     style={{
                         maxHeight: isReturn
                             ? "calc(100vh - var(--return-header-height))"
