@@ -57,10 +57,6 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ selects, values, on
         ? currentSelect.options.filter(opt => filterOption(opt.label, search))
         : [];
 
-    const selectedLabels = selects
-        .map(sel => sel.options.find(opt => opt.value === values[sel.key])?.label)
-        .filter(label => !!label);
-
     const allSelectedLabels = selects
         .map(sel => sel.options.find(opt => opt.value === values[sel.key])?.label)
         .filter(label => !!label && label !== "Tất cả");

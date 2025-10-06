@@ -11,7 +11,7 @@ const JobListSection: React.FC = () => {
     const handleClick = (job: any) => {
         const id = job.id || job.jodId || job.jobId;
         if (id) {
-            navigate(`/jobsdetail/${id}`);
+            navigate(`/jobs/${id}`);
         } else {
             alert("Không tìm thấy id công việc!");
         }

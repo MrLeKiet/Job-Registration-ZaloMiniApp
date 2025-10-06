@@ -22,7 +22,6 @@ export function useFilterOptions() {
                     setOptions(data.map((item: any) => ({ value: item.value, label: item.label })));
                     setIsLoading(false);
                 }
-                // Fetch the rest in the background
                 fetchFull();
             } catch (err) {
                 if (isMounted) {

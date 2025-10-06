@@ -10,12 +10,14 @@ const MAIN_ROUTES = [
     "/home",
     "/news",
     "/profile",
-    "/enterprise"
+    "/enterprise",
+    "/jobs",
+    "/laborer"
 ];
 const RETURN_ROUTES = [
     "/news/",
-    "/jobsdetail/",
-    "/labore/",
+    "/jobs/",
+    "/laborer/",
     "/register",
     "/auth",
     "/profile/edit"
