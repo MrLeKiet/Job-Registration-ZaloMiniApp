@@ -1,10 +1,10 @@
 import Card from "@/components/Card";
 import Skeleton from "@/components/Skeleton";
 import { useNavigate } from "react-router-dom";
-import { useLaborerJobsList } from "../LaborerJobsList/useLaborerJobsList";
+import { useLaborerList } from "./useLaborerList";
 
 const LaborerList = ({ filters }: any) => {
-  const { laborers, loading, error } = useLaborerJobsList();
+  const { laborers, loading, error } = useLaborerList(filters);
   const navigate = useNavigate();
 
   if (loading) return <Skeleton />;
@@ -17,7 +17,7 @@ const LaborerList = ({ filters }: any) => {
         <Card
           key={item.id}
           thumbnail={item.avatar}
-          onClick={() => navigate(`/labor-details/${item.id}`)}
+          onClick={() => navigate(`/jobs/${item.id}`)}
         >
           <div>{item.name}</div>
           <div>{item.job}</div>

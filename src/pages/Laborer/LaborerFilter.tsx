@@ -1,10 +1,10 @@
-import { useSettings, useWards } from "../LaborerJobsList/useLaborerJobsList";
+
 import MultiSelectPanel from "@/components/MultiSelectPanel";
+import { useSettings, useWards } from "./useLaborerList";
 
 const LaborerFilter = ({ filters, onFilterChange }: any) => {
     const { settings } = useSettings();
     const { wards } = useWards();
-    // Use MultiSelectPanel for filter UI
     const selects = [
         {
             key: "job",
