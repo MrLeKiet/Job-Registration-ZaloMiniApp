@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "zmp-ui";
 
 const NAV_ITEMS = [
     { label: "Tìm việc", icon: <Briefcase size={24} />, path: "/home" },
-    { label: "Đăng tuyển", icon: <Edit size={24} />, path: "/labore" },
+    { label: "Đăng tuyển", icon: <Edit size={24} />, path: "/jobs" },
     { label: "Tin tức", icon: <Newspaper size={24} />, path: "/news" },
     { label: "Tài khoản", icon: <User size={24} />, path: "/profile" },
 ];

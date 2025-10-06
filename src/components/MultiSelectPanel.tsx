@@ -42,7 +42,7 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ selects, values, on
         const lowerSearch = search.toLowerCase();
         if (lowerLabel.includes(lowerSearch)) return true;
         // Age range logic: match if search is a number inside range
-        const ageRangeMatch = lowerLabel.match(/(\d+)[^\d]+(\d+)/);
+        const ageRangeMatch = /(\d+)[^\d]+(\d+)/.exec(lowerLabel);
         const searchNum = parseInt(lowerSearch, 10);
         if (ageRangeMatch && !isNaN(searchNum)) {
             const min = parseInt(ageRangeMatch[1], 10);
@@ -57,10 +57,21 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ selects, values, on
         ? currentSelect.options.filter(opt => filterOption(opt.label, search))
         : [];
 
-    // Button label: show selected value or placeholder
-    const buttonLabel = currentSelect && values[currentSelect?.key]
-        ? currentSelect.options.find(o => o.value === values[currentSelect?.key])?.label
-        : placeholder || currentSelect?.placeholder || "Chọn";
+    const selectedLabels = selects
+        .map(sel => sel.options.find(opt => opt.value === values[sel.key])?.label)
+        .filter(label => !!label);
+
+    const allSelectedLabels = selects
+        .map(sel => sel.options.find(opt => opt.value === values[sel.key])?.label)
+        .filter(label => !!label && label !== "Tất cả");
+    let buttonLabel = allSelectedLabels.length > 0
+        ? allSelectedLabels.join(", ")
+        : (placeholder || "Tìm kiếm");
+    // Truncate with ellipsis if too long
+    const maxLabelLength = 30;
+    if (buttonLabel.length > maxLabelLength) {
+        buttonLabel = buttonLabel.slice(0, maxLabelLength - 3) + "...";
+    }
 
     return (
         <>
@@ -72,7 +83,7 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ selects, values, on
                 aria-haspopup="listbox"
                 aria-expanded={open}
             >
-                <span className={values[activeSelect] ? "" : "text-gray-400"}>{buttonLabel}</span>
+                <span className={allSelectedLabels.length > 0 ? "text-black" : "text-gray-400"}>{buttonLabel}</span>
                 <span className="ml-2 flex items-center text-gray-400">
                     <Tally1 size={18} />
                     <ChevronDown size={18} />
@@ -100,11 +111,17 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ selects, values, on
                         {/* Search Bar on top */}
                         <input
                             type="text"
-                            className="w-full mb-3 px-3 py-2 border-gray-300 border-2 rounded focus:outline-none focus:ring"
+                            className="w-full mb-1 px-3 py-2 border-gray-300 border-2 rounded focus:outline-none focus:ring"
                             placeholder="Tìm kiếm..."
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                         />
+                        {/* Selected labels row */}
+                        <div className="mb-2 text-base font-medium text-gray-700">
+                            {allSelectedLabels.length > 0
+                                ? allSelectedLabels.join(", ")
+                                : "Chưa chọn"}
+                        </div>
                         {/* Segmented Tabs for each select */}
                         <div className="flex mb-3 rounded-lg overflow-hidden border border-gray-200">
                             {selects.map(sel => (
@@ -122,7 +139,7 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ selects, values, on
                             ))}
                         </div>
                         <ul
-                            className="space-y-1 overflow-y-auto h-[34vh]"
+                            className="space-y-1 overflow-y-auto max-h-[28vh]"
                             onScroll={e => {
                                 const el = e.currentTarget;
                                 if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
@@ -155,7 +172,6 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ selects, values, on
                                                     }`}
                                                 onClick={() => {
                                                     onChange(currentSelect.key, opt.value);
-                                                    setOpen(false);
                                                 }}
                                                 tabIndex={0}
                                             >
@@ -189,7 +205,6 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ selects, values, on
                                                                 }`}
                                                             onClick={() => {
                                                                 onChange(sel.key, opt.value);
-                                                                setOpen(false);
                                                             }}
                                                             tabIndex={0}
                                                         >

@@ -13,7 +13,8 @@ import HomePage from "@/pages/Home";
 import NewsPage from "@/pages/HotNewsHomePage";
 import JobsDetailPage from "@/pages/JobDetails";
 import LaborerDetailPage from "@/pages/LaborerDetails";
-import LaborerJobsListPage from "@/pages/LaborerJobsList";
+import JobsPage from "@/pages/Jobs";
+import LaborerPage from "@/pages/Laborer";
 import NewsDetailPage from "@/pages/NewDetail";
 import ProfilePage from "@/pages/Profile";
 import EnterprisePage from "@/pages/RecruitmentForeigners";
@@ -32,9 +33,10 @@ const Layout = () => {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/news" element={<NewsPage />} />
               <Route path="/news/:id" element={<NewsDetailPage />} />
-              <Route path="/jobsdetail/:id" element={<JobsDetailPage />} />
-              <Route path="/labore" element={<LaborerJobsListPage />} />
-              <Route path="/labore/:id" element={<LaborerDetailPage />} />
+              <Route path="/jobs" element={<JobsPage />} />
+              <Route path="/jobs/:id" element={<JobsDetailPage />} />
+              <Route path="/laborer" element={<LaborerPage />} />
+              <Route path="/laborer/:id" element={<LaborerDetailPage />} />
               <Route path="/enterprise" element={<EnterprisePage />} />
               <Route path="/detail/:id" element={<JobDetailPage />} />
               <Route path="/register" element={<RegisterPage />} />
