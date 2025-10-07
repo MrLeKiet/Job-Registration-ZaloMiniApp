@@ -16,9 +16,9 @@ interface SelectConfig {
 
 interface MultiSelectPanelProps {
     selects: SelectConfig[];
-    values: Record<string, string>;
-    onChange: (key: string, value: string) => void;
+    filterKey: string;
     placeholder?: string;
+    onFiltersChange?: (filters: Record<string, string>) => void;
 }
 
 //Helper: match search or number inside age range
@@ -40,16 +40,53 @@ const filterOption = (label: string, search: string) => {
 
 const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
     selects,
-    values,
-    onChange,
+    filterKey,
     placeholder = "Tìm kiếm",
+    onFiltersChange,
 }) => {
+    const getInitialFilters = () => {
+        // Default: all 'Tất cả'
+        const obj: Record<string, string> = {};
+        selects.forEach(sel => {
+            const tatCaOption = sel.options.find(o => o.label === "Tất cả");
+            obj[sel.key] = tatCaOption ? tatCaOption.value : "";
+        });
+        return obj;
+    };
+    const [filters, setFilters] = useState<Record<string, string>>(getInitialFilters());
     const [open, setOpen] = useState(false);
     const [activeSelect, setActiveSelect] = useState(selects[0]?.key || "");
     const [search, setSearch] = useState("");
     const [visibleCounts, setVisibleCounts] = useState<Record<string, number>>(
         Object.fromEntries(selects.map(s => [s.key, 10]))
     );
+
+    // Update filters and notify parent
+    const updateFilter = (key: string, value: string) => {
+        setFilters(prev => {
+            const newFilters = { ...prev, [key]: value };
+            if (onFiltersChange) onFiltersChange(newFilters);
+            return newFilters;
+        });
+    };
+
+    // Check if any filter is not 'Tất cả'
+    const isFiltered = selects.some(sel => {
+        const value = filters[sel.key];
+        const tatCaOption = sel.options.find(o => o.label === "Tất cả");
+        return value !== (tatCaOption ? tatCaOption.value : "");
+    });
+
+    // Reset all filters to 'Tất cả' (batch update)
+    const handleResetFilters = () => {
+        const newFilters: Record<string, string> = {};
+        selects.forEach(sel => {
+            const tatCaOption = sel.options.find(o => o.label === "Tất cả");
+            newFilters[sel.key] = tatCaOption ? tatCaOption.value : "";
+        });
+        setFilters(newFilters);
+        if (onFiltersChange) onFiltersChange(newFilters);
+    };
 
     const listRef = useRef<HTMLUListElement>(null);
     const prevSearchRef = useRef("");
@@ -80,7 +117,7 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
     //Auto-scroll to selected item when opened
     useEffect(() => {
         if (open && !prevOpenRef.current && listRef.current && currentSelect) {
-            const selectedValue = values[currentSelect.key];
+            const selectedValue = filters[currentSelect.key];
             const idx = filteredOptions.findIndex(o => o.value === selectedValue);
             if (idx >= 0) {
                 setTimeout(() => {
@@ -89,11 +126,11 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
             }
         }
         prevOpenRef.current = open;
-    }, [open, currentSelect, filteredOptions, values]);
+    }, [open, currentSelect, filteredOptions, filters]);
 
     //Button label handling
     const allSelectedLabels = selects
-        .map(s => s.options.find(o => o.value === values[s.key])?.label)
+        .map(s => s.options.find(o => o.value === filters[s.key])?.label)
         .filter(l => l && l !== "Tất cả") as string[];
 
     const buttonLabel = useMemo(() => {
@@ -159,14 +196,24 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
                 className={`fixed left-0 right-0 bottom-0 z-50 transform transition-transform duration-300 ${open ? "translate-y-0" : "translate-y-full"
                     }`}
             >
-                <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[55vh] flex flex-col justify-between">
+                <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[70vh] flex flex-col justify-between">
                     <div>
                         {/* Header */}
                         <div className="flex justify-between items-center mb-4">
                             <span className="font-semibold">Chọn một lựa chọn</span>
-                            <button onClick={() => setOpen(false)} className="text-2xl leading-none">
-                                &times;
-                            </button>
+                            <div className="flex items-center gap-2">
+                                {isFiltered && (
+                                    <button
+                                        onClick={handleResetFilters}
+                                        className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300 transition"
+                                    >
+                                        Đặt lại bộ lọc
+                                    </button>
+                                )}
+                                <button onClick={() => setOpen(false)} className="text-2xl leading-none">
+                                    &times;
+                                </button>
+                            </div>
                         </div>
 
                         {/* Search */}
@@ -219,8 +266,8 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
                                                 key={opt.value}
                                                 selectKey={currentSelect.key}
                                                 option={opt}
-                                                selected={values[currentSelect.key] === opt.value}
-                                                onChange={onChange}
+                                                selected={filters[currentSelect.key] === opt.value}
+                                                onChange={updateFilter}
                                             />
                                     ))
                             ) : (
@@ -239,8 +286,8 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
                                                             key={opt.value}
                                                             selectKey={sel.key}
                                                             option={opt}
-                                                            selected={values[sel.key] === opt.value}
-                                                            onChange={onChange}
+                                                            selected={filters[sel.key] === opt.value}
+                                                            onChange={updateFilter}
                                                         />
                                                 ))}
                                         </React.Fragment>
