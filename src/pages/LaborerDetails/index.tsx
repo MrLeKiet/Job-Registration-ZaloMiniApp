@@ -7,7 +7,7 @@ import LaborerOtherInfo from "./LaborerOtherInfo";
 import LaborerSkills from "./LaborerSkills";
 const LaborerDetailPage = () => {
     return (
-        <div className="mx-4">
+        <div className="m-4">
             <LaborerGeneralInfo />
             <LaborerEducation />
             <LaborerJobInfo />
