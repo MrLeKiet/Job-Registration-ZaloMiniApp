@@ -1,28 +1,49 @@
 import Skeleton from "@/components/Skeleton";
+import { FileText, Heart } from "lucide-react";
 import React from "react";
 import { useJobDetail } from "./useJobDetails";
 
 const JobDescription: React.FC = () => {
     const { job, loading, error } = useJobDetail();
     if (loading) return (
-        <div className="border-2 rounded-lg mb-4 mx-3">
-            <Skeleton className="h-6 w-1/2 mb-2" />
-            <div className="p-3">
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-5/6 mb-2" />
-                <Skeleton className="h-4 w-2/3" />
-            </div>
+        <div className="border rounded-xl p-4 shadow-sm bg-white">
+            <Skeleton className="h-6 w-1/2 mb-3" />
+            <Skeleton className="h-4 w-3/4 mb-2" />
         </div>
     );
     if (error || !job) return <div>Error loading job details.</div>;
     return (
-        <div className="">
-            <div className="font-bold">MÔ TẢ CÔNG VIỆC</div>
-            <div className="text-sm text-gray-800 mx-2 space-y-1">
-                <div dangerouslySetInnerHTML={{ __html: job.summary || "Chưa có mô tả." }} />
-            </div>
-        </div>
+        <aside id="job-description" className="rounded-md p-4 shadow-sm bg-white mb-4">
+            <h2 className="font-semibold text-gray-800 text-lg mb-3">MÔ TẢ CÔNG VIỆC</h2>
+            <ul className="text-base text-gray-700 space-y-2 mb-6">
+                <InfoItem icon={<FileText />} label="Mô tả" value={job.summary || "Chưa có mô tả."} />
+            </ul>
+            <h2 className="font-semibold text-gray-800 text-lg mb-3">YÊU CẦU CÔNG VIỆC</h2>
+            <ul className="text-base text-gray-700 space-y-2 mb-6">
+                <InfoItem icon={<FileText />} label="Yêu cầu" value={job.jobrequirements || "Chưa có yêu cầu."} />
+            </ul>
+            <h2 className="font-semibold text-gray-800 text-lg mb-3">CHẾ ĐỘ PHÚC LỢI</h2>
+            <ul className="text-base text-gray-700 space-y-2">
+                <InfoItem icon={<Heart />} label="Phúc lợi" value={job.benefits || "Chưa có thông tin."} />
+            </ul>
+        </aside>
     );
 };
+
+interface InfoItemProps {
+    icon: React.ReactNode;
+    label: string;
+    value: string;
+}
+
+const InfoItem: React.FC<InfoItemProps> = ({ icon, label, value }) => (
+    <li className="flex items-start gap-2">
+        <div className="text-blue-500 mt-0.5">{icon}</div>
+        <div>
+            <span className="font-medium text-gray-800">{label}: </span>
+            <span>{value}</span>
+        </div>
+    </li>
+);
 
 export default JobDescription;

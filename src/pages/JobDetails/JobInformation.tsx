@@ -1,36 +1,80 @@
 import Skeleton from "@/components/Skeleton";
+import {
+    Briefcase,
+    Building2,
+    CalendarDays,
+    Clock,
+    FileText,
+    GraduationCap,
+    MapPin,
+    User,
+    Users,
+} from "lucide-react";
 import React from "react";
 import { useJobDetail } from "./useJobDetails";
 
 const JobInformation: React.FC = () => {
     const { job, loading, error } = useJobDetail();
-    if (loading) return (
-        <div className="border-2 rounded-lg">
-            <Skeleton className="h-6 w-1/2 mb-2" />
-            <div className="">
+
+    if (loading)
+        return (
+            <div className="border rounded-xl p-4 shadow-sm bg-white">
+                <Skeleton className="h-6 w-1/2 mb-3" />
                 {Array.from({ length: 7 }).map((_, i) => (
-                    <Skeleton key={`info-skeleton-${i}-${Math.random().toString(36).slice(2, 11)}`} className="h-4 w-2/3 mb-2" />
+                    <Skeleton key={i} className="h-4 w-3/4 mb-2" />
                 ))}
             </div>
-        </div>
-    );
+        );
+
     if (error || !job) return <div>Error loading job details.</div>;
+
     return (
-        <div className="">
-            <div className="font-bold ">THÔNG TIN CHUNG</div>
-            <div className="text-sm text-gray-800 mx-2 space-y-1">
-                <div><b>Ngày đăng tin:</b> {job.publishdate}</div>
-                <div><b>Vị trí (mới):</b> {job.location}</div>
-                <div><b>Cấp bậc:</b> {job.position}</div>
-                <div><b>Yêu cầu giới tính:</b> {job.gender}</div>
-                <div><b>Số lượng tuyển:</b> {job.numofrecruitment}</div>
-                <div><b>Thời gian làm việc:</b> {job.workingtime || "Giờ hành chính"}</div>
-                <div><b>Yêu cầu bằng cấp:</b> {job.degreerequired}</div>
-                <div><b>Yêu cầu kinh nghiệm:</b> {job.experience || "Không yêu cầu kinh nghiệm"}</div>
-                <div><b>Ngành nghề:</b> {job.job}</div>
-                <div><b>Hạn nộp hồ sơ:</b> {job.deadline}</div>
+        <aside
+            id="job-information"
+            className="rounded-md p-4 shadow-sm"
+        >
+            <h2 className="font-semibold text-gray-800 text-lg mb-3">
+                THÔNG TIN CHUNG
+            </h2>
+
+            <ul className="text-base text-gray-700 space-y-2">
+                <InfoItem icon={<CalendarDays />} label="Ngày đăng tin" value={job.publishdate} />
+                <InfoItem icon={<MapPin />} label="Vị trí (mới)" value={job.location} />
+                <InfoItem icon={<User />} label="Cấp bậc" value={job.position} />
+                <InfoItem icon={<FileText />} label="Yêu cầu giới tính" value={job.gender || "Không yêu cầu giới tính"} />
+                <InfoItem icon={<Users />} label="Số lượng tuyển" value={job.numofrecruitment} />
+                <InfoItem icon={<Clock />} label="Thời gian làm việc" value={job.workingtime || "Giờ hành chính"} />
+                <InfoItem icon={<GraduationCap />} label="Yêu cầu bằng cấp" value={job.degreerequired || "Không yêu cầu"} />
+                <InfoItem icon={<Briefcase />} label="Kinh nghiệm" value={job.experience || "Không yêu cầu kinh nghiệm"} />
+                <InfoItem icon={<Building2 />} label="Ngành nghề" value={job.job} />
+                <InfoItem icon={<Building2 />} label="Tên công ty" value={job.companyname} />
+                <InfoItem icon={<MapPin />} label="Địa chỉ" value={job.companyaddress} />
+                <InfoItem icon={<Users />} label="Quy mô" value={job.companyscale} />
+            </ul>
+
+            {/* Deadline highlight */}
+            <div className="mt-4 bg-blue-100 text-blue-800 rounded-lg px-4 py-3 text-center font-semibold flex items-center justify-center gap-2">
+                <CalendarDays className="text-blue-700" size={18} />
+                <span>Hạn nộp hồ sơ: {job.deadline}</span>
             </div>
-        </div>
+        </aside>
     );
 };
+
+interface InfoItemProps {
+    icon: React.ReactNode;
+    label: string;
+    value: string;
+}
+
+const InfoItem: React.FC<InfoItemProps> = ({ icon, label, value }) => (
+    <li className="flex items-start gap-2">
+        <div className="text-blue-500 mt-0.5">{icon}</div>
+        <div>
+            <span className="font-medium text-gray-800">{label}: </span>
+            <span>{value}</span>
+        </div>
+    </li>
+);
+
 export default JobInformation;

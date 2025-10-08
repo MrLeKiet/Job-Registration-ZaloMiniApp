@@ -6,7 +6,7 @@ function delay(ms: number) {
 
 export const getJobDetails = async (id: string) => {
     try {
-        await delay(5500);
+        await delay(1);
         const response = await api.get("/GetJob", {
             params: { jodId: id },
         });
