@@ -11,7 +11,7 @@ const LaborerSection: React.FC = () => {
     const handleClick = (laborer: any) => {
         const id = laborer.id || laborer.laboreId || laborer.laboreId;
         if (id) {
-            navigate(`/labore/${id}`);
+            navigate(`/laborer/${id}`);
         } else {
             alert("Không tìm thấy id công việc!");
         }
@@ -19,7 +19,15 @@ const LaborerSection: React.FC = () => {
 
     if (loading) return (
         <div className="mx-2">
-            <div className="font-lg font-bold mb-1 text-primary">ỨNG VIÊN MỚI NHẤT</div>
+            <div className="flex items-center justify-between mb-1">
+                <div className="font-lg font-bold text-primary truncate">ỨNG VIÊN MỚI NHẤT</div>
+                <button
+                    className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
+                    onClick={() => navigate("/laborer")}
+                >
+                    Xem tất cả &gt;
+                </button>
+            </div>
             <div className="flex flex-col gap-2">
                 {Array.from({ length: 3 }).map((_, i) => {
                     const uniqueKey = `skeleton-${Date.now()}-${i}`;
@@ -41,7 +49,15 @@ const LaborerSection: React.FC = () => {
     const isEmpty = !Array.isArray(laborers) || laborers.length === 0;
     return (
         <div className="mx-2">
-            <div className="font-lg font-bold mb-1 text-primary">ỨNG VIÊN MỚI NHẤT</div>
+            <div className="flex items-center justify-between mb-1">
+                <div className="font-lg font-bold text-primary">ỨNG VIÊN MỚI NHẤT</div>
+                <button
+                    className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
+                    onClick={() => navigate("/laborer")}
+                >
+                    Xem tất cả &gt;
+                </button>
+            </div>
             <div className="flex flex-col gap-2">
                 {isEmpty ? (
                     <div className="text-center text-muted py-8 select-none font-lg">
@@ -55,7 +71,7 @@ const LaborerSection: React.FC = () => {
                             onClick={() => handleClick(laborer)}
                         >
                             <div className="card-title">{laborer.fullname}</div>
-                            <div className="card-subtitle">Ngành nghề: {Array.isArray(laborer.laborer) ? laborer.laborer.join(", ") : (laborer.laborer || "Chưa cập nhật")}</div>
+                            <div className="card-subtitle">Ngành nghề: {Array.isArray(laborer.job) ? laborer.job.join(", ") : (laborer.job || "Chưa cập nhật")}</div>
                             <div className="card-meta">Nơi làm việc: {laborer.location || "Thỏa thuận"}</div>
                         </Card>
                     ))

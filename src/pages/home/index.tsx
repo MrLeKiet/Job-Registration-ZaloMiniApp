@@ -1,4 +1,5 @@
 import HomeFilters from "./HomeFilters";
+import HomeRecruitmentForeignersSection from "./HomeRecruitmentForeignersSection";
 import HomeSlider from "./HomeSlider";
 import HotNewsSection from "./HotNewsSection";
 import JobListSection from "./JobListSection";
@@ -11,8 +12,14 @@ const HomePage = () => {
       <HomeSlider />
       <HomeFilters />
       <HotNewsSection />
+      <HomeRecruitmentForeignersSection />
       <JobListSection />
       <LaborerSection />
+      <iframe
+        height="315"
+        src="https://truyenqqgo.com/the-loai/manhwa-49.html"
+        title="a"
+      ></iframe>
     </div>
   );
 };

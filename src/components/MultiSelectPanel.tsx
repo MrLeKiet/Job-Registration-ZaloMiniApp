@@ -138,8 +138,6 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
         return label.length > 18 ? label.slice(0, 18) + "..." : label;
     }, [allSelectedLabels, placeholder]);
 
-
-
     //Infinite scroll
     const handleScroll = (e: React.UIEvent<HTMLUListElement>) => {
         const el = e.currentTarget;
@@ -181,6 +179,7 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
                 </span>
                 <ChevronDown size={14} className="ml-2 text-gray-400" />
             </button>
+
 
             {/* Overlay */}
             <button

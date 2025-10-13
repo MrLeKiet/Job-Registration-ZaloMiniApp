@@ -55,7 +55,7 @@ const LaborerList = () => {
         onClick={() => handleClick(laborer)}
       >
         <div className="card-title">{laborer.fullname}</div>
-        <div className="card-subtitle">Ngành nghề: {Array.isArray(laborer.laborer) ? laborer.laborer.join(", ") : (laborer.laborer || "Chưa cập nhật")}</div>
+        <div className="card-subtitle">Ngành nghề: {Array.isArray(laborer.job) ? laborer.job.join(", ") : (laborer.job || "Chưa cập nhật")}</div>
         <div className="card-meta">Nơi làm việc: {laborer.location || "Thỏa thuận"}</div>
       </Card>
     ));
@@ -63,8 +63,8 @@ const LaborerList = () => {
   return (
     <>
       <LaborerFilter filters={filters} setFilters={setFilters} />
-      <div className="mx-2">
-        <div className="font-lg font-bold mb-1 text-primary">ỨNG VIÊN MỚI NHẤT</div>
+      <div className="">
+        <div className="mx-2 font-lg font-bold mb-1 text-primary">ỨNG VIÊN MỚI NHẤT</div>
         {content}
       </div>
     </>

@@ -19,7 +19,15 @@ const JobListSection: React.FC = () => {
 
     if (loading) return (
         <div className="mx-2">
-            <div className="font-lg font-bold mb-1 text-primary">VIỆC LÀM MỚI NHẤT</div>
+            <div className="flex items-center justify-between mb-1">
+                <div className="font-lg font-bold text-primary truncate">VIỆC LÀM MỚI NHẤT</div>
+                <button
+                    className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
+                    onClick={() => navigate("/jobs")}
+                >
+                    Xem tất cả &gt;
+                </button>
+            </div>
             <div className="flex flex-col gap-2">
                 {Array.from({ length: 4 }).map((_, i) => {
                     const uniqueKey = `skeleton-${i}-${Math.random().toString(36).slice(2, 11)}`;
@@ -41,7 +49,15 @@ const JobListSection: React.FC = () => {
     const isEmpty = !Array.isArray(jobs) || jobs.length === 0;
     return (
         <div className="mx-2">
-            <div className="font-lg font-bold mb-1 text-primary">VIỆC LÀM MỚI NHẤT</div>
+            <div className="flex items-center justify-between mb-1">
+                <div className="font-lg font-bold text-primary">VIỆC LÀM MỚI NHẤT</div>
+                <button
+                    className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
+                    onClick={() => navigate("/jobs")}
+                >
+                    Xem tất cả &gt;
+                </button>
+            </div>
             <div className="flex flex-col gap-2">
                 {isEmpty ? (
                     <div className="text-center text-muted py-8 select-none font-lg">

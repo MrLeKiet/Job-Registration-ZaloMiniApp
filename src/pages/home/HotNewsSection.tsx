@@ -13,7 +13,7 @@ const HotNewsSection: React.FC = () => {
                     THÔNG BÁO MỚI NHẤT
                 </div>
                 <button
-                    className="text-xs px-3 py-1 font-semibold text-primary"
+                    className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
                     onClick={() => navigate("/news")}
                 >
                     Xem tất cả &gt;
@@ -56,7 +56,7 @@ const HotNewsSection: React.FC = () => {
                     THÔNG BÁO MỚI NHẤT
                 </div>
                 <button
-                    className="text-xs px-3 py-1 font-semibold text-primary"
+                    className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
                     onClick={() => navigate("/news")}
                 >
                     Xem tất cả &gt;
@@ -73,51 +73,51 @@ const HotNewsSection: React.FC = () => {
                             key={item.id}
                             type="button"
                             className="flex gap-3 items-center bg-white/5 rounded p-2 cursor-pointer hover:bg-white/10 w-full text-left"
-                        onClick={() => handleNewsClick(item.id)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                                handleNewsClick(item.id);
-                            }
-                        }}
-                        tabIndex={0}
-                    >
-                        <div className="flex flex-col items-center justify-center min-w-[60px]">
-                            <div className="bg-[#1565C0] text-white font-xs font-bold rounded px-2 py-1 mb-1 text-center">
-                                {item.publishdate
-                                    ? (() => {
-                                        const parts = formatDate(item.publishdate).split("/");
-                                        if (parts.length === 3) {
-                                            return (
-                                                <>
-                                                    {parts[0]}/{parts[1]}
-                                                    <hr className="my-1 w-full" />
-                                                    <div className="mt-1">{parts[2]}</div>
-                                                </>
-                                            );
-                                        }
-                                        return "--/--";
-                                    })()
-                                    : "--/--"}
+                            onClick={() => handleNewsClick(item.id)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    handleNewsClick(item.id);
+                                }
+                            }}
+                            tabIndex={0}
+                        >
+                            <div className="flex flex-col items-center justify-center min-w-[60px]">
+                                <div className="bg-[#1565C0] text-white font-sm font-semibold rounded px-2 py-1 mb-1 text-center">
+                                    {item.publishdate
+                                        ? (() => {
+                                            const parts = formatDate(item.publishdate).split("/");
+                                            if (parts.length === 3) {
+                                                return (
+                                                    <>
+                                                        {parts[0]}/{parts[1]}
+                                                        <hr className="my-1 w-full" />
+                                                        <div className="mt-1">{parts[2]}</div>
+                                                    </>
+                                                );
+                                            }
+                                            return "--/--";
+                                        })()
+                                        : "--/--"}
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex-1">
-                            <div
-                                className="font-semibold leading-tight mb-1 font-base"
-                                style={{
-                                    wordBreak: 'break-word',
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 4,
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                }}
-                            >
-                                {item.title}
+                            <div className="flex-1">
+                                <div
+                                    className="font-semibold leading-tight mb-1 font-base"
+                                    style={{
+                                        wordBreak: 'break-word',
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                    }}
+                                >
+                                    {item.title}
+                                </div>
                             </div>
-                        </div>
-                    </button>
-                ))
-            )}
+                        </button>
+                    ))
+                )}
             </div>
         </div>
     );

@@ -1,44 +1,151 @@
-import SingleSelect from "@/components/SingleSelect";
-import React from "react";
+import { Briefcase, Search, Users } from "lucide-react";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "zmp-ui";
+import { useHomeSearch } from "./useHome";
+
 const HomeFilters: React.FC = () => {
-    const [job, setJob] = React.useState("");
-    const [salary, setSalary] = React.useState("");
+    const [searchValue, setSearchValue] = useState("");
+    const [showPanel, setShowPanel] = useState(false);
+    const [debouncedValue, setDebouncedValue] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
+    const debounceRef = useRef<number | null>(null);
+    const navigate = useNavigate();
+
+    // Debounce logic (2s)
+    React.useEffect(() => {
+        if (debounceRef.current) window.clearTimeout(debounceRef.current);
+        if (!searchValue) {
+            setDebouncedValue("");
+            setIsTyping(false);
+            return;
+        }
+        setIsTyping(true);
+        debounceRef.current = window.setTimeout(() => {
+            setDebouncedValue(searchValue);
+            setIsTyping(false);
+        }, 2000);
+        return () => {
+            if (debounceRef.current) window.clearTimeout(debounceRef.current);
+        };
+    }, [searchValue]);
+
+    const handleFocus = () => setShowPanel(true);
+
+    const { results, loading } = useHomeSearch(debouncedValue);
+
     return (
-        <div className="flex flex-col gap-2 sticky top-0 z-30 bg-white p-2 shadow-sm">
-            <input
-                type="text"
-                placeholder="Tìm kiếm công việc, địa điểm..."
-                className="bg-white h-8 w-full rounded-lg px-3 border border-gray-300 text-sm transition focus:outline-none focus:ring"
-            />
-            <div className="flex gap-2">
-                <div className="w-1/2">
-                    <SingleSelect
-                        options={[
-                            { label: "Công nghệ thông tin", value: "it" },
-                            { label: "Kinh doanh", value: "business" },
-                            { label: "Tiếp thị", value: "marketing" },
-                            { label: "Thiết kế", value: "design" },
-                        ]}
-                        value={job}
-                        placeholder="Ngành nghề"
-                        onChange={setJob}
-                    />
-                </div>
-                <div className="w-1/2">
-                    <SingleSelect
-                        options={[
-                            { label: "Dưới 5 triệu", value: "under_5m" },
-                            { label: "5 - 10 triệu", value: "5m_10m" },
-                            { label: "10 - 15 triệu", value: "10m_15m" },
-                            { label: "Trên 15 triệu", value: "above_15m" },
-                        ]}
-                        value={salary}
-                        placeholder="Mức lương"
-                        onChange={setSalary}
-                    />
+        <>
+            {showPanel && (
+                <button
+                    type="button"
+                    className="fixed inset-0 bg-opacity-20 z-20"
+                    aria-label="Close search panel"
+                    tabIndex={0}
+                    onClick={() => setShowPanel(false)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            setShowPanel(false);
+                        }
+                    }}
+                    style={{ cursor: "pointer" }}
+                />
+            )}
+            <div
+                className="flex flex-col gap-2 sticky top-0 z-30 bg-white p-2"
+            >
+                {/* Wrap input and dropdown inside a relative container */}
+                <div className="relative w-full">
+                    {/* Search Input */}
+                    <div className="relative">
+                        <Search className="absolute left-3 top-2.5 text-gray-400 h-4 w-4" />
+                        <input
+                            type="text"
+                            placeholder="Tìm kiếm công việc, địa điểm..."
+                            className="bg-white h-9 w-full rounded-full pl-9 pr-3 border border-gray-300 text-sm shadow-sm transition focus:outline-none focus:ring focus:ring-primary/30"
+                            value={searchValue}
+                            onChange={(e) => {
+                                setSearchValue(e.target.value);
+                                setShowPanel(true);
+                            }}
+                            onFocus={handleFocus}
+                            autoComplete="off"
+                        />
+                    </div>
+
+                    {/* Dropdown Panel */}
+                    {showPanel && (searchValue.trim() || debouncedValue.trim()) && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-40 max-h-96 overflow-auto">
+                            {(isTyping || loading) ? (
+                                <div className="p-4 text-center text-blue-600 animate-pulse text-sm">
+                                    Đang tìm...
+                                </div>
+                            ) : (
+                                <>
+                                    {results.jobs.length === 0 &&
+                                    results.foreigners.length === 0 ? (
+                                        <div className="p-4 text-center text-gray-400 text-sm">
+                                            Không tìm thấy kết quả phù hợp.
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {results.jobs.length > 0 && (
+                                                <div>
+                                                    <div className="px-4 py-2 text-xs font-semibold text-primary flex items-center gap-2 border-b border-gray-100">
+                                                        <Briefcase size={14} /> Công việc
+                                                    </div>
+                                                    {results.jobs.map((job) => (
+                                                        <button
+                                                            key={job.id || job.jobId}
+                                                            className="w-full text-left px-4 py-2 hover:bg-gray-50 focus:bg-gray-100 active:bg-gray-200 text-sm transition-colors"
+                                                            onClick={() => {
+                                                                navigate(`/jobs/${job.id || job.jobId}`);
+                                                                setShowPanel(false);
+                                                            }}
+                                                        >
+                                                            <div className="font-semibold text-primary line-clamp-1">
+                                                                {job.title}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 line-clamp-1">
+                                                                {job.location || "Chưa cập nhật"}
+                                                            </div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {results.foreigners.length > 0 && (
+                                                <div>
+                                                    <div className="px-4 py-2 text-xs font-semibold text-primary flex items-center gap-2 border-b border-gray-100">
+                                                        <Users size={14} /> Người nước ngoài
+                                                    </div>
+                                                    {results.foreigners.map((f) => (
+                                                        <button
+                                                            key={f.id}
+                                                            className="w-full text-left px-4 py-2 hover:bg-gray-50 focus:bg-gray-100 active:bg-gray-200 text-sm transition-colors"
+                                                            onClick={() => {
+                                                                navigate(`/recruitment-foreigners/${f.id}`);
+                                                                setShowPanel(false);
+                                                            }}
+                                                        >
+                                                            <div className="font-semibold text-primary line-clamp-1">
+                                                                {f.title}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 line-clamp-1">
+                                                                {f.company || "Chưa cập nhật"}
+                                                            </div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

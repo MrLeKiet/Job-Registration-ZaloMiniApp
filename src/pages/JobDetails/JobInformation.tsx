@@ -16,15 +16,21 @@ import { useJobDetail } from "./useJobDetails";
 const JobInformation: React.FC = () => {
     const { job, loading, error } = useJobDetail();
 
-    if (loading)
+    const skeletonKeys = React.useMemo(
+        () => Array.from({ length: 7 }, () => crypto.randomUUID()),
+        []
+    );
+
+    if (loading) {
         return (
             <div className="border rounded-xl p-4 shadow-sm bg-white">
                 <Skeleton className="h-6 w-1/2 mb-3" />
-                {Array.from({ length: 7 }).map((_, i) => (
-                    <Skeleton key={i} className="h-4 w-3/4 mb-2" />
+                {skeletonKeys.map(key => (
+                    <Skeleton key={key} className="h-4 w-3/4 mb-2" />
                 ))}
             </div>
         );
+    }
 
     if (error || !job) return <div>Error loading job details.</div>;
 

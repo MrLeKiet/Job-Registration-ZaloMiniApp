@@ -1,13 +1,34 @@
+// Search RecruitmentForeigners by keyword
+// Search RecruitmentForeigners by keyword
+export async function searchRecruitmentForeigners(keyword: string) {
+    try {
+        const response = await api.get("RecruitmentForeigners", {
+            params: { keyword }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error searching recruitment foreigners:", error);
+        throw error;
+    }
+}
+
+export async function searchJobList(keyword: string) {
+    try {
+        const response = await api.get("JobList", {
+            params: { keyword }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error searching job list:", error);
+        throw error;
+    }
+}
 
 import api from "@/api/axiosInstance";
 
-function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 export async function getHotNewsList() {
     try {
-        await delay(2500);
         const response = await api.get("/HotNewsHomePage", {
             params: { rowIndex: 0, pageSize: 5 },
         });
@@ -20,7 +41,6 @@ export async function getHotNewsList() {
 
 export async function getUrgentJobRecruitment() {
     try {
-        await delay(2500);
         const response = await api.get("/UrgentJobRecruitment", {
             params: { rowIndex: 0, pageSize: 5 },
         });
@@ -33,13 +53,25 @@ export async function getUrgentJobRecruitment() {
 
 export async function getLaborerList() {
     try {
-        await delay(2500);
         const response = await api.get("/Labore", {
             params: { rowIndex: 0, pageSize: 5 },
         });
         return response.data;
     } catch (error) {
         console.error("Error fetching laborer list:", error);
+        throw error;
+    }
+}
+
+
+export async function getRecruitmentForeignersList() {
+    try {
+        const response = await api.get("/RecruitmentForeigners", {
+            params: { rowIndex: 0, pageSize: 5 },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching recruitment foreigners list:", error);
         throw error;
     }
 }

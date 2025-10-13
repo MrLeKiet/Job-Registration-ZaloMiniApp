@@ -1,4 +1,5 @@
 import MultiSelectPanel from "@/components/MultiSelectPanel";
+import { useEffect, useRef, useState } from "react";
 import { useSettings, useWards } from "./useJobsList";
 
 type Props = {
@@ -62,15 +63,44 @@ const JobsFilter = ({ filters, setFilters }: Props) => {
     },
   ];
 
+  const [searchValue, setSearchValue] = useState(filters.keyword || "");
+  const [searchLoading, setSearchLoading] = useState(false);
+  let debounceRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setSearchValue(filters.keyword || "");
+  }, [filters.keyword]);
+
+  useEffect(() => {
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    if (searchValue === (filters.keyword || "")) {
+      setSearchLoading(false);
+      return;
+    }
+    setSearchLoading(true);
+    debounceRef.current = window.setTimeout(() => {
+      setFilters({ ...filters, keyword: searchValue });
+      setSearchLoading(false);
+    }, 2000);
+    return () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    };
+  }, [searchValue]);
+
   return (
     <div className="flex flex-col gap-2 sticky top-0 z-30 bg-white p-2 shadow-sm">
-      <input
-        type="text"
-        placeholder="Tìm kiếm việc làm..."
-        className="bg-white h-8 w-full rounded-lg px-3 border border-gray-300 text-sm transition focus:outline-none focus:ring"
-        value={filters.keyword || ""}
-        onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
-      />
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Tìm kiếm việc làm..."
+          className="bg-white h-8 w-full rounded-lg px-3 border border-gray-300 text-sm transition focus:outline-none focus:ring"
+          value={searchValue}
+          onChange={e => setSearchValue(e.target.value)}
+        />
+        {searchLoading && (
+          <span className="absolute right-3 top-2 text-xs text-blue-600 animate-pulse">Đang tìm...</span>
+        )}
+      </div>
       <div className="flex gap-2">
         <div className="w-full">
           <MultiSelectPanel

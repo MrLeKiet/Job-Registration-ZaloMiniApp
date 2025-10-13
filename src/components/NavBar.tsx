@@ -1,4 +1,4 @@
-import { Briefcase, Edit, Users, User, House } from "lucide-react";
+import { Briefcase, Edit, House, User, Users } from "lucide-react";
 import React from "react";
 import { useLocation, useNavigate } from "zmp-ui";
 
@@ -14,6 +14,13 @@ const Navbar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const currentPath = location.pathname || "/home";
+    // Consider job detail pages as part of 'Việc làm'
+    const isJobsPage = currentPath === "/jobs";
+    const isJobDetailPage = currentPath.startsWith("/jobs/");
+    const isLaborerPage = currentPath === "/laborer";
+    const isLaborerDetailPage = currentPath.startsWith("/laborer/");
+    const isHomePage = currentPath === "/home";
+    const isNewsPage = currentPath === "/news" || currentPath.startsWith("/news/");
 
     const navRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
@@ -29,14 +36,34 @@ const Navbar: React.FC = () => {
         >
             <div ref={navRef} className="max-w-screen-xl mx-auto flex justify-around items-center h-12 xs:h-14 sm:h-16 px-1 xs:px-2 sm:px-4">
                 {NAV_ITEMS.map((item) => {
-                    const isActive =
-                        (!currentPath || currentPath === "/") && item.path === "/home"
-                            ? true
-                            : currentPath === item.path;
+                    let isActive = false;
+                    if (
+                        (item.path === "/home" && (isHomePage || isNewsPage || !currentPath || currentPath === "/")) ||
+                        (item.path === "/jobs" && (isJobsPage || isJobDetailPage)) ||
+                        (item.path === "/laborer" && (isLaborerPage || isLaborerDetailPage))
+                    ) {
+                        isActive = true;
+                    }
                     return (
                         <button
                             key={item.path}
-                            onClick={() => navigate(item.path)}
+                            onClick={() => {
+                                if (item.path === "/home") {
+                                    if (!isHomePage) navigate("/home");
+                                } else if (item.path === "/jobs") {
+                                    if (!isJobsPage) navigate("/jobs");
+                                } else if (item.path === "/laborer") {
+                                    if (!isLaborerPage) navigate("/laborer");
+                                }
+                                if (
+                                    item.path !== "/home" &&
+                                    item.path !== "/jobs" &&
+                                    item.path !== "/laborer" &&
+                                    currentPath !== item.path
+                                ) {
+                                    navigate(item.path);
+                                }
+                            }}
                             className="flex flex-col items-center justify-center flex-1 sm:flex-none sm:px-2 h-full focus:outline-none relative"
                         >
                             <span
