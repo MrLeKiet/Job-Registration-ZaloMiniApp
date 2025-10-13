@@ -51,7 +51,7 @@ const SkillItem = ({ name, level }: { name: string; level?: number }) => (
         <div className="flex gap-1">
             {[...Array(5)].map((_, i) => (
                 <Star
-                    key={i}
+                    key={`${name}-star-${i}`}
                     className={`w-4 h-4 ${i < (level || 0)
                             ? "text-yellow-400 fill-yellow-400"
                             : "text-gray-300"

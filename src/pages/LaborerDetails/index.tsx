@@ -1,20 +1,11 @@
-import LaborerEducation from "./LaborerEducation";
-import LaborerExperience from "./LaborerExperience";
 import LaborerGeneralInfo from "./LaborerGeneralInfo";
-import LaborerJobInfo from "./LaborerJobInfo";
-import LaborerObjective from "./LaborerObjective";
-import LaborerOtherInfo from "./LaborerOtherInfo";
-import LaborerSkills from "./LaborerSkills";
+import TabBar from "./TabBar";
+
 const LaborerDetailPage = () => {
     return (
-        <div className="m-4">
+        <div className="">
             <LaborerGeneralInfo />
-            <LaborerEducation />
-            <LaborerJobInfo />
-            <LaborerExperience />
-            <LaborerObjective />
-            <LaborerSkills />
-            <LaborerOtherInfo />
+            <TabBar />
         </div>
     );
 };
