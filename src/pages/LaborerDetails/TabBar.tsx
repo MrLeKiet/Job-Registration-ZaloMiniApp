@@ -1,3 +1,4 @@
+// TabBar.tsx (Improved for mobile: sticky tab bar, smoother transitions, and better touch scrolling)
 import React, { useEffect, useRef, useState } from "react";
 
 import LaborerJobInfo from "./LaborerJobInfo";
@@ -27,22 +28,21 @@ const TabBar: React.FC = () => {
 
     return (
         <div className="w-full">
-            {/* Scrollable Tabs */}
-            <div className="relative overflow-x-auto shadow">
+            {/* Sticky Scrollable Tabs for mobile */}
+            <div className="sticky top-0 z-10 bg-white shadow-md">
                 <div
                     ref={tabsRef}
-                    className="flex gap-4 px-4 py-4 min-w-max border-b border-transparent relative"
+                    className="flex gap-6 px-4 py-3 overflow-x-auto no-scrollbar min-w-max border-b border-gray-200 relative"
                 >
                     {tabList.map(tab => (
                         <button
                             key={tab.id}
                             data-id={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`pb-2 text-sm font-medium transition-colors duration-200 ${activeTab === tab.id
+                            className={`pb-2 text-base font-medium transition-colors duration-300 whitespace-nowrap ${activeTab === tab.id
                                     ? "text-blue-700"
                                     : "text-gray-500 hover:text-blue-700"
                                 }`}
-                            style={{ whiteSpace: "nowrap" }}
                         >
                             {tab.label}
                         </button>
@@ -50,7 +50,7 @@ const TabBar: React.FC = () => {
 
                     {/* Blue active indicator */}
                     <span
-                        className="absolute bottom-2 h-[3px] bg-blue-700 transition-all duration-300 rounded-full"
+                        className="absolute bottom-0 h-1 bg-blue-700 transition-all duration-300 rounded-full"
                         style={{
                             left: indicatorStyle.left,
                             width: indicatorStyle.width,
