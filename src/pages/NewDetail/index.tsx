@@ -3,7 +3,7 @@ import NewsDetailSection from "./NewsDetailSection";
 
 const NewsDetailPage = () => {
     return (
-        <div className="flex flex-col gap-4 px-4 pb-4">
+        <div className="flex flex-col gap-4 pb-4">
             <NewsDetailSection />
         </div>
     );

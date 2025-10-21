@@ -29,6 +29,8 @@ const NewsDetailSection = () => {
         );
     }
 
+    const skeletonKeys = ["skeleton-1", "skeleton-2", "skeleton-3"];
+
     if (loading) {
         return (
             <div className="bg-[#f4f4f4] min-h-screen p-4" style={{ paddingTop: "var(--safe-top)" }}>
@@ -46,8 +48,8 @@ const NewsDetailSection = () => {
                 {/* Related news skeleton */}
                 <Skeleton className="h-6 w-1/3 mb-4" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="bg-white rounded shadow p-2 flex flex-col">
+                    {skeletonKeys.map((key) => (
+                        <div key={key} className="bg-white rounded shadow p-2 flex flex-col">
                             <Skeleton className="w-full h-32 mb-2" />
                             <Skeleton className="h-4 w-1/2 mb-1" />
                             <Skeleton className="h-5 w-2/3" />
@@ -65,7 +67,7 @@ const NewsDetailSection = () => {
     }
 
     return (
-        <div className="bg-[#f4f4f4] min-h-screen p-4" style={{ paddingTop: "var(--safe-top)"}}>
+        <div className="bg-[#f4f4f4] min-h-screen p-4" style={{ paddingTop: "var(--safe-top)" }}>
             <h1 className="text-2xl font-bold">{news.title}</h1>
             <div className="flex items-center gap-2 text-[#FFA726] text-sm mb-2">
                 {news.publishdate ? formatDate(news.publishdate) : ""}
@@ -86,20 +88,26 @@ const NewsDetailSection = () => {
             <div className="text-lg font-bold mb-2">Bài viết liên quan</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {news.relatedNews?.map((item: any) => (
-                    <div key={item.id} className="bg-white rounded shadow p-2 flex flex-col">
+                    <button
+                        key={item.id}
+                        type="button"
+                        className="bg-white rounded shadow flex flex-col cursor-pointer text-left"
+                        onClick={() => navigate(`/news/${item.id}`)}
+                        style={{ outline: "none", border: "none", padding: 0, background: "none" }}
+                    >
                         <div className="relative">
                             {item.thumbnail && (
                                 <img src={item.thumbnail} alt={item.title} className="w-full h-32 object-cover rounded" />
                             )}
                             <span className="absolute top-2 left-2 bg-[#E53935] text-white text-xs px-2 py-1 rounded">Tin tức</span>
                         </div>
-                        <div className="text-xs text-gray-500 mt-2">
+                        <div className="text-xs text-gray-500 mt-2 px-2">
                             {item.publishdate ? formatDate(item.publishdate) : ""}
                         </div>
-                        <div className="font-semibold mt-1" style={{ wordBreak: "break-word" }}>
+                        <div className="font-semibold mt-1 px-2 pb-2" style={{ wordBreak: "break-word" }}>
                             {item.title}
                         </div>
-                    </div>
+                    </button>
                 ))}
             </div>
         </div>
