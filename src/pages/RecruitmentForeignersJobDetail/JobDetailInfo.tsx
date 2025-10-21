@@ -1,14 +1,31 @@
+import Skeleton from "@/components/Skeleton";
 import React from "react";
+import { useRecruitmentJobDetail } from "./useRecruitmentForeignersJobDetail";
 
-interface JobDetailInfoProps {
-    job: any;
-}
-
-const JobDetailInfo: React.FC<JobDetailInfoProps> = ({ job }) => {
-    console.log("[JobDetailInfo] job prop:", job);
+const JobDetailInfo: React.FC = () => {
+    const { job, loading } = useRecruitmentJobDetail();
+    if (loading) {
+        return (
+            <div className="space-y-4">
+                <Skeleton className="h-8 w-2/3 mb-2" />
+                <Skeleton className="h-6 w-1/2 mb-1" />
+                <Skeleton className="h-4 w-1/3 mb-2" />
+                <div className="relative rounded-lg bg-white p-4 shadow-lg mt-6">
+                    <Skeleton className="absolute left-0 top-0 w-full h-1 rounded-t-lg bg-orange-300" />
+                    <Skeleton className="h-5 w-1/2 mb-2 mt-2" />
+                    <ul className="space-y-2">
+                        {Array.from({ length: 8 }).map((_, i) => (
+                            <li key={i}><Skeleton className="h-4 w-full" /></li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        );
+    }
+    if (!job) return null;
     const detail = job?.detailjob?.[0];
     return (
-        <>
+        <div className="space-y-4 p-4">
             <div className="font-bold text-xl mb-4 text-gray-800">{job.title}</div>
             <div className="text-base text-gray-700 font-semibold mb-1 flex items-center">{job.companyname}</div>
             <div className="text-gray-500 text-sm mb-4">Ngày đăng: {job.publishdate}</div>
@@ -30,7 +47,7 @@ const JobDetailInfo: React.FC<JobDetailInfoProps> = ({ job }) => {
                     )}
                 </ul>
             </div>
-        </>
+        </div>
     );
 };
 

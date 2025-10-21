@@ -18,7 +18,6 @@ const RecruitmentForeignersSection: React.FC = () => {
     if (loading) {
         content = (
             <div>
-                <div className="font-lg font-bold mb-1 text-primary">VIỆC LÀM CHO NGƯỜI NƯỚC NGOÀI</div>
                 <div className="flex flex-col gap-2">
                     {Array.from({ length: 4 }).map((_, i) => {
                         const uniqueKey = `skeleton-${i}-${Math.random().toString(36).slice(2, 11)}`;
@@ -57,23 +56,26 @@ const RecruitmentForeignersSection: React.FC = () => {
 
     return (
         <div>
-            <div className="text-2xl font-bold mb-4">Việc làm cho người nước ngoài</div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Tìm kiếm việc làm..."
-                    className="w-full pl-4 pr-4 py-3 shadow rounded-full bg-white focus:outline-gray-400 text-base placeholder-gray-400"
-                    aria-label="Tìm kiếm việc làm"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                />
-            </div>
-            <div className="mb-4">
-                <FilterBar
-                    value={selectedFilter}
-                    onChange={setSelectedFilter}
-                    placeholder="Chọn doanh nghiệp"
-                />
+            <div className="flex flex-col gap-2 sticky top-0 z-30 bg-white p-2 shadow-sm">
+                <div className="relative">
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm việc làm..."
+                        className="bg-white h-8 w-full rounded-lg px-3 border border-gray-300 text-sm transition focus:outline-none focus:ring"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                    />
+                    {loading && (
+                        <span className="absolute right-3 top-2 text-xs text-blue-600 animate-pulse">Đang tìm...</span>
+                    )}
+                </div>
+                <div className="mb-4">
+                    <FilterBar
+                        value={selectedFilter}
+                        onChange={setSelectedFilter}
+                        placeholder="Chọn doanh nghiệp"
+                    />
+                </div>
             </div>
             {content}
         </div>
