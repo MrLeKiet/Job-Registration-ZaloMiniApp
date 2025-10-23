@@ -9,7 +9,7 @@ const ReturnHeader: React.FC = () => {
                 const height = returnHeaderRef.current.offsetHeight;
                 document.documentElement.style.setProperty('--return-header-height', height + 'px');
             }
-            });
+        });
     return (
         <div ref={returnHeaderRef} className="px-4 flex items-center" style={{ paddingTop: 'var(--safe-top)', paddingBottom: '10px' }}>
             <button

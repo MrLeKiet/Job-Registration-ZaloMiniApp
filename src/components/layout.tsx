@@ -18,9 +18,8 @@ import LaborerPage from "@/pages/Laborer";
 import NewsDetailPage from "@/pages/NewDetail";
 import ProfilePage from "@/pages/Profile";
 import EnterprisePage from "@/pages/RecruitmentForeigners";
-import JobDetailPage from "@/pages/RecruitmentForeignersJobDetail";
 import RegisterPage from "@/pages/Register";
-
+import RecruitmentForeignersJobDetailPage from "@/pages/RecruitmentForeignersJobDetail";
 const Layout = () => {
   return (
     <App theme={getSystemInfo().zaloTheme as AppProps["theme"]}>
@@ -38,7 +37,8 @@ const Layout = () => {
               <Route path="/laborer" element={<LaborerPage />} />
               <Route path="/laborer/:id" element={<LaborerDetailPage />} />
               <Route path="/enterprise" element={<EnterprisePage />} />
-              <Route path="/detail/:id" element={<JobDetailPage />} />
+              <Route path="/RecruitmentForeigners/:id" element={<RecruitmentForeignersJobDetailPage />} />
+              <Route path="/detail/:id" element={<JobsDetailPage />} />
               <Route path="/register" element={<RegisterPage />} />
             </AnimationRoutes>
           </MainLayout>
