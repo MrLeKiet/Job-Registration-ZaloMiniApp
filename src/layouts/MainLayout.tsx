@@ -20,7 +20,8 @@ const RETURN_ROUTES = [
     "/register",
     "/news",
     "/auth",
-    "/profile/edit"
+    "/profile/edit",
+    "/enterprise",
 ];
 
 
