@@ -1,4 +1,5 @@
-// Mock API for profile (replace with real endpoints later)
+import api from "@/api/axiosInstance";
+    
 export async function getProfile() {
     // Simulate network latency
     await new Promise((res) => setTimeout(res, 300));
@@ -16,4 +17,9 @@ export async function getProfile() {
             }
         }
     };
+}
+
+export async function getSettings() {
+    const response = await api.get("/Settings");
+    return response.data.Data;
 }

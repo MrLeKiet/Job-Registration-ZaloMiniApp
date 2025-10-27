@@ -10,8 +10,8 @@ const LaborerJobInfo: React.FC = () => {
     if (loading)
         return (
             <SectionCard title="Thông tin nghề nghiệp" icon={<Briefcase className="w-5 h-5 text-blue-500" />}>
-                {Array.from({ length: 4 }).map((_, i) => (
-                    <Skeleton key={i} className="h-4 w-2/3 mb-2" />
+                {["skeleton-1", "skeleton-2", "skeleton-3", "skeleton-4"].map((id) => (
+                    <Skeleton key={id} className="h-4 w-2/3 mb-2" />
                 ))}
             </SectionCard>
         );
@@ -41,17 +41,21 @@ const LaborerJobInfo: React.FC = () => {
             <SectionCard title="Kỹ năng" icon={<Wrench className="w-5 h-5 text-blue-500" />}>
                 {skills.length > 0 ? (
                     <div className="space-y-3">
-                        {skills.map((skill: any, index: number) => (
-                            <div key={index} className="flex justify-between items-center border-b border-gray-100 pb-2 last:border-b-0">
+                        {skills.map((skill: any) => (
+                            <div
+                                key={skill.id || skill.name} // Use skill.id if available, else skill.name
+                                className="flex justify-between items-center border-b border-gray-100 pb-2 last:border-b-0"
+                            >
                                 <span className="text-gray-700 font-medium text-sm">{skill.name}</span>
                                 <div className="flex gap-1">
-                                    {[...Array(5)].map((_, i) => (
+                                    {["star-1", "star-2", "star-3", "star-4", "star-5"].map((starId, i) => (
                                         <Star
-                                            key={`${skill.name}-star-${i}`}
-                                            className={`w-4 h-4 ${i < (skill.level || 0)
-                                                ? "text-yellow-400 fill-yellow-400"
-                                                : "text-gray-300"
-                                                }`}
+                                            key={`${skill.id || skill.name}-${starId}`} // Combine skill identifier with star identifier
+                                            className={`w-4 h-4 ${
+                                                i < (skill.level || 0)
+                                                    ? "text-yellow-400 fill-yellow-400"
+                                                    : "text-gray-300"
+                                            }`}
                                         />
                                     ))}
                                 </div>

@@ -3,6 +3,14 @@ import React from "react";
 import { useNavigate } from "zmp-ui";
 import { useHotNews } from "./useHome";
 
+function formatDate(dateStr: string) {
+    const parts = dateStr.split("/");
+    if (parts.length === 3) {
+        return `${parts[0]}/${parts[1]}/${parts[2]}`;
+    }
+    return dateStr;
+}
+
 const HotNewsSection: React.FC = () => {
     const { news, loading, error } = useHotNews();
     const navigate = useNavigate();
@@ -36,14 +44,6 @@ const HotNewsSection: React.FC = () => {
         </div>
     );
     if (error) return <p>Có lỗi xảy ra khi tải dữ liệu.</p>;
-
-    function formatDate(dateStr: string) {
-        const parts = dateStr.split("/");
-        if (parts.length === 3) {
-            return `${parts[0]}/${parts[1]}/${parts[2]}`;
-        }
-        return dateStr;
-    }
 
     function handleNewsClick(id: string) {
         navigate(`/news/${id}`);

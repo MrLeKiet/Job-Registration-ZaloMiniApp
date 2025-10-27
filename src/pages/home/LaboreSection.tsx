@@ -17,6 +17,7 @@ const LaborerSection: React.FC = () => {
         }
     };
 
+
     if (loading) return (
         <div className="mx-2">
             <div className="flex items-center justify-between mb-1">
@@ -45,7 +46,12 @@ const LaborerSection: React.FC = () => {
             </div>
         </div>
     );
-    if (error) return <div>Lỗi: {String(error)}</div>;
+    if (error)
+        return (
+            <div>
+                Lỗi: {typeof error === "string" ? error : JSON.stringify(error, null, 2)}
+            </div>
+        );
     const isEmpty = !Array.isArray(laborers) || laborers.length === 0;
     return (
         <div className="mx-2">

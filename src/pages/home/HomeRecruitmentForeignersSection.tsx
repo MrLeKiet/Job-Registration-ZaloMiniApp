@@ -15,7 +15,7 @@ const HomeRecruitmentForeignersSection: React.FC = () => {
                 <div className="font-lg font-bold text-primary truncate">VIỆC LÀM CHO NGƯỜI NƯỚC NGOÀI</div>
                 <button
                     className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
-                    onClick={() => navigate("/recruitment-foreigners")}
+                    onClick={() => navigate("/RecruitmentForeigners")}
                 >
                     Xem tất cả &gt;
                 </button>

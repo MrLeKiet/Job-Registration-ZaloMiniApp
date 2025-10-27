@@ -15,11 +15,6 @@ const HomePage = () => {
       <HomeRecruitmentForeignersSection />
       <JobListSection />
       <LaborerSection />
-      <iframe
-        height="315"
-        src="https://truyenqqgo.com/the-loai/manhwa-49.html"
-        title="a"
-      ></iframe>
     </div>
   );
 };

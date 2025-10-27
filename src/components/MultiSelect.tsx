@@ -33,6 +33,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     const [search, setSearch] = React.useState("");
     const navbarCtx = React.useContext(NavbarVisibilityContext);
     const headerRef = useRef<HTMLDivElement>(null);
+    const listRef = useRef<HTMLUListElement>(null); // Ref for the <ul> element
 
     // Calculate dynamic height offset based on header and input
     const [heightOffset, setHeightOffset] = useState(100);
@@ -50,15 +51,34 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     }, [value]);
 
     const handleOpen = () => {
-        setPendingInternal(internal);
+        setPendingInternal(internal); // Use committed internal state
         setOpen(true);
         if (navbarCtx) navbarCtx.setShowNavbar(false);
         if (typeof onOpen === 'function') onOpen();
+        // Restore scroll position and focus on last selected item after a small delay
+        setTimeout(() => {
+            if (listRef.current && internal.length > 0) {
+                const lastSelectedValue = internal[internal.length - 1]; // Last selected item
+                const selectedElement = listRef.current.querySelector(`button[key="${lastSelectedValue}"]`);
+                if (selectedElement) {
+                    selectedElement.scrollIntoView({ behavior: "auto", block: "nearest" });
+                    (selectedElement as HTMLButtonElement).focus();
+                }
+                const savedScrollPosition = localStorage.getItem("multiSelectScrollPosition");
+                if (savedScrollPosition) {
+                    listRef.current.scrollTop = parseInt(savedScrollPosition, 10);
+                }
+            }
+        }, 50); // Delay to ensure DOM is ready
     };
     const handleClose = () => {
         setOpen(false);
         if (navbarCtx) navbarCtx.setShowNavbar(true);
         if (typeof onClose === 'function') onClose();
+        // Save current scroll position
+        if (listRef.current) {
+            localStorage.setItem("multiSelectScrollPosition", listRef.current.scrollTop.toString());
+        }
     };
 
     const handleSelect = (optionValue: string) => {
@@ -71,6 +91,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             next = pendingInternal;
         }
         setPendingInternal(next);
+        // Save scroll position after selection
+        if (listRef.current) {
+            localStorage.setItem("multiSelectScrollPosition", listRef.current.scrollTop.toString());
+        }
     };
 
     const handleConfirm = () => {
@@ -151,7 +175,11 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                                     onChange={(e) => setSearch(e.target.value)}
                                 />
                             </div>
-                            <ul className="space-y-1 overflow-y-auto h-[25vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
+                            <ul
+                                ref={listRef}
+                                className="space-y-1 overflow-y-auto h-[25vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+                                style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}
+                            >
                                 {options
                                     .filter((option) =>
                                         typeof option.label === "string" &&

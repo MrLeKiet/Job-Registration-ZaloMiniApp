@@ -13,11 +13,11 @@ const HomeSlider: React.FC = () => {
     // Helper to reset auto-slide interval with custom delay
     const resetSliderInterval = (delay: number = 3000) => {
         if (sliderInterval.current) {
-            window.clearInterval(sliderInterval.current);
+            globalThis.clearInterval(sliderInterval.current);
             sliderInterval.current = null;
         }
         if (sliderImages.length > 1) {
-            sliderInterval.current = window.setInterval(() => {
+            sliderInterval.current = globalThis.setInterval(() => {
                 setCurrentIndex((prev) => (prev + 1) % sliderImages.length);
             }, delay);
         }
@@ -52,7 +52,7 @@ const HomeSlider: React.FC = () => {
         resetSliderInterval(3000);
         return () => {
             if (sliderInterval.current) {
-                window.clearInterval(sliderInterval.current);
+                globalThis.clearInterval(sliderInterval.current);
                 sliderInterval.current = null;
             }
         };

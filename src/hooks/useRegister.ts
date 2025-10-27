@@ -9,7 +9,7 @@ export function useRegisterForm() {
         (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
             let value = e.target.value;
             if (field === "phone") {
-                // Only allow numbers
+                // Only allow numbers, using replace with global regex
                 value = value.replace(/\D/g, "");
             }
             setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -128,9 +128,9 @@ export function useRegisterForm() {
 
     function validateForm() {
         const newErrors: { [key: string]: string } = {};
-        Object.keys(requiredFields).forEach((field) => {
+        for (const field of Object.keys(requiredFields)) {
             newErrors[field] = validateField(field, formData[field]);
-        });
+        }
         setErrors(newErrors);
         // Return true if no errors
         return Object.values(newErrors).every((err) => !err);
@@ -143,9 +143,9 @@ export function useRegisterForm() {
             // Optionally, set all touched to true to show errors
             setTouched((prev) => {
                 const allTouched: { [key: string]: boolean } = { ...prev };
-                Object.keys(requiredFields).forEach((field) => {
+                for (const field of Object.keys(requiredFields)) {
                     allTouched[field] = true;
-                });
+                }
                 return allTouched;
             });
             return;

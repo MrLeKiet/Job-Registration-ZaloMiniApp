@@ -72,18 +72,18 @@ const JobsFilter = ({ filters, setFilters }: Props) => {
   }, [filters.keyword]);
 
   useEffect(() => {
-    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    if (debounceRef.current) globalThis.clearTimeout(debounceRef.current);
     if (searchValue === (filters.keyword || "")) {
       setSearchLoading(false);
       return;
     }
     setSearchLoading(true);
-    debounceRef.current = window.setTimeout(() => {
+    debounceRef.current = globalThis.setTimeout(() => {
       setFilters({ ...filters, keyword: searchValue });
       setSearchLoading(false);
     }, 2000);
     return () => {
-      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+      if (debounceRef.current) globalThis.clearTimeout(debounceRef.current);
     };
   }, [searchValue]);
 

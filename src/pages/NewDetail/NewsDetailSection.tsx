@@ -2,32 +2,29 @@ import Skeleton from "@/components/Skeleton";
 import { useNavigate } from "zmp-ui";
 import { useNewDetail } from "./useNewDetail";
 
+function formatDate(dateStr: string) {
+    const parts = dateStr.split("/");
+    if (parts.length === 3) {
+        return `${parts[0]}/${parts[1]}/${parts[2]}`;
+    }
+    return dateStr;
+}
+
+function decodeHtml(html: string) {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
+
+function decodeAndFixImages(html: string) {
+        const decoded = decodeHtml(html);
+        const imageBaseUrl = import.meta.env.VITE_API_IMAGE_URL;
+        return decoded.replace('src="/FileStorage', `src="${imageBaseUrl}/FileStorage`);
+    }
+
 const NewsDetailSection = () => {
     const { news, loading, error } = useNewDetail();
     const navigate = useNavigate();
-
-    function formatDate(dateStr: string) {
-        const parts = dateStr.split("/");
-        if (parts.length === 3) {
-            return `${parts[0]}/${parts[1]}/${parts[2]}`;
-        }
-        return dateStr;
-    }
-
-    function decodeHtml(html: string) {
-        const txt = document.createElement("textarea");
-        txt.innerHTML = html;
-        return txt.value;
-    }
-
-    function decodeAndFixImages(html: string) {
-        const decoded = decodeHtml(html);
-        const imageBaseUrl = import.meta.env.VITE_API_IMAGE_URL;
-        return decoded.replace(
-            /src="\/FileStorage/g,
-            `src="${imageBaseUrl}`
-        );
-    }
 
     const skeletonKeys = ["skeleton-1", "skeleton-2", "skeleton-3"];
 

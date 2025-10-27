@@ -73,7 +73,7 @@ const JobGeneralInfo: React.FC = () => {
                 <div className="flex items-center gap-1 text-gray-700">
                     <MapPin size={16} />
                     <span className="font-medium whitespace-nowrap">Vị trí:</span>
-                    <span className="font-semibold text-gray-900">{job.location}</span>
+                    <span className="font-semibold text-gray-900 pl-1">{job.location}</span>
                 </div>
             </div>
             <div className="flex items-center gap-6 mb-4">

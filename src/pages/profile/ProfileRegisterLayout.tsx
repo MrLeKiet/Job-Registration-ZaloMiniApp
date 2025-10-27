@@ -42,7 +42,7 @@ const PersonalInfoSection: React.FC<any> = ({
                 value={formData.fullName}
                 onChange={handleInputChange("fullName")}
                 onBlur={handleInputBlur("fullName")}
-                className="w-full rounded-md border-transparent border-gray-300"
+                className="w-full h-5 rounded-md border-transparent border-gray-950"
             />
         </InputBox>
 

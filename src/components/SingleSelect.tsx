@@ -122,7 +122,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
                         style={{ border: "none", padding: 0, margin: 0 }}
                     />
                     <div className={`fixed left-0 right-0 bottom-0 z-50 transform transition-transform duration-300 will-change-transform ${visible ? 'translate-y-0' : 'translate-y-full'}`}>
-                        <div className="bg-white rounded-t-2xl shadow-lg p-4 max-h-[calc(50vh-20px)] flex flex-col">
+                        <div className="bg-white rounded-t-2xl shadow-lg p-4 max-h-[60vh] flex flex-col">
                             <div ref={headerRef}>
                                 <div className="flex justify-between items-center mb-4">
                                     <span className="font-semibold">Chọn một lựa chọn</span>
@@ -139,12 +139,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
                                 />
                             </div>
                             <ul className="space-y-1 overflow-y-auto h-[40vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
-                                {options
-                                    .filter((option) =>
-                                        typeof option.label === "string" &&
-                                        option.label.toLowerCase().includes(search.toLowerCase())
-                                    )
-                                    .map((option) => {
+                                {filteredOptions.map((option) => {
                                         const isSelected = internal === option.value;
                                         return (
                                             <button

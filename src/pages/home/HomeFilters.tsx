@@ -13,19 +13,19 @@ const HomeFilters: React.FC = () => {
 
     // Debounce logic (2s)
     React.useEffect(() => {
-        if (debounceRef.current) window.clearTimeout(debounceRef.current);
+        if (debounceRef.current) globalThis.clearTimeout(debounceRef.current);
         if (!searchValue) {
             setDebouncedValue("");
             setIsTyping(false);
             return;
         }
         setIsTyping(true);
-        debounceRef.current = window.setTimeout(() => {
+        debounceRef.current = globalThis.setTimeout(() => {
             setDebouncedValue(searchValue);
             setIsTyping(false);
         }, 2000);
         return () => {
-            if (debounceRef.current) window.clearTimeout(debounceRef.current);
+            if (debounceRef.current) globalThis.clearTimeout(debounceRef.current);
         };
     }, [searchValue]);
 

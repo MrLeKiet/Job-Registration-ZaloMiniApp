@@ -31,6 +31,7 @@ api.interceptors.response.use(
       // await refreshToken();
       // return api(error.config); // retry original request
       // For now, just reject
+      return Promise.reject(new Error("Unauthorized. Please log in again."));
     }
     return Promise.reject(new Error(error?.message || String(error)));
   }
