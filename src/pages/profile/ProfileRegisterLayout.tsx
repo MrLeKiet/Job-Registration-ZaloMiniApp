@@ -11,8 +11,7 @@ import {
     Venus,
 } from "lucide-react";
 import React, { useEffect } from "react";
-import { Box, Button, DatePicker, Input, Text } from "zmp-ui";
-import InputBox from "../../components/InputBox";
+import { Box, Button, DatePicker, Input, Text, Icon} from "zmp-ui";
 import MultiSelect from "../../components/MultiSelect";
 import SingleSelect from "../../components/SingleSelect";
 import { useRegisterForm } from "../../hooks/useRegister";
@@ -27,253 +26,167 @@ const PersonalInfoSection: React.FC<any> = ({
     handleDateChange,
     settings,
 }) => (
-    <Box className="bg-white">
+    <Box className="bg-white flex flex-col gap-2">
         <Text className="text-lg font-semibold text-gray-700">Thông tin cá nhân</Text>
 
         {/* Full Name */}
-        <InputBox
-            label="Họ và Tên"
-            icon={<User size={18} />}
-            error={touched.fullName && !!formData.errors?.fullName}
-            errorMessage={touched.fullName ? formData.errors?.fullName : undefined}
-        >
-            <Input
-                placeholder="Nhập họ và tên"
-                value={formData.fullName}
-                onChange={handleInputChange("fullName")}
-                onBlur={handleInputBlur("fullName")}
-                className="w-full h-5 rounded-md border-transparent border-gray-950"
-            />
-        </InputBox>
+        <Input
+            label="Nhập họ và tên"
+            value={formData.fullName}
+            onChange={handleInputChange("fullName")}
+            onBlur={handleInputBlur("fullName")}
+            aria-label="Họ và Tên"
+            helperText="Vui lòng nhập tên người dùng của bạn."
+            suffix={<Box pr={4}><Icon icon="zi-info-circle" /></Box>}
+        />
 
         {/* Birth Date */}
-        <InputBox
-            label="Ngày sinh"
-            icon={<Calendar size={18} />}
-            error={touched.birthDate && !!formData.errors?.birthDate}
-            errorMessage={touched.birthDate ? formData.errors?.birthDate : undefined}
-        >
-            <DatePicker
-                value={formData.birthDate}
-                onChange={handleDateChange("birthDate")}
-                placeholder="Chọn ngày"
-                
-            />
-        </InputBox>
+        <DatePicker
+            value={formData.birthDate}
+            onChange={handleDateChange("birthDate")}
+            label="Chọn ngày sinh"
+            aria-label="Ngày sinh"
+        />
 
         {/* Gender */}
-        <InputBox
-            label="Giới tính"
-            icon={<Venus size={18} />}
-            error={touched.gender && !!formData.errors?.gender}
-            errorMessage={touched.gender ? formData.errors?.gender : undefined}
-        >
+        <div>
+            <Text className="text-sm text-[#141415] mb-2">Chọn giới tính</Text>
             <SingleSelect
                 options={settings?.ListGenderUser || []}
                 value={formData.gender}
-                onChange={option => handleSelectChange("gender")((option as any)?.label ?? option)}
-                placeholder="Chọn giới tính"
-                
+                onChange={(option) => handleSelectChange("gender")((option as any)?.label ?? option)}
+                placeholder="Giới tính"
             />
-        </InputBox>
+        </div>
 
         {/* ID Card */}
-        <InputBox
-            label="Căn Cước Công Dân"
-            icon={<IdCard size={18} />}
-            error={touched.idCard && !!formData.errors?.idCard}
-            errorMessage={touched.idCard ? formData.errors?.idCard : undefined}
-        >
-            <Input
-                placeholder="Nhập số CCCD"
-                value={formData.idCard}
-                onChange={handleInputChange("idCard")}
-                onBlur={handleInputBlur("idCard")}
-                className="w-full rounded-md border-transparent border-gray-300"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={15}
-            />
-        </InputBox>
+        <Input
+            label="Nhập số CCCD"
+            value={formData.idCard}
+            onChange={handleInputChange("idCard")}
+            onBlur={handleInputBlur("idCard")}
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={15}
+            aria-label="Căn Cước Công Dân"
+            suffix={<Box pr={4}><Icon icon="zi-info-circle" /></Box>}
+        />
 
         {/* Issue Date */}
-        <InputBox
-            label="Ngày cấp"
-            icon={<Calendar size={18} />}
-            error={touched.issueDate && !!formData.errors?.issueDate}
-            errorMessage={touched.issueDate ? formData.errors?.issueDate : undefined}
-        >
-            <DatePicker
-                value={formData.issueDate}
-                onChange={handleDateChange("issueDate")}
-                placeholder="Chọn ngày"
-                
-            />
-        </InputBox>
+        <DatePicker
+            value={formData.issueDate}
+            onChange={handleDateChange("issueDate")}
+            label="Chọn ngày cấp"
+            aria-label="Ngày cấp"
+        />
 
         {/* Issue Place */}
-        <InputBox
-            label="Nơi cấp"
-            icon={<MapPin size={18} />}
-            error={touched.issuePlace && !!formData.errors?.issuePlace}
-            errorMessage={touched.issuePlace ? formData.errors?.issuePlace : undefined}
-        >
-            <Input
-                placeholder="Nơi cấp"
-                value={formData.issuePlace}
-                onChange={handleInputChange("issuePlace")}
-                onBlur={handleInputBlur("issuePlace")}
-                className="w-full rounded-md border-transparent border-gray-300"
-            />
-        </InputBox>
+        <Input
+            label="Nhập nơi cấp"
+            value={formData.issuePlace}
+            onChange={handleInputChange("issuePlace")}
+            onBlur={handleInputBlur("issuePlace")}
 
+            aria-label="Nơi cấp"
+        />
         {/* Phone */}
-        <InputBox
-            label="Số điện thoại"
-            icon={<Phone size={18} />}
-            error={touched.phone && !!formData.errors?.phone}
-            errorMessage={touched.phone ? formData.errors?.phone : undefined}
-        >
-            <Input
-                placeholder="Nhập số điện thoại"
-                value={formData.phone}
-                onChange={handleInputChange("phone")}
-                onBlur={handleInputBlur("phone")}
-                className="w-full rounded-md border-transparent border-gray-300"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={15}
-            />
-        </InputBox>
+        <Input
+            label="Nhập số điện thoại"
+            value={formData.phone}
+            onChange={handleInputChange("phone")}
+            onBlur={handleInputBlur("phone")}
+
+            inputMode="tel"
+            pattern="[0-9]*"
+            maxLength={15}
+            aria-label="Số điện thoại"
+            suffix={<Box pr={4}><Icon icon="zi-info-circle" /></Box>}
+        />
 
         {/* Email */}
-        <InputBox
-            label="Email"
-            icon={<Mail size={18} />}
-            error={touched.email && !!formData.errors?.email}
-            errorMessage={touched.email ? formData.errors?.email : undefined}
-        >
-            <Input
-                placeholder="Nhập email"
-                value={formData.email}
-                onChange={handleInputChange("email")}
-                onBlur={handleInputBlur("email")}
-                className="w-full rounded-md border-transparent border-gray-300"
-            />
-        </InputBox>
-
+        <Input
+            label="Nhập email"
+            value={formData.email}
+            onChange={handleInputChange("email")}
+            onBlur={handleInputBlur("email")}
+            aria-label="Email"
+            suffix={<Box pr={4}><Icon icon="zi-info-circle" /></Box>}
+        />
         {/* Ethnicity */}
-        <InputBox
-            label="Dân tộc"
-            icon={<GraduationCap size={18} />}
-            error={touched.ethnicity && !!formData.errors?.ethnicity}
-            errorMessage={touched.ethnicity ? formData.errors?.ethnicity : undefined}
-        >
+        <div>
+            <Text className="text-sm text-[#141415] mb-2">Chọn dân tộc</Text>
             <SingleSelect
                 options={settings?.ListEthnicity || []}
                 value={formData.ethnicity}
-                onChange={option => handleSelectChange("ethnicity")((option as any)?.label ?? option)}
-                placeholder="Chọn dân tộc"
-                
+                onChange={(option) => handleSelectChange("ethnicity")((option as any)?.label ?? option)}
+                placeholder="Dân tộc"
             />
-        </InputBox>
+        </div>
 
         {/* Address */}
-        <InputBox
-            label="Địa chỉ liên lạc"
-            icon={<MapPin size={18} />}
-            error={touched.address && !!formData.errors?.address}
-            errorMessage={touched.address ? formData.errors?.address : undefined}
-        >
-            <Input
-                placeholder="Nhập địa chỉ"
-                value={formData.address}
-                onChange={handleInputChange("address")}
-                onBlur={handleInputBlur("address")}
-                className="w-full rounded-md border-transparent border-gray-300"
-            />
-        </InputBox>
+        <Input
+            label="Nhập địa chỉ liên lạc"
+            value={formData.address}
+            onChange={handleInputChange("address")}
+            onBlur={handleInputBlur("address")}
+
+            aria-label="Địa chỉ liên lạc"
+        />
 
         {/* Education Level */}
-        <InputBox
-            label="Trình độ học vấn"
-            icon={<GraduationCap size={18} />}
-            error={touched.educationLevel && !!formData.errors?.educationLevel}
-            errorMessage={touched.educationLevel ? formData.errors?.educationLevel : undefined}
-        >
-            <Input
-                placeholder="Nhập trình độ học vấn"
-                value={formData.educationLevel}
-                onChange={handleInputChange("educationLevel")}
-                onBlur={handleInputBlur("educationLevel")}
-                className="w-full rounded-md border-transparent border-gray-300"
-            />
-        </InputBox>
+        <Input
+            label="Nhập trình độ học vấn"
+            value={formData.educationLevel}
+            onChange={handleInputChange("educationLevel")}
+            onBlur={handleInputBlur("educationLevel")}
+
+            aria-label="Trình độ học vấn"
+        />
 
         {/* CMKT Level */}
-        <InputBox
-            label="Trình độ CMKT cao nhất"
-            icon={<GraduationCap size={18} />}
-            error={touched.cmktLevel && !!formData.errors?.cmktLevel}
-            errorMessage={touched.cmktLevel ? formData.errors?.cmktLevel : undefined}
-        >
+        <div>
+            <Text className="text-sm text-[#141415] mb-2">Chọn trình độ CMKT</Text>
             <SingleSelect
                 options={settings?.TechnicalLevel || []}
                 value={formData.cmktLevel}
-                onChange={option => handleSelectChange("cmktLevel")((option as any)?.label ?? option)}
-                placeholder="Chọn trình độ CMKT"
-                
+                onChange={(option) => handleSelectChange("cmktLevel")((option as any)?.label ?? option)}
+                placeholder="Trình độ CMKT"
             />
-        </InputBox>
+
+        </div>
 
         {/* Major */}
-        <InputBox
-            label="Chuyên ngành đào tạo"
-            icon={<GraduationCap size={18} />}
-            error={touched.major && !!formData.errors?.major}
-            errorMessage={touched.major ? formData.errors?.major : undefined}
-        >
-            <Input
-                placeholder="Nhập chuyên ngành đào tạo"
-                value={formData.major}
-                onChange={handleInputChange("major")}
-                onBlur={handleInputBlur("major")}
-                className="w-full rounded-md border-transparent border-gray-300"
-            />
-        </InputBox>
+        <Input
+            label="Nhập chuyên ngành đào tạo"
+            value={formData.major}
+            onChange={handleInputChange("major")}
+            onBlur={handleInputBlur("major")}
+
+            aria-label="Chuyên ngành đào tạo"
+        />
 
         {/* School */}
-        <InputBox
-            label="Tên trường tốt nghiệp"
-            icon={<Building size={18} />}
-            error={touched.school && !!formData.errors?.school}
-            errorMessage={touched.school ? formData.errors?.school : undefined}
-        >
-            <Input
-                placeholder="Nhập tên trường"
-                value={formData.school}
-                onChange={handleInputChange("school")}
-                onBlur={handleInputBlur("school")}
-                className="w-full rounded-md border-transparent border-gray-300"
-            />
-        </InputBox>
+        <Input
+            label="Nhập tên trường tốt nghiệp"
+            value={formData.school}
+            onChange={handleInputChange("school")}
+            onBlur={handleInputBlur("school")}
+
+            aria-label="Tên trường tốt nghiệp"
+        />
 
         {/* Desired Job */}
-        <InputBox
-            label="Ngành nghề mong muốn"
-            icon={<Briefcase size={18} />}
-            error={touched.desiredJob && !!formData.errors?.desiredJob}
-            errorMessage={touched.desiredJob ? formData.errors?.desiredJob : undefined}
-        >
+        <div>
+            <Text className="text-sm text-[#141415] mb-2">Chọn ngành nghề (tối đa 2)</Text>
             <MultiSelect
                 options={settings?.ListJob || []}
                 value={formData.desiredJob}
                 onChange={(selected) => handleSelectChange("desiredJob")(selected)}
                 max={2}
-                placeholder="Chọn ngành nghề (tối đa 2)"
-                
+                placeholder="Ngành nghề"
             />
-        </InputBox>
+        </div>
+
     </Box>
 );
 
@@ -291,8 +204,7 @@ const ProfileRegisterLayout: React.FC = () => {
     const { settings } = useProfile();
 
     useEffect(() => {
-        // potaotes to to go popo amd thing to go with othe rthing
-
+        // Initialize form or fetch settings if needed
     }, []);
 
     return (
@@ -307,7 +219,7 @@ const ProfileRegisterLayout: React.FC = () => {
                     handleDateChange={handleDateChange}
                     settings={settings}
                 />
-                <div className="px-4 py-4 flex justify-end">
+                <div className="flex justify-start">
                     <Button
                         type="highlight"
                         onClick={(e: any) => handleSubmit(e)}

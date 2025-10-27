@@ -82,16 +82,16 @@ const ProfileSection: React.FC = () => {
 	const percent = computePercent();
 
 	return (
-		<div className="px-4 -mt-6">
+		<div className="px-4 -mt-6 pb-4">
 			<div className={`rounded-lg overflow-hidden ${zaloUserInfo ? 'shadow-none' : 'shadow bg-transparent'}`}>
 				{/* Accordion Wrapper */}
 				<div
 					className={`
 	  overflow-hidden transition-all duration-500
 	  ${zaloUserInfo
-								? 'max-h-0 p-0 opacity-0 pointer-events-none'
-								: 'max-h-40 opacity-100'
-							}
+							? 'max-h-0 p-0 opacity-0 pointer-events-none'
+							: 'max-h-40 opacity-100'
+						}
 	`}
 					aria-hidden={!!zaloUserInfo}
 				>
