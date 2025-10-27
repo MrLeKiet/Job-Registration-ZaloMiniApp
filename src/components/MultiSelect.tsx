@@ -1,5 +1,5 @@
 import { NavbarVisibilityContext } from "@/layouts/MainLayout";
-import { ChevronDown, Square, SquareCheck, Tally1 } from "lucide-react";
+import { ChevronDown, ChevronUp, Square, SquareCheck, Tally1 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -123,7 +123,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         <>
             <button
                 type="button"
-                className={`w-full flex items-center justify-between px-1 py-1 border-transparent text-base font-medium transition focus:outline-none`}
+                className={`bg-white h-12 px-3 w-full mb-1 flex items-center rounded-lg justify-between border border-opacity-35 border-[#141415] text-sm transition focus:outline-none focus:ring`}
                 onClick={handleOpen}
                 tabIndex={0}
                 aria-haspopup="listbox"
@@ -144,8 +144,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                             .join(", ")}
                 </span>
                 <span className="ml-2 flex items-center text-gray-400">
-                    <Tally1 size={18} />
-                    <ChevronDown size={18} />
+                    {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </span>
             </button>
             {renderSheet && typeof document !== 'undefined' && createPortal(

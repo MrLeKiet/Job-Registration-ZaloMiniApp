@@ -85,7 +85,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
         <>
             <button
                 type="button"
-                className={`bg-white h-8 w-full flex items-center rounded-lg justify-between px-3 border border-gray-300 text-sm transition focus:outline-none focus:ring`}
+                className={`bg-white h-12 px-3 w-full mb-1 flex items-center rounded-lg justify-between border border-opacity-35 border-[#141415] text-sm transition focus:outline-none focus:ring`}
                 onClick={open ? handleClose : handleOpen}
                 tabIndex={0}
                 aria-haspopup="listbox"
