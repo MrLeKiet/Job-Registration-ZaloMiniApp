@@ -61,6 +61,7 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
     const [visibleCounts, setVisibleCounts] = useState<Record<string, number>>(
         Object.fromEntries(selects.map(s => [s.key, 10]))
     );
+    const [truncateLength, setTruncateLength] = useState(50); // Initial value, will be adjusted
 
     // Update filters and notify parent
     const updateFilter = (key: string, value: string) => {
@@ -93,6 +94,8 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
     const prevSearchRef = useRef("");
     const prevActiveSelectRef = useRef(activeSelect);
     const prevOpenRef = useRef(false);
+    const spanRef = useRef<HTMLSpanElement>(null); // Ref for the span
+    const headerRef = useRef<HTMLDivElement>(null); // Ref for the header
 
     const currentSelect = selects.find(s => s.key === activeSelect);
 
@@ -129,6 +132,23 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
         prevOpenRef.current = open;
     }, [open, currentSelect, filteredOptions, filters]);
 
+    // Dynamic truncation length based on span width
+    useEffect(() => {
+        const updateTruncateLength = () => {
+            if (spanRef.current) {
+                const spanWidth = spanRef.current.offsetWidth;
+                // Approximate 8px per character (adjust based on font)
+                const avgCharWidth = 8;
+                const maxChars = Math.floor(spanWidth / avgCharWidth) - 3; // Subtract 3 for ellipsis
+                setTruncateLength(Math.max(10, maxChars)); // Minimum 10 to avoid too short truncation
+            }
+        };
+
+        updateTruncateLength(); // Initial call
+        window.addEventListener("resize", updateTruncateLength);
+        return () => window.removeEventListener("resize", updateTruncateLength);
+    }, []);
+
     // Button label handling
     const allSelectedLabels = selects
         .map(s => s.options.find(o => o.value === filters[s.key])?.label)
@@ -136,8 +156,8 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
 
     const buttonLabel = useMemo(() => {
         const label = allSelectedLabels.length ? allSelectedLabels.join(", ") : placeholder;
-        return label.length > 18 ? label.slice(0, 18) + "..." : label;
-    }, [allSelectedLabels, placeholder]);
+        return label.length > truncateLength + 10 ? label.slice(0, truncateLength + 10) + "..." : label;
+    }, [allSelectedLabels, placeholder, truncateLength]);
 
     // Infinite scroll
     const handleScroll = (e: React.UIEvent<HTMLUListElement>) => {
@@ -164,6 +184,9 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
         }
     };
 
+    // Height offset for options list (adjust as needed for header, padding, etc.)
+    const heightOffset = 120; // Example value, adjust to fit your layout
+
     return (
         <>
             {/* Main Button */}
@@ -174,6 +197,7 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
                 aria-expanded={open}
             >
                 <span
+                    ref={spanRef}
                     className={`${allSelectedLabels.length ? "" : "text-gray-400"} whitespace-nowrap overflow-hidden text-ellipsis w-full block text-left`}
                 >
                     {buttonLabel}
@@ -193,8 +217,8 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
             <div
                 className={`fixed left-0 right-0 bottom-0 z-50 transform transition-transform duration-300 ${open ? "translate-y-0" : "translate-y-full"}`}
             >
-                <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[70vh] flex flex-col justify-between">
-                    <div>
+                <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[60vh] flex flex-col">
+                    <div ref={headerRef}>
                         {/* Header */}
                         <div className="flex justify-between items-center mb-4">
                             <span className="font-semibold">Chọn một lựa chọn</span>
@@ -245,52 +269,52 @@ const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({
                                 </button>
                             ))}
                         </div>
-
-                        {/* Options List */}
-                        <ul ref={listRef} className="space-y-1 overflow-y-auto max-h-[28vh]" onScroll={handleScroll}>
-                            {search.trim() === "" ? (
-                                currentSelect &&
-                                filteredOptions
-                                    .slice(0, visibleCounts[currentSelect.key])
-                                    .map(opt => (
-                                        <OptionItem
-                                            key={opt.value}
-                                            selectKey={currentSelect.key}
-                                            option={opt}
-                                            selected={filters[currentSelect.key] === opt.value}
-                                            onChange={updateFilter}
-                                        />
-                                    ))
-                            ) : (
-                                selects.map(sel => {
-                                    const filtered = sel.options.filter(o => filterOption(o.label, search));
-                                    if (!filtered.length) return null;
-                                    return (
-                                        <React.Fragment key={sel.key}>
-                                            <div className="font-semibold text-gray-700 py-2 px-2 bg-gray-50 rounded mt-2 mb-1">
-                                                {sel.label}
-                                            </div>
-                                            {filtered
-                                                .slice(0, visibleCounts[sel.key])
-                                                .map(opt => (
-                                                    <OptionItem
-                                                        key={opt.value}
-                                                        selectKey={sel.key}
-                                                        option={opt}
-                                                        selected={filters[sel.key] === opt.value}
-                                                        onChange={updateFilter}
-                                                    />
-                                                ))}
-                                        </React.Fragment>
-                                    );
-                                })
-                            )}
-                            {search.trim() !== "" &&
-                                selects.every(s => !s.options.some(o => filterOption(o.label, search))) && (
-                                    <div className="text-gray-400">Không có kết quả</div>
-                                )}
-                        </ul>
                     </div>
+
+                    {/* Options List */}
+                    <ul ref={listRef} className="space-y-1 overflow-y-auto max-h-[28vh]" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }} onScroll={handleScroll}>
+                        {search.trim() === "" ? (
+                            currentSelect &&
+                            filteredOptions
+                                .slice(0, visibleCounts[currentSelect.key])
+                                .map(opt => (
+                                    <OptionItem
+                                        key={opt.value}
+                                        selectKey={currentSelect.key}
+                                        option={opt}
+                                        selected={filters[currentSelect.key] === opt.value}
+                                        onChange={updateFilter}
+                                    />
+                                ))
+                        ) : (
+                            selects.map(sel => {
+                                const filtered = sel.options.filter(o => filterOption(o.label, search));
+                                if (!filtered.length) return null;
+                                return (
+                                    <React.Fragment key={sel.key}>
+                                        <div className="font-semibold text-gray-700 py-2 px-2 bg-gray-50 rounded mt-2 mb-1">
+                                            {sel.label}
+                                        </div>
+                                        {filtered
+                                            .slice(0, visibleCounts[sel.key])
+                                            .map(opt => (
+                                                <OptionItem
+                                                    key={opt.value}
+                                                    selectKey={sel.key}
+                                                    option={opt}
+                                                    selected={filters[sel.key] === opt.value}
+                                                    onChange={updateFilter}
+                                                />
+                                            ))}
+                                    </React.Fragment>
+                                );
+                            })
+                        )}
+                        {search.trim() !== "" &&
+                            selects.every(s => !s.options.some(o => filterOption(o.label, search))) && (
+                                <div className="text-gray-400">Không có kết quả</div>
+                            )}
+                    </ul>
                 </div>
             </div>
         </>
