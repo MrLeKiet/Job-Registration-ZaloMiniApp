@@ -347,7 +347,7 @@ const Select: React.FC<SelectProps> = ({
                                             </button>
                                         ))}
                                     </div>
-                                    <ul className="space-y-1 overflow-y-auto h-[32vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
+                                    <ul className="space-y-1 overflow-y-auto h-[3vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
                                         {search.trim() === "" ? (
                                             panelFilteredOptions[0]?.filtered.map(opt => (
                                                 <OptionItem
