@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components {
+	.btn-primary {
+		@apply bg-green-500 hover:bg-green-600 rounded-md h-12 px-6 text-sm text-white transition;
+	}
+	.btn-blue {
+		@apply bg-blue-600 hover:bg-blue-700 rounded-md h-12 px-6 text-sm text-white transition;
+	}
+	.btn-sky {
+		@apply bg-sky-600 hover:bg-sky-700 rounded-md h-12 px-6 text-sm text-white transition;
+	}
+	.input-wrapper {
+		@apply flex items-center border rounded-md px-3 min-h-[50px] h-[50px];
+	}
+	.input-field {
+		@apply border-none shadow-none bg-transparent placeholder-gray-400 pl-[4px];
+	}
+	.error-text {
+		@apply text-xs text-red-500 mt-1;
+	}
+	.card-section {
+		@apply w-full max-w-7xl bg-white rounded-lg shadow-lg p-6 sm:p-8 mx-auto;
+	}
+}

@@ -1,0 +1,133 @@
+@import './datepicker-override.css';
+@import './styles.scss';
+
+.page {
+  padding: 16px 16px 96px 16px;
+}
+
+.section-container {
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.zaui-list-item {
+  cursor: pointer;
+}
+
+:root {
+  --safe-top: var(--zaui-safe-area-inset-top, env(safe-area-inset-top, 30px));
+  --safe-bottom: max(8px,
+      var(--zaui-safe-area-inset-bottom, env(safe-area-inset-bottom, 30px)));
+}
+
+.btn-primary {
+  background-color: #22c55e;
+  /* Tailwind bg-green-500 */
+  border-radius: 0.375rem;
+  /* rounded-md */
+  height: 3rem;
+  /* h-12 */
+  padding-left: 1.5rem;
+  /* px-6 */
+  padding-right: 1.5rem;
+  font-size: 0.875rem;
+  /* text-sm */
+  color: #fff;
+  /* text-white */
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #16a34a;
+  /* Tailwind hover:bg-green-600 */
+}
+
+.btn-blue {
+  background-color: #2563eb;
+  /* Tailwind bg-blue-600 */
+  border-radius: 0.375rem;
+  height: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  font-size: 0.875rem;
+  color: #fff;
+  transition: all 0.2s;
+}
+
+.btn-blue:hover {
+  background-color: #1d4ed8;
+  /* Tailwind hover:bg-blue-700 */
+}
+
+.btn-sky {
+  background-color: #0284c7;
+  /* Tailwind bg-sky-600 */
+  border-radius: 0.375rem;
+  height: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  font-size: 0.875rem;
+  color: #fff;
+  transition: all 0.2s;
+}
+
+.btn-sky:hover {
+  background-color: #0369a1;
+  /* Tailwind hover:bg-sky-700 */
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  /* Tailwind border (gray-300) */
+  border-radius: 0.375rem;
+  padding-left: 0.75rem;
+  /* px-3 */
+  padding-right: 0.75rem;
+  min-height: 50px;
+  height: 50px;
+}
+
+.input-field {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  color: inherit;
+}
+
+.input-field::placeholder {
+  color: #9ca3af;
+  /* Tailwind placeholder-gray-400 */
+}
+
+.error-text {
+  font-size: 0.75rem;
+  /* text-xs */
+  color: #ef4444;
+  /* text-red-500 */
+  margin-top: 0.25rem;
+  /* mt-1 */
+}
+
+.card-section {
+  width: 100%;
+  max-width: 80rem;
+  /* max-w-7xl */
+  background: #fff;
+  border-radius: 0.5rem;
+  /* rounded-lg */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  /* shadow-lg */
+  padding: 1.5rem;
+  /* p-6 */
+  padding-left: 2rem;
+  /* sm:p-8 (approximate for larger screens) */
+  padding-right: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
