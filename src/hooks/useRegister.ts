@@ -1,7 +1,23 @@
 import { useState } from "react";
 
 export function useRegisterForm() {
-    const [formData, setFormData] = useState<any>({});
+    const [formData, setFormData] = useState<any>({
+        fullName: "",
+        birthDate: null,
+        gender: "",
+        idCard: "",
+        issueDate: null,
+        issuePlace: "",
+        phone: "",
+        email: "",
+        ethnicity: "",
+        address: "",
+        educationLevel: "",
+        cmktLevel: "",
+        major: "",
+        school: "",
+        desiredJob: [],
+    });
     const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -9,28 +25,29 @@ export function useRegisterForm() {
         (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
             let value = e.target.value;
             if (field === "phone") {
-                // Only allow numbers, using replace with global regex
-                value = value.replace(/\D/g, "");
+                // Only allow numbers, using replaceAll for digit filtering
+                value = value.replaceAll(/\D/g, "");
             }
             setFormData((prev: any) => ({ ...prev, [field]: value }));
-            validateField(field, value);
+            setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
         };
 
     const handleInputBlur = (field: string) => () => {
         setTouched((prev) => ({ ...prev, [field]: true }));
-        validateField(field, formData[field]);
+        setErrors((prev) => ({ ...prev, [field]: validateField(field, formData[field]) }));
     };
 
     const handleSelectChange = (field: string) => (value: any) => {
         setFormData((prev: any) => ({ ...prev, [field]: value }));
-        validateField(field, value);
+        setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
     };
 
     const handleDateChange = (field: string) => (date: Date | undefined) => {
         setFormData((prev: any) => ({ ...prev, [field]: date }));
-        validateField(field, date);
+        setErrors((prev) => ({ ...prev, [field]: validateField(field, date) }));
     };
 
+    // Only required fields remain here; others are now optional
     const requiredFields: { [key: string]: string } = {
         fullName: "Vui lòng nhập Họ và Tên",
         birthDate: "Vui lòng chọn ngày sinh",
@@ -40,12 +57,6 @@ export function useRegisterForm() {
         issuePlace: "Vui lòng nhập nơi cấp CCCD",
         phone: "Vui lòng nhập số điện thoại",
         email: "Vui lòng nhập email",
-        ethnicity: "Vui lòng chọn dân tộc",
-        address: "Vui lòng nhập địa chỉ liên lạc",
-        educationLevel: "Vui lòng nhập trình độ học vấn",
-        cmktLevel: "Vui lòng chọn Trình độ CMKT cao nhất",
-        major: "Vui lòng nhập chuyên ngành đào tạo",
-        school: "Vui lòng nhập Tên trường tốt nghiệp",
         desiredJob: "Vui lòng chọn ngành nghề mong muốn",
     };
 
@@ -54,7 +65,6 @@ export function useRegisterForm() {
         if (requiredFields[field]) {
             error = getFieldError(field, value);
         }
-        setErrors((prev) => ({ ...prev, [field]: error }));
         return error;
     }
 
@@ -71,6 +81,7 @@ export function useRegisterForm() {
         if (!value) {
             return requiredFields[field];
         }
+        // For optional fields, never show warning
         return "";
     }
 
