@@ -1,6 +1,6 @@
 import { Briefcase, Search, Users } from "lucide-react";
 import React, { useRef, useState } from "react";
-import { useNavigate } from "zmp-ui";
+import { Input, useNavigate } from "zmp-ui";
 import { useHomeSearch } from "./useHome";
 
 const HomeFilters: React.FC = () => {
@@ -57,11 +57,10 @@ const HomeFilters: React.FC = () => {
                 <div className="relative w-full">
                     {/* Search Input */}
                     <div className="relative">
-                        <Search className="absolute left-3 top-2.5 text-gray-400 h-4 w-4" />
-                        <input
+                        <Search className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
                             type="text"
                             placeholder="Tìm kiếm công việc, địa điểm..."
-                            className="bg-white h-9 w-full rounded-full pl-9 pr-3 border border-gray-300 text-sm shadow-sm transition focus:outline-none"
                             value={searchValue}
                             onChange={(e) => {
                                 setSearchValue(e.target.value);
@@ -82,7 +81,7 @@ const HomeFilters: React.FC = () => {
                             ) : (
                                 <>
                                     {results.jobs.length === 0 &&
-                                    results.foreigners.length === 0 ? (
+                                        results.foreigners.length === 0 ? (
                                         <div className="p-4 text-center text-gray-400 text-sm">
                                             Không tìm thấy kết quả phù hợp.
                                         </div>
