@@ -10,7 +10,7 @@ interface CardLayoutProps {
 const Card: React.FC<CardLayoutProps> = ({ thumbnail, onClick, children }) => (
   <button
     type="button"
-    className="flex gap-3 items-center bg-white/5 rounded p-2 w-full text-left cursor-pointer hover:bg-white/10"
+    className="flex gap-3 items-center bg-white/5 rounded p-2 pl-3 w-full text-left cursor-pointer hover:bg-white/10"
     onClick={onClick}
     onKeyDown={e => {
       if (e.key === "Enter" || e.key === " ") onClick?.();
