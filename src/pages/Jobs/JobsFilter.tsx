@@ -89,16 +89,18 @@ const JobsFilter = ({ filters, setFilters }: Props) => {
 
   return (
     <div className="flex flex-col gap-2 mb-2 sticky top-0 z-30 bg-white p-2 shadow-sm">
-      <div className="relative">
+      <div className="flex relative justify-center">
         <input
           type="text"
           placeholder="Tìm kiếm việc làm..."
-          className="bg-white h-8 w-full rounded-lg px-3 border border-gray-300 text-sm transition focus:outline-none"
+          className="bg-white border-opacity-35 border-[#141415]/30 h-12 px-3 w-full mb-1 flex items-center rounded-lg justify-between border text-base transition focus:outline-none hover:border-[#3b82f6] focus:border-[#3b82f6] pr-24" // Added pr-24 for space
           value={searchValue}
           onChange={e => setSearchValue(e.target.value)}
         />
         {searchLoading && (
-          <span className="absolute right-3 top-2 text-xs text-blue-600 animate-pulse">Đang tìm...</span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-blue-600 animate-pulse">
+            Đang tìm...
+          </span>
         )}
       </div>
       <div className="flex gap-2">
@@ -106,7 +108,7 @@ const JobsFilter = ({ filters, setFilters }: Props) => {
           <Select
             type="panel"
             options={[]} // not used in panel mode
-            onChange={() => {}} // not used in panel mode
+            onChange={() => { }} // not used in panel mode
             selects={selects}
             filterKey="jobsFilters"
             value={filters}
