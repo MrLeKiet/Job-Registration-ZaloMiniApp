@@ -1,7 +1,7 @@
-import React from "react";
-import { Eye, User, Phone, Mail } from "lucide-react";
 import Skeleton from "@/components/Skeleton";
 import noImage from "@/images/no_image.png";
+import { Eye, Mail, Phone } from "lucide-react";
+import React from "react";
 import { useLaborerDetail } from "./useLaborerDetails";
 
 const LoadingState: React.FC = () => (
@@ -27,55 +27,93 @@ const LaborerGeneralInfo: React.FC = () => {
             </section>
         );
 
-    const infoList = [
-        { label: "Tuổi", value: laborer.age },
-        { label: "Ngày sinh", value: laborer.birthdate },
-        { label: "Địa chỉ", value: laborer.address },
-        { label: "Dân tộc", value: laborer.ethnicity },
-        { label: "Quốc tịch", value: laborer.nationality },
-        { label: "Số điện thoại", value: laborer.phone, icon: <Phone className="w-4 h-4 text-green-500" /> },
-        { label: "Email", value: laborer.email, icon: <Mail className="w-4 h-4 text-blue-500" /> },
-        { label: "Cập nhật", value: laborer.updatedate },
-    ];
 
     return (
-        <section className="bg-white rounded-xl border border-gray-200 p-5 mx-3 mt-3 mb-5 shadow-sm">
-            <div className="flex flex-col items-center text-center mb-5">
-                <img
-                    src={laborer.thumbnail || noImage}
-                    alt="Ảnh đại diện"
-                    className="w-28 h-28 rounded-full object-cover border-2 border-blue-500 shadow-sm"
-                    onError={(e) => (e.currentTarget.src = noImage)}
-                />
-                <h3 className="text-xl font-bold text-gray-900 mt-3">{laborer.fullname}</h3>
-
-                <div className="flex flex-wrap justify-center items-center gap-2 text-sm text-gray-600 mt-2">
-                    <User className="w-4 h-4 text-blue-500" />
-                    <span>{laborer.gender}</span>
-                    <span className="text-gray-400">•</span>
-                    <span className="font-medium">CID: {laborer.cid}</span>
-                </div>
-
-                <div className="flex justify-center items-center gap-1 text-sm text-gray-500 mt-2">
-                    <Eye className="w-4 h-4 text-blue-500" />
-                    <span>{laborer.viewcount ?? 0} lượt xem</span>
+        <div className="bg-white shadow px-4 py-4 rounded-xl">
+            <div className="flex items-center gap-4 mb-3">
+                <img src={laborer.thumbnail || noImage} alt="Ảnh đại diện" className="w-16 h-16 object-cover rounded-full border" onError={e => (e.currentTarget.src = noImage)} />
+                <div className="flex-1">
+                    <div className="font-bold text-xl text-gray-900 mb-1">{laborer.fullname}</div>
                 </div>
             </div>
-
-            <div className="border-t border-gray-100 my-3" />
-
-            <div className="grid grid-cols-1 gap-3">
-                {infoList.map((item) => (
-                    <div key={item.label} className="flex justify-between items-center bg-gray-50 rounded-lg px-4 py-2">
-                        <div className="text-gray-600 text-sm font-medium">{item.label}</div>
-                        <div className="flex items-center gap-2 text-gray-800 text-sm">
-                            {item.icon}
-                            <span>{item.value || "-"}</span>
-                        </div>
+            <div className="border-b border-gray-200 mb-3" />
+            {/* Chips row for key info */}
+            <div className="flex flex-wrap gap-4 mb-4">
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Giới tính</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        {laborer.gender || "-"}
                     </div>
-                ))}
+                </div>
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Tuổi</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        {laborer.age || "-"}
+                    </div>
+                </div>
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Ngày sinh</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        {laborer.birthdate || "-"}
+                    </div>
+                </div>
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Địa chỉ</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        {laborer.address || "-"}
+                    </div>
+                </div>
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Dân tộc</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        {laborer.ethnicity || "-"}
+                    </div>
+                </div>
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Quốc tịch</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        {laborer.nationality || "-"}
+                    </div>
+                </div>
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Số điện thoại</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        <Phone className="w-4 h-4 text-green-500" />
+                        {laborer.phone || "-"}
+                    </div>
+                </div>
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Email</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        <Mail className="w-4 h-4 text-blue-500" />
+                        {laborer.email || "-"}
+                    </div>
+                </div>
+                <div className="flex flex-col items-start">
+                    <span className="text-xs text-gray-500 font-bold mb-1">Cập nhật</span>
+                    <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
+                        {laborer.updatedate || "-"}
+                    </div>
+                </div>
             </div>
-        </section>
+            {/* View count row */}
+            <div className="flex items-center gap-1 text-sm text-gray-500 mt-2">
+                <Eye className="w-4 h-4 text-blue-500" />
+                <span className="text-gray-800 text-sm">{laborer.viewcount ?? 0} lượt xem</span>
+            </div>
+            <div className="flex gap-3 mt-6">
+                <button
+                    className="flex-1 font-bold text-white py-3 rounded-lg flex items-center justify-center gap-2 text-base transition"
+                    style={{ background: '#1565C0' }}
+                    onMouseOver={e => e.currentTarget.style.background = '#0d47a1'}
+                    onFocus={e => e.currentTarget.style.background = '#0d47a1'}
+                    onMouseOut={e => e.currentTarget.style.background = '#1565C0'}
+                    onBlur={e => e.currentTarget.style.background = '#1565C0'}
+                >
+                    <p className="text-white">Ứng tuyển ngay</p>
+                </button>
+            </div>
+        </div>
     );
 };
 

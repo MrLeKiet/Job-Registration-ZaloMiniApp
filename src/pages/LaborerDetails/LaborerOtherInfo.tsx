@@ -1,8 +1,8 @@
-import React from "react";
-import { BadgeInfo } from "lucide-react";
 import Skeleton from "@/components/Skeleton";
-import { useLaborerDetail } from "./useLaborerDetails";
+import { BadgeInfo } from "lucide-react";
+import React from "react";
 import SectionCard from "./SectionCard";
+import { useLaborerDetail } from "./useLaborerDetails";
 
 const LaborerOtherInfo: React.FC = () => {
     const { laborer, loading, error } = useLaborerDetail();
@@ -24,13 +24,13 @@ const LaborerOtherInfo: React.FC = () => {
         );
 
     return (
-        <div className="px-3 pb-5 space-y-5">
-            <SectionCard title="Thông tin khác" icon={<BadgeInfo className="w-5 h-5 text-blue-500" />}>
-                <div className="space-y-3 text-gray-800 text-sm">
-                    <p><span className="font-medium text-gray-700">Ngành nghề:</span> {laborer.desiredjobtitle || "Chưa cập nhật"}</p>
-                    <p><span className="font-medium text-gray-700">Vị trí mong muốn:</span> {laborer.locationjob || "Chưa cập nhật"}</p>
-                    <p><span className="font-medium text-gray-700">Mức lương mong muốn:</span> {laborer.desired_salary ? `${laborer.desired_salary.toLocaleString()} VND` : "Chưa cập nhật"}</p>
-                    <p><span className="font-medium text-gray-700">Hình thức làm việc:</span> {laborer.work_type || "Chưa cập nhật"}</p>
+        <div className="space-y-6 px-2 pb-6">
+            <SectionCard title="Thông tin khác" icon={<BadgeInfo className="w-5 h-5 text-blue-500" />}> 
+                <div className=" rounded-lg p-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-800 text-base">
+                    <div><span className="font-semibold text-gray-700">Ngành nghề:</span> <span>{laborer.desiredjobtitle || "Chưa cập nhật"}</span></div>
+                    <div><span className="font-semibold text-gray-700">Vị trí mong muốn:</span> <span>{laborer.locationjob || "Chưa cập nhật"}</span></div>
+                    <div><span className="font-semibold text-gray-700">Mức lương mong muốn:</span> <span>{laborer.desired_salary ? `${laborer.desired_salary.toLocaleString()} VND` : "Chưa cập nhật"}</span></div>
+                    <div><span className="font-semibold text-gray-700">Hình thức làm việc:</span> <span>{laborer.work_type || "Chưa cập nhật"}</span></div>
                 </div>
             </SectionCard>
         </div>

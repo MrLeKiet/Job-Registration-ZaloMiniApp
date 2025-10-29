@@ -39,11 +39,11 @@ const JobInformation: React.FC = () => {
             id="job-information"
             className="rounded-md p-4 shadow-sm"
         >
-            <h2 className="font-semibold text-gray-800 text-lg mb-3">
+            <h2 className="font-bold text-gray-800 text-lg mb-3">
                 THÔNG TIN CHUNG
             </h2>
 
-            <ul className="text-base text-gray-700 space-y-2">
+            <ul className="text-base text-gray-700 space-y-2 flex flex-col gap-2 px-2">
                 <InfoItem icon={<CalendarDays />} label="Ngày đăng tin" value={job.publishdate} />
                 <InfoItem icon={<MapPin />} label="Vị trí (mới)" value={job.location} />
                 <InfoItem icon={<User />} label="Cấp bậc" value={job.position} />
@@ -77,8 +77,8 @@ const InfoItem: React.FC<InfoItemProps> = ({ icon, label, value }) => (
     <li className="flex items-start gap-2">
         <div className="text-blue-500 mt-0.5">{icon}</div>
         <div>
-            <span className="font-medium text-gray-800">{label}: </span>
-            <span>{value}</span>
+            <span className="font-semibold text-gray-800">{label}: </span>
+            <span className="text-base">{value}</span>
         </div>
     </li>
 );

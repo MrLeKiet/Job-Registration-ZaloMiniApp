@@ -30,15 +30,15 @@ const JobDescription: React.FC = () => {
     if (error || !job) return <div>Error loading job details.</div>;
     return (
         <aside id="job-description" className="rounded-md p-4 shadow-sm bg-white mb-4">
-            <h2 className="font-semibold text-gray-800 text-lg mb-3">MÔ TẢ CÔNG VIỆC</h2>
+            <h2 className="font-bold text-gray-800 text-lg mb-3">MÔ TẢ CÔNG VIỆC</h2>
             <ul className="text-base text-gray-700 space-y-2 mb-6">
                 <InfoItem icon={<FileText />} label="Mô tả" dangerouslySetInnerHTML={{ __html: decodeAndFixImages(job.summary || "Chưa có mô tả.") }} />
             </ul>
-            <h2 className="font-semibold text-gray-800 text-lg mb-3">YÊU CẦU CÔNG VIỆC</h2>
+            <h2 className="font-bold text-gray-800 text-lg mb-3">YÊU CẦU CÔNG VIỆC</h2>
             <ul className="text-base text-gray-700 space-y-2 mb-6">
                 <InfoItem icon={<FileText />} label="Yêu cầu" value={job.jobrequirements || "Chưa có yêu cầu."} />
             </ul>
-            <h2 className="font-semibold text-gray-800 text-lg mb-3">CHẾ ĐỘ PHÚC LỢI</h2>
+            <h2 className="font-bold text-gray-800 text-lg mb-3">CHẾ ĐỘ PHÚC LỢI</h2>
             <ul className="text-base text-gray-700 space-y-2">
                 <InfoItem icon={<Heart />} label="Phúc lợi" value={job.benefits || "Chưa có thông tin."} />
             </ul>
@@ -57,7 +57,7 @@ const InfoItem: React.FC<InfoItemProps> = ({ icon, label, value, dangerouslySetI
     <li className="flex items-start gap-2">
         <div className="text-blue-500 mt-0.5">{icon}</div>
         <div>
-            <span className="font-medium text-gray-800">{label}: </span>
+            <span className="font-bold text-gray-800">{label}: </span>
             {dangerouslySetInnerHTML ? (
                 <span dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
             ) : (

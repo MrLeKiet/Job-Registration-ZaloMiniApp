@@ -1,4 +1,5 @@
 import Skeleton from "@/components/Skeleton";
+import React from "react";
 import { useNavigate } from "zmp-ui";
 import { useNewDetail } from "./useNewDetail";
 
@@ -25,7 +26,7 @@ function decodeAndFixImages(html: string) {
 const NewsDetailSection = () => {
     const { news, loading, error } = useNewDetail();
     const navigate = useNavigate();
-
+    const [relatedLimit, setRelatedLimit] = React.useState(5);
     const skeletonKeys = ["skeleton-1", "skeleton-2", "skeleton-3"];
 
     if (loading) {
@@ -63,6 +64,10 @@ const NewsDetailSection = () => {
         return null;
     }
 
+    // Only show up to relatedLimit news
+    const relatedNewsToShow = news.relatedNews?.slice(0, relatedLimit) || [];
+    const canShowMore = news.relatedNews && relatedLimit < news.relatedNews.length;
+
     return (
         <div className="bg-[#f4f4f4] min-h-screen p-4" style={{ paddingTop: "var(--safe-top)" }}>
             <h1 className="text-2xl font-bold">{news.title}</h1>
@@ -84,7 +89,7 @@ const NewsDetailSection = () => {
             </div>
             <div className="text-lg font-bold mb-2">Bài viết liên quan</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {news.relatedNews?.map((item: any) => (
+                {relatedNewsToShow.map((item: any) => (
                     <button
                         key={item.id}
                         type="button"
@@ -107,6 +112,17 @@ const NewsDetailSection = () => {
                     </button>
                 ))}
             </div>
+            {canShowMore && (
+                <div className="flex justify-center mt-2">
+                    <button
+                        type="button"
+                        className="text-blue-700 text-sm font-semibold px-3 py-1 rounded hover:underline bg-transparent border-none cursor-pointer"
+                        onClick={() => setRelatedLimit(relatedLimit + 5)}
+                    >
+                        Xem thêm
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

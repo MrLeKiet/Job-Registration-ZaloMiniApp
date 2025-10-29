@@ -111,7 +111,7 @@ const RecruitmentPostPage: React.FC = () => {
     return (
         <div className="p-4">
             <div className="">
-                <Box className="flex flex-col gap-4 rounded">
+                <Box className=" flex flex-col gap-4 rounded">
                     <Text.Header className="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Tạo bài đăng tuyển dụng</Text.Header>
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                         <Text className="text-sm text-[#141415] ">Tên công ty</Text>
@@ -146,6 +146,8 @@ const RecruitmentPostPage: React.FC = () => {
                             onChange={handleChange("endDate")}
                             label="Ngày kết thúc tìm việc"
                             aria-label="Ngày kết thúc tìm việc"
+                            startDate={new Date()}
+                            defaultValue={new Date()}
                         />
                         <div>
                             <Text className="text-sm text-[#141415] mb-2">Thêm ảnh</Text>

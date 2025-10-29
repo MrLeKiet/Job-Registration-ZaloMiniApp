@@ -66,10 +66,10 @@ const PersonalInfoSection: React.FC<any> = ({
             maxLength={15}
             aria-label="Căn Cước Công Dân"
             placeholder="Số căn cước công dân"
-            suffix={<Box pr={4}><Icon icon="zi-info-circle" /></Box>}
             status={touched?.idCard && errors?.idCard ? "error" : undefined}
             errorText={touched?.idCard ? errors?.idCard : undefined}
             onFocus={e => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+            helperText="Vui lòng nhập số CCCD gồm 9 hoặc 12 chữ số."
         />
 
         {/* Issue Date */}
@@ -80,6 +80,7 @@ const PersonalInfoSection: React.FC<any> = ({
             aria-label="Ngày cấp"
             status={touched?.issueDate && errors?.issueDate ? "error" : undefined}
             errorText={touched?.issueDate ? errors?.issueDate : undefined}
+            helperText="Vui lòng chọn ngày cấp căn cước công dân."
         />
 
         {/* Issue Place */}
@@ -92,6 +93,7 @@ const PersonalInfoSection: React.FC<any> = ({
             placeholder="Nơi cấp căn cước"
             status={touched?.issuePlace && errors?.issuePlace ? "error" : undefined}
             errorText={touched?.issuePlace ? errors?.issuePlace : undefined}
+            helperText="Vui lòng nhập nơi cấp căn cước công dân."
         />
         {/* Phone */}
         <Input
@@ -104,9 +106,10 @@ const PersonalInfoSection: React.FC<any> = ({
             maxLength={15}
             aria-label="Số điện thoại"
             placeholder="Số điện thoại liên hệ"
-            suffix={<Box pr={4}><Icon icon="zi-info-circle" /></Box>}
             status={touched?.phone && errors?.phone ? "error" : undefined}
             errorText={touched?.phone ? errors?.phone : undefined}
+            helperText="Vui lòng nhập số điện thoại liên hệ."
+            prefix={<Box pl={4}><Icon icon="zi-call" /></Box>}
         />
 
         {/* Email */}
@@ -117,9 +120,9 @@ const PersonalInfoSection: React.FC<any> = ({
             onBlur={handleInputBlur("email")}
             aria-label="Email"
             placeholder="Email của bạn"
-            suffix={<Box pr={4}><Icon icon="zi-info-circle" /></Box>}
             status={touched?.email && errors?.email ? "error" : undefined}
             errorText={touched?.email ? errors?.email : undefined}
+            helperText="Vui lòng nhập địa chỉ email hợp lệ."
         />
         {/* Ethnicity */}
         <div>

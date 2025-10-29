@@ -56,7 +56,6 @@ const JobsList = () => {
         onClick={() => handleClick(job)}
       >
         <div className="card-title font-bold line-clamp-2">{job.title}</div>
-        <div className="card-subtitle truncate line-clamp-2">Ngành nghề: {Array.isArray(job.job) ? job.job.join(", ") : job.job || "Chưa cập nhật"}</div>
         <div className="card-meta truncate">Địa chỉ: {job.location || "Thỏa thuận"}</div>
         <div className="card-meta truncate">Lương: {job.salary || "Thỏa thuận"}</div>
       </Card>
