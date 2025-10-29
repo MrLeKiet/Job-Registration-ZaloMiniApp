@@ -10,7 +10,7 @@ const RecruitmentPostPage: React.FC = () => {
         content: string;
         requirements: string;
         endDate: Date;
-        image: File | null;
+        image: string | null;
         benefits: string[];
         jobType: string;
         salary: string;
@@ -31,7 +31,7 @@ const RecruitmentPostPage: React.FC = () => {
         content: string;
         requirements: string;
         endDate: Date;
-        image: File | null;
+    image: string | null;
         benefits: string[];
         jobType: string;
         salary: string;
@@ -76,7 +76,6 @@ const RecruitmentPostPage: React.FC = () => {
     React.useEffect(() => {
         localStorage.setItem("recruitmentPosts", JSON.stringify(posts));
     }, [posts]);
-    const [selectedPost, setSelectedPost] = useState<PostType | null>(null);
     const [message, setMessage] = useState<string | null>(null);
 
     const handleChange = (field: string) => (value: any) => {
@@ -89,12 +88,25 @@ const RecruitmentPostPage: React.FC = () => {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] ?? null;
-        setForm((prev) => ({ ...prev, image: file }));
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setForm((prev) => ({ ...prev, image: typeof reader.result === "string" ? reader.result : null }));
+            };
+            reader.onerror = () => {
+                setForm((prev) => ({ ...prev, image: null }));
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setForm((prev) => ({ ...prev, image: null }));
+        }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setPosts(prev => [...prev, { ...form, id: Date.now() }]);
+        // No need to convert image, it's already a string
+        const postToSave = { ...form, id: Date.now() };
+        setPosts(prev => [...prev, postToSave]);
         setMessage("Recruitment post submitted!");
         setTimeout(() => setMessage(null), 2000);
     };
@@ -155,7 +167,7 @@ const RecruitmentPostPage: React.FC = () => {
                                 <label htmlFor="image-upload" className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100">
                                     {form.image ? (
                                         <img
-                                            src={form.image ? URL.createObjectURL(form.image) : ''}
+                                            src={form.image}
                                             alt="Preview"
                                             className="w-full h-full object-cover rounded-lg"
                                         />
@@ -173,7 +185,7 @@ const RecruitmentPostPage: React.FC = () => {
                                     onChange={handleImageChange}
                                     className="hidden"
                                 />
-                                {form.image && <Text className="text-xs mt-1">{(form.image as File).name}</Text>}
+                                {/* No file name display since image is a string */}
                             </div>
                         </div>
                         <div>
