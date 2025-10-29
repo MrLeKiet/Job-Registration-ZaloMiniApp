@@ -6,7 +6,7 @@ const NAV_ITEMS = [
     { label: "Trang chủ", icon: <House size={24} />, path: "/home" },
     { label: "Ứng viên", icon: <Users size={24} />, path: "/laborer" },
     { label: "Việc làm", icon: <Briefcase size={24} />, path: "/jobs" },
-    { label: "Đăng tuyển", icon: <Edit size={24} />, path: "" },
+    { label: "Đăng tuyển", icon: <Edit size={24} />, path: "/RecruitmentPost" },
     { label: "Tài khoản", icon: <User size={24} />, path: "/profile" },
 ];
 
@@ -23,6 +23,7 @@ const Navbar: React.FC = () => {
     const isNewsPage = currentPath === "/news" || currentPath.startsWith("/news/");
     const isProfilePage = currentPath === "/profile";
     const isProfileSubPage = currentPath.startsWith("/profile/");
+    const isRecruitmentPostPage = currentPath === "/RecruitmentPost";
 
     const navRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
@@ -43,7 +44,8 @@ const Navbar: React.FC = () => {
                         (item.path === "/home" && (isHomePage || isNewsPage || !currentPath || currentPath === "/")) ||
                         (item.path === "/jobs" && (isJobsPage || isJobDetailPage)) ||
                         (item.path === "/laborer" && (isLaborerPage || isLaborerDetailPage)) ||
-                        (item.path === "/profile" && (isProfilePage || isProfileSubPage))
+                        (item.path === "/profile" && (isProfilePage || isProfileSubPage)) ||
+                        (item.path === "/RecruitmentPost" && isRecruitmentPostPage)
                     ) {
                         isActive = true;
                     }
