@@ -20,6 +20,7 @@ import ProfilePage from "@/pages/Profile";
 import EnterprisePage from "@/pages/RecruitmentForeigners";
 import RegisterPage from "@/pages/Register";
 import RecruitmentForeignersJobDetailPage from "@/pages/RecruitmentForeignersJobDetail";
+import RecruitmentPostPage from "@/pages/RecruitmentPost";
 const Layout = () => {
   return (
     <App theme={getSystemInfo().zaloTheme as AppProps["theme"]}>
@@ -37,9 +38,10 @@ const Layout = () => {
               <Route path="/laborer" element={<LaborerPage />} />
               <Route path="/laborer/:id" element={<LaborerDetailPage />} />
               <Route path="/enterprise" element={<EnterprisePage />} />
-              <Route path="/RecruitmentForeigners/:id" element={<RecruitmentForeignersJobDetailPage />} />
+              <Route path="/recruitmentForeigners/:id" element={<RecruitmentForeignersJobDetailPage />} />
               <Route path="/detail/:id" element={<JobsDetailPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/RecruitmentPost" element={<RecruitmentPostPage />} />
             </AnimationRoutes>
           </MainLayout>
         </ZMPRouter>
