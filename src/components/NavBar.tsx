@@ -24,6 +24,7 @@ const Navbar: React.FC = () => {
     const isProfilePage = currentPath === "/profile";
     const isProfileSubPage = currentPath.startsWith("/profile/");
     const isRecruitmentPostPage = currentPath === "/RecruitmentPost";
+    const isRecruitmentPostDetailPage = currentPath.startsWith("/recruitmentForeigners/");
 
     const navRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
@@ -45,7 +46,7 @@ const Navbar: React.FC = () => {
                         (item.path === "/jobs" && (isJobsPage || isJobDetailPage)) ||
                         (item.path === "/laborer" && (isLaborerPage || isLaborerDetailPage)) ||
                         (item.path === "/profile" && (isProfilePage || isProfileSubPage)) ||
-                        (item.path === "/RecruitmentPost" && isRecruitmentPostPage)
+                        (item.path === "/RecruitmentPost" && (isRecruitmentPostPage || isRecruitmentPostDetailPage))
                     ) {
                         isActive = true;
                     }

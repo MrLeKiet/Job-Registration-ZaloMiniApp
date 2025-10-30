@@ -63,9 +63,8 @@ const Select: React.FC<SelectProps> = ({
     const [heightOffset, setHeightOffset] = useState(100);
     useEffect(() => {
         if (headerRef.current) {
-            const headerHeight = headerRef.current.offsetHeight;
-            const inputHeight = 50;
-            setHeightOffset(headerHeight + inputHeight + 20);
+            const inputHeight = 0;
+            setHeightOffset(inputHeight);
         }
     }, [open]);
 
