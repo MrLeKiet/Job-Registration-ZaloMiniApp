@@ -1,37 +1,15 @@
 :root {
     --color-primary: #1565C0;
-    --color-secondary: #FFA726;
-    --color-danger: #E53935;
-    --color-success: #43A047;
-    --color-text: #222;
-    --color-muted: #888;
     --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-base: 16px;
     --font-size-lg: 20px;
     --font-size-xl: 24px;
     --font-size-2xl: 32px;
-    background-color: #E53935;
 }
 
 .text-primary {
     color: var(--color-primary) !important;
-}
-
-.text-secondary {
-    color: var(--color-secondary) !important;
-}
-
-.text-danger {
-    color: var(--color-danger) !important;
-}
-
-.text-success {
-    color: var(--color-success) !important;
-}
-
-.text-muted {
-    color: var(--color-muted) !important;
 }
 
 .text-base {

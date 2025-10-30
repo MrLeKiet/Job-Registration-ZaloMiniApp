@@ -12,7 +12,12 @@ module.exports = {
       spacing: {
         st: "var(--safe-top)",
         sb: "var(--safe-bottom)",
+
+        
       },
+      padding: {
+        4: "16px"
+      }
     },
   },
 };
