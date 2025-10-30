@@ -1,5 +1,6 @@
 
 import Skeleton from "@/components/Skeleton";
+import SkeletonList from "@/components/SkeletonList";
 import { BriefcaseBusiness, Clock, GraduationCap, HandCoins, Heart, MapPin } from "lucide-react";
 import React from "react";
 import { useJobDetail } from "./useJobDetails";
@@ -8,15 +9,22 @@ const JobGeneralInfo: React.FC = () => {
     const { job, loading, error } = useJobDetail();
     if (loading) return (
         <div className="bg-white shadow rounded-xl p-6 flex flex-col gap-2 mb-2">
-            <Skeleton className="h-8 w-3/4 mb-2" />
-            <div className="flex gap-4 mb-2">
-                <Skeleton className="h-6 w-24" />
-                <Skeleton className="h-6 w-24" />
-                <Skeleton className="h-6 w-24" />
-                <Skeleton className="h-6 w-24" />
-            </div>
-            <Skeleton className="h-4 w-1/2 mb-2" />
-            <Skeleton className="h-10 w-1/2" />
+            <SkeletonList
+                count={1}
+                renderSkeleton={() => (
+                    <>
+                        <Skeleton className="h-8 w-3/4 mb-2" />
+                        <div className="flex gap-4 mb-2">
+                            <Skeleton className="h-6 w-24" />
+                            <Skeleton className="h-6 w-24" />
+                            <Skeleton className="h-6 w-24" />
+                            <Skeleton className="h-6 w-24" />
+                        </div>
+                        <Skeleton className="h-4 w-1/2 mb-2" />
+                        <Skeleton className="h-10 w-1/2" />
+                    </>
+                )}
+            />
         </div>
     );
     if (error || !job) return <div>Error loading job details.</div>;

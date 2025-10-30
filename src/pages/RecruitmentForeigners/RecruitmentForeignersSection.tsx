@@ -3,6 +3,8 @@ import React from "react";
 import FilterBar from "./FilterBar";
 import RecruitmentCard from "./RecruitmentCard";
 import { useRecruitmentJobs } from "./useRecruitmentForeigners";
+import { Search } from "lucide-react";
+import Searchbar from "@/components/Searchbar";
 
 const RecruitmentForeignersSection: React.FC = () => {
     const {
@@ -57,18 +59,11 @@ const RecruitmentForeignersSection: React.FC = () => {
     return (
         <div>
             <div className="flex flex-col gap-2 mb-2 sticky top-0 z-30 bg-white p-2 shadow-sm">
-                <div className="relative">
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm việc làm..."
-                        className="bg-white h-8 w-full rounded-lg px-3 border border-gray-300 text-sm transition focus:outline-none"
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                    />
-                    {loading && (
-                        <span className="absolute right-3 top-2 text-xs text-blue-600 animate-pulse">Đang tìm...</span>
-                    )}
-                </div>
+                <Searchbar
+                    value={search}
+                    onSearch={setSearch}
+                    placeholder="Tìm kiếm công việc"
+                />
                 <div className="mb-4">
                     <FilterBar
                         value={selectedFilter}
@@ -77,7 +72,12 @@ const RecruitmentForeignersSection: React.FC = () => {
                     />
                 </div>
             </div>
-            {content}
+            <div className="p-4 flex flex-col gap-2 mb-2">
+                <div className="font-lg font-bold mb-1 text-primary">
+                    VIỆC LÀM NƯỚC NGOÀI MỚI NHẤT
+                </div>
+                {content}
+            </div>
         </div>
     );
 };

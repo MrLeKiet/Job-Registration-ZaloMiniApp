@@ -15,7 +15,6 @@ import React, { useEffect, useState } from "react";
 import { getAccessToken, getPhoneNumber, getUserID } from "zmp-sdk/apis";
 import {
     Box,
-    Button,
     DatePicker,
     Input,
     Text,
@@ -24,6 +23,7 @@ import {
 
 import InputBox from "../../components/InputBox";
 import Select from "../../components/Select";
+import SkeletonList from "../../components/SkeletonList";
 import { useRegisterForm } from "../../hooks/useRegister";
 
 const PersonalInfoRow1: React.FC<any> = ({
@@ -501,54 +501,33 @@ const RegisterPage: React.FC = () => {
         setLoading(false);
     }
 
-    return (
-        // <Page className="bg-gray-100 p-4 min-h-screen" style={{ paddingTop: 'var(--safe-top)', paddingBottom: 'var(--safe-bottom)' }}>
-        <Box className="mb-12">
-            <Box className="card-section ">
-                <Box className="flex justify-center mb-6 sm:mb-8">
-                    <Box className="flex items-center space-x-2">
-                        <Text size="large" className="text-blue-500">🔍</Text>
-                        <Text.Header className="text-xl sm:text-2xl font-bold text-blue-800">ĐĂNG KÝ THÀNH VIÊN</Text.Header>
-                    </Box>
-                </Box>
-
-                <form
-                    onSubmit={handleSubmit}
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-                >
-                    <PersonalInfoSection
-                        formData={formData}
-                        touched={touched}
-                        handleInputChange={handleInputChange}
-                        handleInputBlur={handleInputBlur}
-                        handleSelectChange={handleSelectChange}
-                        handleDateChange={handleDateChange}
-                        settings={settings}
-                    />
-                    <Box className="lg:col-span-4 mt-6 sm:mt-8 flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0 lg:space-x-4">
-                        <Text className="text-sm text-gray-500">(*) Vui lòng nhập đầy đủ thông tin</Text>
-                        {message && (
-                            <Box className="mb-4">
-                                <Text className="text-red-500">{message}</Text>
+    if (loading || !settings) {
+        return (
+            <Box className="mb-12">
+                <SkeletonList count={1} renderSkeleton={() => (
+                    <Box className="card-section">
+                        <Box className="flex justify-center mb-6 sm:mb-8">
+                            <Box className="flex items-center space-x-2">
+                                <div className="h-8 w-8 bg-gray-200 rounded-full" />
+                                <div className="h-8 w-2/3 bg-gray-200 rounded" />
                             </Box>
-                        )}
-                        <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-                            <Button
-                                variant="primary"
-                                className="btn-primary"
-                                htmlType="submit"
-                                disabled={loading}
-                            >
-                                {loading ? "Đang gửi..." : "Đăng Ký Ngay"}
-                            </Button>
-                            <Button className="btn-sky">Đăng Ký Cho Nhà Tuyển Dụng</Button>
-                        </div>
+                        </Box>
+                        <Box className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {Array.from({ length: 5 }).map((_, idx) => (
+                                <Box key={`skeleton-row-${idx}`} className="space-y-4">
+                                    {Array.from({ length: 3 }).map((_, jdx) => (
+                                        <div key={`skeleton-field-${idx}-${jdx}`} className="h-6 w-full bg-gray-200 rounded mb-2" />
+                                    ))}
+                                </Box>
+                            ))}
+                        </Box>
+                        <div className="h-10 w-full bg-gray-200 rounded mt-8" />
                     </Box>
-                </form>
+                )} />
             </Box>
-        </Box>
-        // </Page>
-    );
+        );
+    }
+    // ...existing code...
 };
 
 export default RegisterPage;

@@ -1,5 +1,6 @@
 import Card from "@/components/Card";
 import Skeleton from "@/components/Skeleton";
+import SkeletonList from "@/components/SkeletonList";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import JobsFilter from "./JobsFilter";
@@ -26,21 +27,20 @@ const JobsList = () => {
   let content;
   if (loading) {
     content = (
-      <div className="flex flex-col gap-2 mb-2">
-        {Array.from({ length: 3 }).map((_, i) => {
-          const uniqueKey = `skeleton-${Date.now()}-${i}`;
-          return (
-            <div key={uniqueKey} className="flex gap-3 items-center bg-white/5 rounded p-2 w-full">
-              <Skeleton className="w-16 h-16" />
-              <div className="flex-1">
-                <Skeleton className="h-4 w-2/3 mb-2" />
-                <Skeleton className="h-3 w-1/2 mb-1" />
-                <Skeleton className="h-3 w-1/3" />
-              </div>
+      <SkeletonList
+        count={3}
+        renderSkeleton={() => (
+          <div className="flex gap-3 items-center bg-white/5 rounded p-2 w-full">
+            <Skeleton className="w-16 h-16" />
+            <div className="flex-1">
+              <Skeleton className="h-4 w-2/3 mb-2" />
+              <Skeleton className="h-3 w-1/2 mb-1" />
+              <Skeleton className="h-3 w-1/3" />
             </div>
-          );
-        })}
-      </div>
+          </div>
+        )}
+        className="flex flex-col gap-2 mb-2"
+      />
     );
   } else if (isEmpty) {
     content = (

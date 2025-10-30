@@ -1,4 +1,5 @@
 import Skeleton from "@/components/Skeleton";
+import SkeletonList from "@/components/SkeletonList";
 import React from "react";
 import { useRecruitmentJobDetail } from "./useRecruitmentForeignersJobDetail";
 
@@ -6,33 +7,38 @@ const JobDetailInfo: React.FC = () => {
     const { job, loading } = useRecruitmentJobDetail();
 
     if (loading) {
-        const skeletonKeys = [
-            "skeleton-1",
-            "skeleton-2",
-            "skeleton-3",
-            "skeleton-4",
-            "skeleton-5",
-            "skeleton-6",
-            "skeleton-7",
-            "skeleton-8",
-        ];
-
         return (
             <div className="space-y-4">
-                <Skeleton className="h-8 w-2/3 mb-2" />
-                <Skeleton className="h-6 w-1/2 mb-1" />
-                <Skeleton className="h-4 w-1/3 mb-2" />
-                <div className="relative rounded-lg bg-white p-4 shadow-lg mt-6">
-                    <Skeleton className="absolute left-0 top-0 w-full h-1 rounded-t-lg bg-orange-300" />
-                    <Skeleton className="h-5 w-1/2 mb-2 mt-2" />
-                    <ul className="space-y-2">
-                        {skeletonKeys.map((key) => (
-                            <li key={key}>
-                                <Skeleton className="h-4 w-full" />
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <SkeletonList
+                    count={1}
+                    renderSkeleton={() => (
+                        <>
+                            <Skeleton className="h-8 w-2/3 mb-2" />
+                            <Skeleton className="h-6 w-1/2 mb-1" />
+                            <Skeleton className="h-4 w-1/3 mb-2" />
+                            <div className="relative rounded-lg bg-white p-4 shadow-lg mt-6">
+                                <Skeleton className="absolute left-0 top-0 w-full h-1 rounded-t-lg bg-orange-300" />
+                                <Skeleton className="h-5 w-1/2 mb-2 mt-2" />
+                                <ul className="space-y-2">
+                                    {[
+                                        "skeleton-item-1",
+                                        "skeleton-item-2",
+                                        "skeleton-item-3",
+                                        "skeleton-item-4",
+                                        "skeleton-item-5",
+                                        "skeleton-item-6",
+                                        "skeleton-item-7",
+                                        "skeleton-item-8",
+                                    ].map((key) => (
+                                        <li key={key}>
+                                            <Skeleton className="h-4 w-full" />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </>
+                    )}
+                />
             </div>
         );
     }

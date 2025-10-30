@@ -1,4 +1,5 @@
 import Skeleton from "@/components/Skeleton";
+import SkeletonList from "@/components/SkeletonList";
 import noImage from "@/images/no_image.png";
 import { Eye, Mail, Phone } from "lucide-react";
 import React from "react";
@@ -6,13 +7,18 @@ import { useLaborerDetail } from "./useLaborerDetails";
 
 const LoadingState: React.FC = () => (
     <section className="bg-white rounded-xl border border-gray-200 p-5 mx-3 mt-3 shadow-sm">
-        <div className="flex flex-col items-center gap-4">
-            <Skeleton className="h-28 w-28 rounded-full" />
-            <div className="w-full space-y-3">
-                <Skeleton className="h-5 w-3/4 mx-auto" />
-                <Skeleton className="h-4 w-1/2 mx-auto" />
-            </div>
-        </div>
+        <SkeletonList
+            count={1}
+            renderSkeleton={() => (
+                <div className="flex flex-col items-center gap-4">
+                    <Skeleton className="h-28 w-28 rounded-full" />
+                    <div className="w-full space-y-3">
+                        <Skeleton className="h-5 w-3/4 mx-auto" />
+                        <Skeleton className="h-4 w-1/2 mx-auto" />
+                    </div>
+                </div>
+            )}
+        />
     </section>
 );
 
