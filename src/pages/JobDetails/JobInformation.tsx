@@ -59,7 +59,7 @@ const JobInformation: React.FC = () => {
             </ul>
 
             {/* Deadline highlight */}
-            <div className="mt-4 bg-blue-100 text-blue-800 rounded-lg px-4 py-3 text-center font-semibold flex items-center justify-center gap-2">
+            <div className="mt-4 bg-blue-100 text-blue-800 rounded-lg p-4 text-center font-semibold flex items-center justify-center gap-2">
                 <CalendarDays className="text-blue-700" size={18} />
                 <span>Hạn nộp hồ sơ: {job.deadline}</span>
             </div>

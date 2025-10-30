@@ -1,6 +1,6 @@
 
+import Card from "@/components/Card";
 import Skeleton from "@/components/Skeleton";
-import RecruitmentCard from "@/pages/RecruitmentForeigners/RecruitmentCard";
 import React from "react";
 import { useNavigate } from "zmp-ui";
 import { useRecruitmentForeigners } from "./useHome";
@@ -8,20 +8,21 @@ import { useRecruitmentForeigners } from "./useHome";
 const HomeRecruitmentForeignersSection: React.FC = () => {
     const { jobs, loading, error } = useRecruitmentForeigners();
     const navigate = useNavigate();
-    // Consistent layout with other sections
+    const isEmpty = !Array.isArray(jobs) || jobs.length === 0;
+
     if (loading) return (
-        <div className="mx-3">
+        <div className="">
             <div className="flex items-center justify-between mb-1">
                 <div className="font-lg font-bold text-primary truncate">VIỆC LÀM CHO NGƯỜI NƯỚC NGOÀI</div>
                 <button
                     className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
-                    onClick={() => navigate("/recruitmentForeigners")}
+                    onClick={() => navigate("/foreignjobs")}
                 >
                     Xem tất cả &gt;
                 </button>
             </div>
             <div className="flex flex-col gap-2 mb-2">
-                {Array.from({ length: 5 }).map((_, i) => {
+                {Array.from({ length: 4 }).map((_, i) => {
                     const uniqueKey = `skeleton-${i}-${Math.random().toString(36).slice(2, 11)}`;
                     return (
                         <div key={uniqueKey} className="flex gap-3 items-center bg-white/5 rounded p-2 w-full">
@@ -38,14 +39,13 @@ const HomeRecruitmentForeignersSection: React.FC = () => {
         </div>
     );
     if (error) return <div className=" text-red-500">Lỗi tải dữ liệu tuyển dụng.</div>;
-    const isEmpty = !Array.isArray(jobs) || jobs.length === 0;
     return (
         <div className="flex flex-col gap-2 mb-2">
             <div className="flex items-center justify-between mb-1">
                 <div className="font-lg font-bold text-primary">VIỆC LÀM CHO NGƯỜI NƯỚC NGOÀI</div>
                 <button
                     className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"
-                    onClick={() => navigate("/enterprise")}
+                    onClick={() => navigate("/recruitmentForeigners")}
                 >
                     Xem tất cả &gt;
                 </button>
@@ -57,14 +57,15 @@ const HomeRecruitmentForeignersSection: React.FC = () => {
                     </div>
                 ) : (
                     jobs.map((job) => (
-                        <RecruitmentCard
-                            key={job.id}
-                            id={job.id}
-                            title={job.title}
+                        <Card
+                            key={job.id || job.jodId || job.jobId}
                             thumbnail={job.thumbnail}
-                            company={job.company}
-                            publishdate={job.publishdate}
-                        />
+                            onClick={() => navigate(`/recruitmentForeigners/${job.id || job.jodId || job.jobId}`)}
+                        >
+                            <div className="card-title">{job.title}</div>
+                            <div className="card-subtitle">Khu vực: {job.location || "Chưa cập nhật"}</div>
+                            <div className="card-meta">Mức lương: {job.salary || "Thỏa thuận"}</div>
+                        </Card>
                     ))
                 )}
             </div>

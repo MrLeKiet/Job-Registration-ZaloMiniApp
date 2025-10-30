@@ -21,8 +21,8 @@ const ProfilePage: React.FC = () => {
                 setZaloUserInfo(raw ? JSON.parse(raw) : null);
             } catch {}
         };
-        window.addEventListener('storage', handler);
-        return () => window.removeEventListener('storage', handler);
+        globalThis.addEventListener('storage', handler);
+        return () => globalThis.removeEventListener('storage', handler);
     }, []);
 
     return (

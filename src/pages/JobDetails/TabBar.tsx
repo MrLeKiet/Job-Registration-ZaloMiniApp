@@ -30,7 +30,7 @@ const TabBar: React.FC = () => {
             <div className="relative overflow-x-auto shadow">
                 <div
                     ref={tabsRef}
-                    className="flex gap-4 px-4 py-4 min-w-max border-b border-transparent relative"
+                    className="flex gap-4 p-4 min-w-max border-b border-transparent relative"
                 >
                     {tabList.map(tab => (
                         <button

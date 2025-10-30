@@ -3,11 +3,11 @@ import { getJobList, getSettings, getWards } from "./api";
 
 export function useJobsList(filters: any) {
     const params: Record<string, string> = {};
-    Object.keys(filters).forEach(key => {
+    for (const key of Object.keys(filters)) {
         if (filters[key] !== "") {
             params[key] = filters[key];
         }
-    });
+    }
 
     const { data, isLoading, error } = useQuery([
         "jobs",
@@ -31,7 +31,15 @@ export function useJobsList(filters: any) {
                 job: post.job || "Chưa cập nhật",
                 location: post.companyAddress || "Thỏa thuận",
                 salary: post.salary || "Thỏa thuận",
-                thumbnail: post.image ? (typeof post.image === "string" ? post.image : undefined) : undefined,
+                // Extract thumbnail logic
+                thumbnail: (() => {
+                    if (post.image) {
+                        if (typeof post.image === "string") {
+                            return post.image;
+                        }
+                    }
+                    return undefined;
+                })(),
                 createdAt: post.id // use id (timestamp) as creation time
             }));
         }

@@ -51,7 +51,7 @@ const HomeFilters: React.FC = () => {
                 />
             )}
             <div
-                className="flex flex-col gap-2 mb-2 sticky top-0 z-30 bg-white p-2"
+                className="flex flex-col gap-2 sticky top-0 z-30 bg-white p-2 mt-2"
             >
                 {/* Wrap input and dropdown inside a relative container */}
                 <div className="relative w-full">
@@ -122,7 +122,7 @@ const HomeFilters: React.FC = () => {
                                                             key={f.id}
                                                             className="w-full text-left px-4 py-2 hover:bg-gray-50 focus:bg-gray-100 active:bg-gray-200 text-sm transition-colors"
                                                             onClick={() => {
-                                                                navigate(`/recruitment-foreigners/${f.id}`);
+                                                                navigate(`/recruitmentForeigners/${f.id}`);
                                                                 setShowPanel(false);
                                                             }}
                                                         >

@@ -29,7 +29,7 @@ const LaborerGeneralInfo: React.FC = () => {
 
 
     return (
-        <div className="bg-white shadow px-4 py-4 rounded-xl">
+        <div className="bg-white shadow p-4 rounded-xl">
             <div className="flex items-center gap-4 mb-3">
                 <img src={laborer.thumbnail || noImage} alt="Ảnh đại diện" className="w-16 h-16 object-cover rounded-full border" onError={e => (e.currentTarget.src = noImage)} />
                 <div className="flex-1">

@@ -18,7 +18,7 @@ function formatDate(dateStr: string) {
 
 const NewsCard: React.FC<NewsCardProps> = ({ id, title, thumbnail, publishdate, onClick }) => (
     <button
-        className="bg-white rounded border-2 shadow p-2 flex flex-col cursor-pointer hover:bg-white/10 text-left focus:outline-none"
+        className="rounded border-2 shadow p-2 flex flex-col cursor-pointer hover:bg-white/10 text-left focus:outline-none"
         onClick={() => onClick(id)}
         tabIndex={0}
         aria-label={title}

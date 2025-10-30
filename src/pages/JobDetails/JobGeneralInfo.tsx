@@ -21,7 +21,7 @@ const JobGeneralInfo: React.FC = () => {
     );
     if (error || !job) return <div>Error loading job details.</div>;
     return (
-        <div className="bg-white shadow px-4 py-4">
+        <div className="bg-white shadow p-4">
             <div className="flex items-center gap-4 mb-3">
                 {job.thumbnail && (
                     <img src={job.thumbnail} alt={job.companyname} className="w-16 h-16 object-cover rounded-full border" />

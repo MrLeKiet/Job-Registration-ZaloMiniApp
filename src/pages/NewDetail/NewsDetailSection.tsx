@@ -18,10 +18,10 @@ function decodeHtml(html: string) {
 }
 
 function decodeAndFixImages(html: string) {
-        const decoded = decodeHtml(html);
-        const imageBaseUrl = import.meta.env.VITE_API_IMAGE_URL;
-        return decoded.replace('src="/FileStorage', `src="${imageBaseUrl}/FileStorage`);
-    }
+    const decoded = decodeHtml(html);
+    const imageBaseUrl = import.meta.env.VITE_API_IMAGE_URL;
+    return decoded.replace('src="/FileStorage', `src="${imageBaseUrl}/FileStorage`);
+}
 
 const NewsDetailSection = () => {
     const { news, loading, error } = useNewDetail();
@@ -69,7 +69,7 @@ const NewsDetailSection = () => {
     const canShowMore = news.relatedNews && relatedLimit < news.relatedNews.length;
 
     return (
-        <div className="bg-[#f4f4f4] min-h-screen p-4" style={{ paddingTop: "var(--safe-top)" }}>
+        <div className="p-4 mb-4">
             <h1 className="text-2xl font-bold">{news.title}</h1>
             <div className="flex items-center gap-2 text-[#FFA726] text-sm mb-2">
                 {news.publishdate ? formatDate(news.publishdate) : ""}
@@ -87,26 +87,31 @@ const NewsDetailSection = () => {
                     }
                 `}</style>
             </div>
-            <div className="text-lg font-bold mb-2">Bài viết liên quan</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="text-lg font-bold mb-4">Bài viết liên quan</div>
+            <div className="flex flex-col gap-4">
                 {relatedNewsToShow.map((item: any) => (
                     <button
                         key={item.id}
                         type="button"
-                        className="bg-white rounded shadow flex flex-col cursor-pointer text-left"
+                        className="bg-white rounded border-2 shadow p-2 flex flex-col cursor-pointer hover:bg-white/10 text-left focus:outline-none"
                         onClick={() => navigate(`/news/${item.id}`)}
-                        style={{ outline: "none", border: "none", padding: 0, background: "none" }}
+                        tabIndex={0}
+                        aria-label={item.title}
                     >
                         <div className="relative">
                             {item.thumbnail && (
                                 <img src={item.thumbnail} alt={item.title} className="w-full h-32 object-cover rounded" />
                             )}
-                            <span className="absolute top-2 left-2 bg-[#E53935] text-white text-xs px-2 py-1 rounded">Tin tức</span>
+                            <span className="absolute top-2 left-2 bg-[#E53935] text-white text-xs px-2 py-1 rounded">
+                                Tin tức
+                            </span>
                         </div>
-                        <div className="text-xs text-gray-500 mt-2 px-2">
+
+                        <div className="text-xs text-gray-500 mt-2">
                             {item.publishdate ? formatDate(item.publishdate) : ""}
                         </div>
-                        <div className="font-semibold mt-1 px-2 pb-2" style={{ wordBreak: "break-word" }}>
+
+                        <div className="font-semibold mt-1" style={{ wordBreak: "break-word" }}>
                             {item.title}
                         </div>
                     </button>

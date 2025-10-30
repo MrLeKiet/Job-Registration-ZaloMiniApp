@@ -32,7 +32,7 @@ const TabBar: React.FC = () => {
             <div className="sticky top-0 z-10 bg-white shadow-md">
                 <div
                     ref={tabsRef}
-                    className="flex gap-6 px-4 py-3 overflow-x-auto no-scrollbar min-w-max border-b border-gray-200 relative"
+                    className="flex gap-6 p-4 overflow-x-auto no-scrollbar min-w-max border-b border-gray-200 relative"
                 >
                     {tabList.map(tab => (
                         <button

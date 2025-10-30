@@ -1,3 +1,13 @@
+// Lấy chi tiết việc làm cho người nước ngoài
+export async function getForeignJobDetails(id: string) {
+    try {
+        const response = await api.get(`/RecruitmentForeigners/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching foreign job details:", error);
+        throw error;
+    }
+}
 export async function searchRecruitmentForeigners(keyword: string) {
     try {
         const response = await api.get("RecruitmentForeigners", {

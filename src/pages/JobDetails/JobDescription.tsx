@@ -12,8 +12,8 @@ function decodeHtml(html: string) {
 function decodeAndFixImages(html: string) {
     const decoded = decodeHtml(html);
     const imageBaseUrl = import.meta.env.VITE_API_IMAGE_URL;
-    return decoded.replace(
-        /src="\/FileStorage/g,
+    return decoded.replaceAll(
+        'src="/FileStorage',
         `src="${imageBaseUrl}`
     );
 }

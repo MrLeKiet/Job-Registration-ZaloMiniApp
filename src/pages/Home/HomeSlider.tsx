@@ -89,7 +89,6 @@ const HomeSlider: React.FC = () => {
             <div
                 className="relative w-full max-w-md h-48 overflow-hidden "
             >
-                {/* Chevron left button */}
                 {sliderImages.length > 1 && (
                     <button
                         type="button"
@@ -104,8 +103,6 @@ const HomeSlider: React.FC = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                     </button>
                 )}
-
-                {/* Chevron right button */}
                 {sliderImages.length > 1 && (
                     <button
                         type="button"

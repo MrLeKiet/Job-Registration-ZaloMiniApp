@@ -63,16 +63,19 @@ export function useUrgentJobs() {
     try {
         const stored = localStorage.getItem("recruitmentPosts");
         if (stored) {
-            localPosts = JSON.parse(stored).map((post: any) => ({
-                ...post,
-                id: post.id,
-                title: post.job || post.position || "Bài đăng nội bộ",
-                job: post.job || "Chưa cập nhật",
-                location: post.companyAddress || "Thỏa thuận",
-                salary: post.salary || "Thỏa thuận",
-                thumbnail: post.image ? (typeof post.image === "string" ? post.image : undefined) : undefined,
-                createdAt: post.id // use id (timestamp) as creation time
-            }));
+            localPosts = JSON.parse(stored).map((post: any) => {
+                const thumbnail = post.image && typeof post.image === "string" ? post.image : undefined;
+                return {
+                    ...post,
+                    id: post.id,
+                    title: post.job || post.position || "Bài đăng nội bộ",
+                    job: post.job || "Chưa cập nhật",
+                    location: post.companyAddress || "Thỏa thuận",
+                    salary: post.salary || "Thỏa thuận",
+                    thumbnail,
+                    createdAt: post.id // use id (timestamp) as creation time
+                };
+            });
         }
     } catch {}
     // Merge and sort jobs by createdAt (newest first)
