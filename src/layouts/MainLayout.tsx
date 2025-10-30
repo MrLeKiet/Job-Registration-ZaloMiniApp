@@ -22,6 +22,7 @@ const RETURN_ROUTES = [
     "/auth",
     "/profile/edit",
     "/enterprise",
+    "/recruitmentForeigners/"
 ];
 
 
