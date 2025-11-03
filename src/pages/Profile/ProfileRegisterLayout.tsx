@@ -1,7 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, Button, DatePicker, Icon, Input, Text } from "zmp-ui";
+import { FileText } from "lucide-react"
 import Select from "../../components/Select";
 import { useRegisterForm } from "../../hooks/useRegister";
+import ProfileCompletionCard from "./ProfileCompletionCard";
 import { useProfile } from "./useProfile";
 
 const PersonalInfoSection: React.FC<any> = ({
@@ -214,10 +216,49 @@ const PersonalInfoSection: React.FC<any> = ({
             />
         </div>
 
+        {/* Summary */}
+        <div>
+            <Text className="text-sm text-[#141415] mb-2">Giới thiệu bản thân</Text>
+            <textarea
+                className="w-full border border-gray-300 rounded-md p-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={4}
+                maxLength={500}
+                placeholder="Giới thiệu bản thân (tối đa 500 ký tự)"
+                value={formData.summary}
+                onChange={handleInputChange("summary")}
+            />
+        </div>
     </Box>
 );
 
-const ProfileRegisterLayout: React.FC = () => {
+const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle' | 'success' | 'fail' }> = ({ profileData, signInStatus }) => {
+    // Calculate completion percent
+    const getCompletionPercent = () => {
+        // List all required fields
+        const requiredFields = [
+            'fullName', 'birthDate', 'gender', 'idCard', 'issueDate', 'issuePlace',
+            'phone', 'email', 'ethnicity', 'address', 'educationLevel', 'cmktLevel',
+            'major', 'school', 'desiredJob', 'summary'
+        ];
+        let filled = 0;
+        for (const field of requiredFields) {
+            const value = formData[field];
+            if (Array.isArray(value)) {
+                if (value.length > 0) filled++;
+            } else if (value instanceof Date) {
+                if (!Number.isNaN(value.getTime())) filled++;
+            } else if (typeof value === 'string') {
+                if (value.trim() !== '') filled++;
+            } else if (value) {
+                filled++;
+            }
+        }
+        return Math.round((filled / requiredFields.length) * 100);
+    };
+
+    React.useEffect(() => {
+        console.log('[DEBUG] ProfileRegisterLayout props:', { profileData, signInStatus });
+    }, [profileData, signInStatus]);
     // ...existing code...
     const {
         formData,
@@ -233,64 +274,253 @@ const ProfileRegisterLayout: React.FC = () => {
         validateForm,
     } = useRegisterForm();
 
-    // Sync Zalo name to formData.fullName live if available and not already set
-    useEffect(() => {
-        try {
-            const raw = localStorage.getItem('zaloUserInfo');
-            const zaloUserInfo = raw ? JSON.parse(raw) : null;
-            if (zaloUserInfo?.name && (formData.fullName === "Nguyen Van A" || !formData.fullName)) {
-                setFormData((prev: any) => ({ ...prev, fullName: zaloUserInfo.name }));
-            }
-        } catch {}
-    }, [formData.fullName, setFormData]);
     const [showToast, setShowToast] = React.useState(false);
-
+    const [errorMessage, setErrorMessage] = React.useState("");
+    const [laboreSignUpLoading, setLaboreSignUpLoading] = React.useState(false);
     const { settings } = useProfile();
-    useEffect(() => {
-        setSuccessMessage("");
-    }, [formData]);
 
-    // Load from localStorage on mount, else set dummy data
-    useEffect(() => {
-        const saved = localStorage.getItem("profileRegisterForm");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                // Convert date strings back to Date objects
-                if (parsed.birthDate) parsed.birthDate = new Date(parsed.birthDate);
-                if (parsed.issueDate) parsed.issueDate = new Date(parsed.issueDate);
-                setFormData((prev: any) => ({ ...prev, ...parsed }));
-                return;
-            } catch {}
+    // Autofill from profileData after sign in
+    React.useEffect(() => {
+        if (signInStatus === 'success' && profileData) {
+            console.log('[DEBUG] Autofilling form with profileData:', profileData);
+            // Convert DD/MM/YYYY to YYYY-MM-DD for ciddate
+            const parseDDMMYYYY = (str: string) => {
+                if (!str || typeof str !== 'string') return null;
+                const match = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+                if (match) {
+                    const [_, dd, mm, yyyy] = match;
+                    return `${yyyy}-${mm}-${dd}`;
+                }
+                return str; // fallback to original string
+            };
+            let parsedIssueDate: string | null = null;
+            let parsedBirthDate: string | null = null;
+            if (profileData.ciddate) {
+                parsedIssueDate = parseDDMMYYYY(profileData.ciddate);
+            }
+            if (profileData.dateofbirth) {
+                parsedBirthDate = parseDDMMYYYY(profileData.dateofbirth);
+            }
+            setFormData((prev: any) => ({
+                ...prev,
+                fullName: profileData.fullname || prev.fullName,
+                birthDate:
+                    parsedBirthDate && typeof parsedBirthDate === 'string'
+                        ? new Date(parsedBirthDate)
+                        : prev.birthDate,
+                gender: profileData.gender || prev.gender,
+                idCard: profileData.cid || prev.idCard,
+                issueDate:
+                    parsedIssueDate && typeof parsedIssueDate === 'string'
+                        ? new Date(parsedIssueDate)
+                        : prev.issueDate,
+                issuePlace: profileData.cidaddress || prev.issuePlace,
+                phone: profileData.phone || prev.phone,
+                email: profileData.email || prev.email,
+                ethnicity: profileData.ethnicity || prev.ethnicity,
+                address: profileData.address || prev.address,
+                educationLevel: profileData.traininglevel || prev.educationLevel,
+                cmktLevel: profileData.highestlevelofexpertise || prev.cmktLevel,
+                major: profileData.trainingmajor || prev.major,
+                school: profileData.schoolgraduate || prev.school,
+                desiredJob: profileData.desiredcareer || prev.desiredJob,
+                summary: profileData.summary || prev.summary,
+            }));
         }
-        setFormData((prev: any) => ({
-            ...prev,
-            fullName: "Nguyen Van A",
-            birthDate: new Date("1990-01-01"),
-            idCard: "123456789012",
-            issueDate: new Date("2010-05-20"),
-            issuePlace: "Hà Nội",
-            phone: "0912345678",
-                    // Removed success message logic as toast now handles success feedback
-            school: "ĐH Bách Khoa",
-        }));
-    }, [setFormData]);
+    }, [signInStatus, profileData, setFormData]);
 
-    // Save to localStorage on formData change
-    useEffect(() => {
-        // Only save serializable fields
-        const toSave = { ...formData };
-        if (toSave.birthDate) toSave.birthDate = toSave.birthDate instanceof Date ? toSave.birthDate.toISOString() : toSave.birthDate;
-        if (toSave.issueDate) toSave.issueDate = toSave.issueDate instanceof Date ? toSave.issueDate.toISOString() : toSave.issueDate;
-        localStorage.setItem("profileRegisterForm", JSON.stringify(toSave));
-    }, [formData]);
+    const handleLaboreSignUp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const isValid = validateForm();
+        if (!isValid) {
+            setTouched((prev) => {
+                const allTouched: { [key: string]: boolean } = { ...prev };
+                const fields = [
+                    "fullName", "birthDate", "gender", "idCard", "issueDate", "issuePlace", "phone", "email", "ethnicity", "address", "educationLevel", "cmktLevel", "major", "school", "desiredJob"
+                ];
+                for (const field of fields) {
+                    allTouched[field] = true;
+                }
+                return allTouched;
+            });
+            setShowToast(false);
+            return;
+        }
+        setLaboreSignUpLoading(true);
+        setErrorMessage("");
+        let apiError = "";
+        try {
+            // Map frontend fields to backend fields for update
+            const safeDateString = (val: any) => {
+                if (!val) return null;
+                if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+                const d = new Date(val);
+                return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
+            };
+            const safeString = (val: any) => {
+                if (val === undefined || val === null || (typeof val === "string" && val.trim() === "")) return null;
+                return val;
+            };
+            const updatePayloadRaw = {
+                FullName: formData.fullName,
+                DateOfBirth: safeDateString(formData.birthDate),
+                Gender: formData.gender,
+                CID: formData.idCard,
+                CIDDate: safeDateString(formData.issueDate),
+                CIDAddress: formData.issuePlace,
+                Phone: formData.phone,
+                Email: formData.email,
+                Ethnicity: formData.ethnicity,
+                Address: formData.address,
+                Study: formData.educationLevel,
+                TechnicalLevel: formData.cmktLevel,
+                TrainingMajor: formData.major,
+                GraduateSchool: formData.school,
+                DesiredCareer: Array.isArray(formData.desiredJob)
+                    ? formData.desiredJob.map((job: any) => typeof job === 'object' ? (job.value || job.label || job) : job)
+                    : [],
+                // Add other fields if present in formData
+                Summary: safeString(formData.summary),
+                Salary: formData.salary || "",
+                Experience: formData.experience || 0,
+                EducationQualifications: formData.educationQualifications || [],
+                Skills: formData.skills || [],
+                CPSkill: formData.cpSkill || "",
+                FLanguages: formData.fLanguages || [],
+                ExperienceSummary: formData.experienceSummary || "",
+                InterviewFormat: formData.interviewFormat || "",
+                Benefits: formData.benefits || [],
+                CVPath: formData.cvPath || "",
+            };
+            // Remove CIDDate and Summary if they are null or empty
+            const updatePayload = { ...updatePayloadRaw };
+            if (updatePayload.CIDDate === null || updatePayload.CIDDate === "") {
+                delete (updatePayload as any).CIDDate;
+            }
+            // Always include Summary as null if not provided
+            if (updatePayload.Summary === null || updatePayload.Summary === "") {
+                updatePayload.Summary = null;
+            }
 
-    // Custom submit handler to show all errors
-    // Remove unused handleFormSubmit
+            if (signInStatus === 'success') {
+                // Update profile if already signed in
+                console.log('[DEBUG] UpdateProfile payload:', updatePayload);
+                const { updateProfile } = await import('@/api/registerApi');
+                const res = await updateProfile(updatePayload);
+                console.log("UpdateProfile response:", res);
+                if (res?.StatusResult?.Code === 0) {
+                    setShowToast(true);
+                    setTimeout(() => setShowToast(false), 2000);
+                    const { getProfile } = await import('./api');
+                    await getProfile(); // fetch profile, parent will update profileData prop
+                    // profileData is now managed by parent, do not set here
+                } else {
+                    console.error('[DEBUG] updateProfile API error:', res);
+                    apiError = res?.StatusResult?.Message || "Cập nhật thông tin thất bại.";
+                    setErrorMessage(apiError);
+                }
+            }
+
+            // Only run LaboreSignUp if signInStatus is 'fail'
+            if (signInStatus === 'fail') {
+                // Fetch Zalo auth fields
+                const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
+                const Accesstoken = await getAccessToken();
+                const phoneRes = await getPhoneNumber();
+                const Code = phoneRes?.token || "";
+                const ZaloId = await getUserID();
+
+                // Map frontend fields to backend fields for sign up
+                const payload = {
+                    Accesstoken,
+                    Code,
+                    ZaloId,
+                    ...updatePayload,
+                };
+                // Call LaboreSignUp
+                const { laborerSignUp, signIn } = await import('@/api/registerApi');
+                const res = await laborerSignUp(payload);
+                console.log("LaboreSignUp response:", res);
+                if (res?.Success) {
+                    // Try sign in again
+                    const signInRes = await signIn({ Accesstoken, Code, ZaloId });
+                    console.log("SignIn response:", signInRes);
+                    if (signInRes?.Success) {
+                        // signInStatus is now managed by parent, do not set here
+                        const { getProfile } = await import('./api');
+                        await getProfile(); // fetch profile, parent will update profileData prop
+                        // profileData is now managed by parent, do not set here
+                    }
+                    setShowToast(true);
+                    setTimeout(() => setShowToast(false), 2000);
+                } else {
+                    apiError = res?.Message || "Đăng ký thất bại.";
+                    setErrorMessage(apiError);
+                }
+            }
+        } catch (err) {
+            console.error('[DEBUG] handleLaboreSignUp error:', err);
+            setShowToast(false);
+            setErrorMessage(apiError || "Có lỗi xảy ra. Vui lòng thử lại.");
+        } finally {
+            setLaboreSignUpLoading(false);
+        }
+    };
+
+    const [cvFile, setCvFile] = React.useState<File | null>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleUploadCV = () => {
+        if (!cvFile && fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
 
     return (
         <div className="min-h-screen">
             <div className="max-w-md mx-auto pt">
+                {signInStatus === 'success' && (
+                    <div className="mb-4">
+                        <ProfileCompletionCard percent={getCompletionPercent()} />
+                    </div>
+                )}
+                <div className="bg-white rounded-lg mb-3">
+                    <button
+                        onClick={handleUploadCV}
+                        className="w-full flex items-center p-3 gap-3 hover:bg-gray-50 rounded-lg border border-gray-200 active:scale-95 transition-transform duration-150"
+                        aria-label="Tải lên CV"
+                        disabled={!!cvFile}
+                    >
+                        <div className="w-10 h-10 bg-[#E3F2FD] text-[#1565C0] rounded-md flex items-center justify-center">
+                            <FileText size={18} />
+                        </div>
+                        <div className="text-sm text-gray-700">Tải lên CV</div>
+                    </button>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={e => {
+                            const file = e.target.files?.[0] ?? null;
+                            if (file) setCvFile(file);
+                        }}
+                        disabled={!!cvFile}
+                    />
+                    {cvFile && (
+                        <div className="flex items-center justify-between bg-gray-100 rounded px-3 py-2 mt-2">
+                            <span className="text-sm font-medium text-gray-800 truncate mr-2">{cvFile.name}</span>
+                            <button
+                                type="button"
+                                className="text-red-500 text-lg font-bold px-2 py-0.5 rounded hover:bg-red-100"
+                                onClick={() => setCvFile(null)}
+                                aria-label="Xóa CV"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    )}
+                </div>
                 <form>
                     <PersonalInfoSection
                         formData={formData}
@@ -302,47 +532,43 @@ const ProfileRegisterLayout: React.FC = () => {
                         settings={settings}
                         errors={errors}
                     />
+                    {/* Only show summary if signed in */}
+                    {signInStatus === 'success' && (
+                        <div className="mb-4">
+                            <Text className="text-sm text-[#141415] mb-2">Giới thiệu bản thân</Text>
+                            <textarea
+                                className="w-full border border-gray-300 rounded-md p-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                rows={4}
+                                maxLength={500}
+                                placeholder="Giới thiệu bản thân (tối đa 500 ký tự)"
+                                value={formData.summary}
+                                onChange={e => handleInputChange("summary")(e as any)}
+                            />
+                        </div>
+                    )}
                     {showToast && (
                         <div className="text-green-600 text-center mb-2 font-semibold">Cập nhật thông tin thành công</div>
                     )}
-                    <Button
-                        className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            const isValid = validateForm();
-                            if (!isValid) {
-                                setTouched((prev) => {
-                                    const allTouched: { [key: string]: boolean } = { ...prev };
-                                    const fields = [
-                                        "fullName", "birthDate", "gender", "idCard", "issueDate", "issuePlace", "phone", "email", "ethnicity", "address", "educationLevel", "cmktLevel", "major", "school", "desiredJob"
-                                    ];
-                                    for (const field of fields) {
-                                        allTouched[field] = true;
-                                    }
-                                    return allTouched;
-                                });
-                                setShowToast(false);
-                                return;
-                            }
-                            // If valid, call original submit logic
-                            handleSubmit(e);
-                            // Update Zalo user info in localStorage and header
-                            try {
-                                const raw = localStorage.getItem('zaloUserInfo');
-                                const zaloUserInfo = raw ? JSON.parse(raw) : {};
-                                if (formData.fullName && zaloUserInfo?.name !== formData.fullName) {
-                                    zaloUserInfo.name = formData.fullName;
-                                    localStorage.setItem('zaloUserInfo', JSON.stringify(zaloUserInfo));
-                                    // Dispatch storage event for live update
-                                    window.dispatchEvent(new Event('storage'));
-                                }
-                            } catch {}
-                            setShowToast(true);
-                            setTimeout(() => setShowToast(false), 2000);
-                        }}
-                    >
-                        Lưu
-                    </Button>
+                    {errorMessage && (
+                        <div className="text-red-600 text-center mb-2 font-semibold">{errorMessage}</div>
+                    )}
+                    {signInStatus === 'success' ? (
+                        <Button
+                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
+                            loading={laboreSignUpLoading}
+                            onClick={handleLaboreSignUp}
+                        >
+                            Cập nhật hồ sơ cá nhân
+                        </Button>
+                    ) : (
+                        <Button
+                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
+                            loading={laboreSignUpLoading}
+                            onClick={handleLaboreSignUp}
+                        >
+                            Tạo tài khoản
+                        </Button>
+                    )}
                 </form>
             </div>
         </div>
@@ -354,5 +580,4 @@ export default ProfileRegisterLayout;
 function setSuccessMessage(_: string) {
     //: success feedback is shown via showToast state
     // No-op
-
 }

@@ -1,40 +1,21 @@
 import { ChevronRight, User } from "lucide-react";
 import React from "react";
+import { useQueryClient } from 'react-query';
 import { getUserInfo } from "zmp-sdk/apis";
 import { useNavigate } from "zmp-ui";
-import ProfileCompletionCard from "./ProfileCompletionCard";
+
 import QuickActions from "./QuickActions";
-import { useProfile } from "./useProfile";
+
 
 interface ProfileSectionProps {
-	onZaloUserInfoChange?: (info: any) => void;
+	onProfileFetched?: (profileData: any, signInStatus: 'idle' | 'success' | 'fail') => void;
 }
 
-const ProfileSection: React.FC<ProfileSectionProps> = ({ onZaloUserInfoChange }) => {
-	const [zaloUserInfo, setZaloUserInfo] = React.useState<Record<string, any> | null>(() => {
-		try {
-			const raw = localStorage.getItem('zaloUserInfo');
-			return raw ? JSON.parse(raw) : null;
-		} catch (e) {
-			// eslint-disable-next-line no-console
-			console.warn('localStorage.get error', e);
-			return null;
-		}
-	});
-	// Auto-fill Họ và tên in registration form if Zalo name is available
-	React.useEffect(() => {
-		if (zaloUserInfo?.name) {
-			try {
-				const raw = localStorage.getItem('profileRegisterForm');
-				const form = raw ? JSON.parse(raw) : {};
-				if (!form.fullName || form.fullName === "Nguyen Van A") {
-					form.fullName = zaloUserInfo.name;
-					localStorage.setItem('profileRegisterForm', JSON.stringify(form));
-				}
-			} catch {}
-		}
-	}, [zaloUserInfo]);
-	const { profile } = useProfile();
+const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched }) => {
+	const queryClient = useQueryClient();
+	const [zaloUserInfo, setZaloUserInfo] = React.useState<Record<string, any> | null>(null);
+	const [signInStatus, setSignInStatus] = React.useState<'idle' | 'success' | 'fail'>('idle');
+	const [profileData, setProfileData] = React.useState<any>(null);
 	const navigate = useNavigate();
 	const [registerLoading, setRegisterLoading] = React.useState(false);
 
@@ -43,17 +24,41 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onZaloUserInfoChange })
 		try {
 			// artificial delay to show processing (2 seconds)
 			await new Promise((r) => setTimeout(r, 2000));
+			// Get Zalo info
+			const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
+			const Accesstoken = await getAccessToken();
+			const phoneRes = await getPhoneNumber();
+			const Code = phoneRes?.token || "";
+			const ZaloId = await getUserID();
+			// Try sign in
+			const { signIn } = await import('@/api/registerApi');
+			let signInRes;
+			try {
+				signInRes = await signIn({ Accesstoken, Code, ZaloId });
+				console.log('[DEBUG] signIn response:', signInRes);
+				console.log('[DEBUG] signInRes.Data.AccessToken:', signInRes?.Data?.AccessToken);
+				if (signInRes?.Data?.AccessToken) {
+					// Debug log: show which token is used for profile API call
+					console.log('[DEBUG] Fetching profile with token:', signInRes.Data.AccessToken);
+					const { getProfileWithToken } = await import('./api');
+					const profileRes = await getProfileWithToken(signInRes.Data.AccessToken);
+					console.log('[DEBUG] /api/v1/Profile (with token) response:', profileRes);
+					const profile = profileRes?.Data || null;
+					setProfileData(profile);
+					setSignInStatus('success');
+					if (onProfileFetched) onProfileFetched(profile, 'success');
+				} else {
+					console.log('[DEBUG] signIn failed: no AccessToken in response');
+					setSignInStatus('fail');
+					if (onProfileFetched) onProfileFetched(null, 'fail');
+				}
+			} catch {
+				setSignInStatus('fail');
+			}
+			// Only update state, do not save to localStorage
 			const res = await getUserInfo({ autoRequestPermission: true });
 			const userInfo = (res as any)?.userInfo ?? res;
-			// store locally and render on profile header
 			setZaloUserInfo(userInfo);
-			if (onZaloUserInfoChange) onZaloUserInfoChange(userInfo);
-			try {
-				localStorage.setItem('zaloUserInfo', JSON.stringify(userInfo));
-			} catch (e) {
-				// eslint-disable-next-line no-console
-				console.warn('localStorage.set error', e);
-			}
 		} catch (e) {
 			const err: any = e;
 			console.error('getUserInfo error', err);
@@ -70,28 +75,18 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onZaloUserInfoChange })
 	const handleLogout = () => {
 		// clear local Zalo user info
 		setZaloUserInfo(null);
-		if (onZaloUserInfoChange) onZaloUserInfoChange(null);
-		try {
-			localStorage.removeItem('zaloUserInfo');
-		} catch (e) {
-			// ignore when localStorage unavailable, but log for debugging
-			// eslint-disable-next-line no-console
-			console.warn('localStorage.clear error', e);
-		}
+		setProfileData(null);
+		setSignInStatus('idle');
+		// Notify parent to reset header to Guest
+		if (onProfileFetched) onProfileFetched(null, 'idle');
 		// Optionally navigate away or show a toast. We'll stay on the profile page.
 		console.log('User logged out (local state cleared)');
 	};
 
 	// compute completion percent from registration form data in localStorage
 	const computePercent = () => {
-		let formData = {};
-		try {
-			const raw = localStorage.getItem('profileRegisterForm');
-			if (raw) {
-				formData = JSON.parse(raw);
-			}
-		} catch { }
-		const p: any = formData;
+		// Removed localStorage usage for profileRegisterForm
+		const p: any = {};
 		const fields = [
 			p.fullName,
 			p.birthDate,
@@ -114,7 +109,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onZaloUserInfoChange })
 		const max = fields.length + 1;
 		return Math.round((total / max) * 100);
 	};
-	const percent = computePercent();
+
 
 	return (
 		<div className="px-4 -mt-6 pb-4">
@@ -159,11 +154,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onZaloUserInfoChange })
 				{/* show completion, quick actions and logout only after successful login */}
 				{zaloUserInfo ? (
 					<>
-						<div className={`mt-0 transform transition-all duration-500 translate-y-0`} style={{ transitionDelay: '0ms' }}>
-							<ProfileCompletionCard percent={percent} />
-						</div>
 						<div className={`mt-3 transform transition-all duration-500 translate-y-0`} style={{ transitionDelay: '80ms' }}>
-							<QuickActions onNavigate={(p) => navigate(p)} />
+							<QuickActions onNavigate={(p) => navigate(p)} profileData={profileData} signInStatus={signInStatus} />
 						</div>
 						<div className={`mt-3 transform transition-all duration-500 translate-y-0`} style={{ transitionDelay: '160ms' }}>
 							<button onClick={handleLogout} className="w-full bg-white mt-2 my-4 rounded-lg p-3 shadow text-center text-sm text-red-600 border border-red-100">

@@ -4,31 +4,23 @@ import ProfileHeader from "./ProfileHeader";
 import ProfileSection from "./ProfileSection";
 
 const ProfilePage: React.FC = () => {
-    const [zaloUserInfo, setZaloUserInfo] = React.useState<any>(() => {
-        try {
-            const raw = localStorage.getItem('zaloUserInfo');
-            return raw ? JSON.parse(raw) : null;
-        } catch {
-            return null;
-        }
-    });
+    const [profileData, setProfileData] = React.useState<any>(null);
+    const [signInStatus, setSignInStatus] = React.useState<'idle' | 'success' | 'fail'>('idle');
 
-    // Listen for changes to localStorage (from ProfileSection)
-    React.useEffect(() => {
-        const handler = () => {
-            try {
-                const raw = localStorage.getItem('zaloUserInfo');
-                setZaloUserInfo(raw ? JSON.parse(raw) : null);
-            } catch {}
-        };
-        globalThis.addEventListener('storage', handler);
-        return () => globalThis.removeEventListener('storage', handler);
-    }, []);
+    // Handler to receive profile data and sign-in status from ProfileSection
+    const handleProfileFetched = (profile: any, status: 'idle' | 'success' | 'fail') => {
+        setProfileData(profile);
+        setSignInStatus(status);
+    };
 
     return (
         <div className="">
-            <ProfileHeader name={zaloUserInfo?.name} avatar={zaloUserInfo?.avatar} />
-            <ProfileSection onZaloUserInfoChange={setZaloUserInfo} />
+            <ProfileHeader
+                name={profileData?.fullname}
+                avatar={profileData?.avatar}
+                signInStatus={signInStatus}
+            />
+            <ProfileSection onProfileFetched={handleProfileFetched} />
         </div>
     );
 };
