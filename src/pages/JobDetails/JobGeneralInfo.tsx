@@ -40,9 +40,7 @@ const JobGeneralInfo: React.FC = () => {
                 </div>
             </div>
             <div className="border-b border-gray-200 mb-3" />
-            {/* 3 chips in a single flex row that wraps */}
             <div className="flex flex-wrap gap-4 mb-4">
-                {/* Salary chip */}
                 <div className="flex flex-col items-start">
                     <span className="text-xs text-gray-500 font-bold mb-1">Lương</span>
                     <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
@@ -50,7 +48,6 @@ const JobGeneralInfo: React.FC = () => {
                         {job.salary}
                     </div>
                 </div>
-                {/* Experience chip */}
                 <div className="flex flex-col items-start">
                     <span className="text-xs text-gray-500 font-bold mb-1">Kinh nghiệm</span>
                     <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
@@ -58,7 +55,6 @@ const JobGeneralInfo: React.FC = () => {
                         {job.experience || "Không yêu cầu"}
                     </div>
                 </div>
-                {/* Job field chip (Ngành nghề) */}
                 <div className="flex flex-col items-start">
                     <span className="text-xs text-gray-500 font-bold mb-1">Ngành nghề</span>
                     <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
@@ -66,7 +62,6 @@ const JobGeneralInfo: React.FC = () => {
                         {job.job || "Không xác định"}
                     </div>
                 </div>
-                {/* Degree chip */}
                 <div className="flex flex-col items-start">
                     <span className="text-xs text-gray-500 font-bold mb-1">Bằng cấp</span>
                     <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
@@ -75,8 +70,6 @@ const JobGeneralInfo: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Location chip below, styled like deadline/viewcount row */}
             <div className="flex items-center gap-6 mb-4">
                 <div className="flex items-center gap-1 text-gray-700">
                     <MapPin size={16} />

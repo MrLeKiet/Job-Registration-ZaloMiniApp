@@ -26,7 +26,6 @@ const TabBar: React.FC = () => {
 
     return (
         <div className="w-full">
-            {/* Scrollable Tabs */}
             <div className="relative overflow-x-auto shadow">
                 <div
                     ref={tabsRef}
@@ -47,7 +46,6 @@ const TabBar: React.FC = () => {
                         </button>
                     ))}
 
-                    {/* Blue active indicator */}
                     <span
                         className="absolute bottom-2 h-[3px] bg-blue-700 transition-all duration-300 rounded-full"
                         style={{
