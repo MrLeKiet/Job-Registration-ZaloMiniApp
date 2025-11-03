@@ -271,7 +271,6 @@ const Select: React.FC<SelectProps> = ({
                     {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </span>
             </button>
-            {/* Error message */}
             {status === "error" && errorText && (
                 <div className="flex items-center text-sm">
                     <svg width="16" height="16" viewBox="0 0 16 16" className="inline-block mr-1" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -280,10 +279,8 @@ const Select: React.FC<SelectProps> = ({
                     <div className="text-[13px] text-[#DC1F18]">{errorText}</div>
                 </div>
             )}
-            {/* Modal/Sheet */}
             {showModal && typeof document !== 'undefined' && createPortal(
                 <>
-                    {/* Overlay covers header and content with fade animation */}
                     <button
                         type="button"
                         className={`fixed inset-0 z-40 bg-black/70 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
@@ -291,7 +288,6 @@ const Select: React.FC<SelectProps> = ({
                         onClick={handleClose}
                         style={{ border: "none", padding: 0, margin: 0 }}
                     />
-                    {/* Overlay on top for header, scales with --header-height variable, fade animation */}
                     <div
                         className={`fixed top-0 left-0 right-0 z-50 bg-black/70 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
                         style={{ height: 'var(--header-height)' }}
@@ -300,7 +296,7 @@ const Select: React.FC<SelectProps> = ({
                         ref={modalRef}
                         className={`fixed left-0 right-0 bottom-0 z-50 transform transition-transform duration-300 will-change-transform ${open ? 'translate-y-0' : 'translate-y-full'}`}
                     >
-                        <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[60vh] flex flex-col">
+                        <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[90vh] flex flex-col">
                             {type === "panel" && selects && (
                                 <>
                                     <div className="mb-2 text-base font-medium text-gray-700">
@@ -331,11 +327,11 @@ const Select: React.FC<SelectProps> = ({
                                         value={search}
                                         onChange={e => setSearch(e.target.value)}
                                     />
-                                    <div className="flex mb-3 rounded-lg overflow-hidden border border-gray-200">
+                                    <div className="grid grid-cols-2 mb-3 gap-5 rounded-lg overflow-hidden border border-gray-200">
                                         {selects.map(sel => (
                                             <button
                                                 key={sel.key}
-                                                className={`flex-1 py-2 px-2 text-sm font-medium transition-colors ${activeSelect === sel.key ? "bg-blue-500 text-white" : "bg-white text-gray-700"}`}
+                                                className={`flex-1 py-4 px-4 text-sm font-medium transition-colors ${activeSelect === sel.key ? "bg-blue-500 text-white" : "bg-white text-gray-700"}`}
                                                 style={{ borderRight: sel.key === selects.at(-1)?.key ? "none" : "1px solid #e5e7eb" }}
                                                 onClick={() => {
                                                     setSearch("");
@@ -386,7 +382,6 @@ const Select: React.FC<SelectProps> = ({
                                     </ul>
                                 </>
                             )}
-                            {/* ...existing code for single and multi types... */}
                             {type === "single" && (
                                 <>
                                     <div ref={headerRef}>
