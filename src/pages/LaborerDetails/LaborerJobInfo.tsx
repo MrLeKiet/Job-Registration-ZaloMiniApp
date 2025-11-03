@@ -27,7 +27,6 @@ const LaborerJobInfo: React.FC = () => {
 
     return (
         <div className="space-y-6 px-2 pb-6">
-            {/* Career Objective */}
             <SectionCard title="Mục tiêu nghề nghiệp" icon={<Target className="w-5 h-5 text-blue-500" />}> 
                 <div className=" rounded-lg p-3">
                     <p
@@ -39,7 +38,6 @@ const LaborerJobInfo: React.FC = () => {
                 </div>
             </SectionCard>
 
-            {/* Skills */}
             <SectionCard title="Kỹ năng" icon={<Wrench className="w-5 h-5 text-blue-500" />}> 
                 <div className=" rounded-lg p-3">
                     {skills.length > 0 ? (
@@ -70,8 +68,6 @@ const LaborerJobInfo: React.FC = () => {
                     )}
                 </div>
             </SectionCard>
-
-            {/* Job Info */}
             <SectionCard title="Chi tiết nghề nghiệp" icon={<Briefcase className="w-5 h-5 text-blue-500" />}> 
                 <div className=" rounded-lg p-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div><span className="font-semibold text-gray-700">Công việc mong muốn:</span> <span className="text-gray-800">{laborer.desiredjobtitle || "—"}</span></div>
@@ -80,8 +76,6 @@ const LaborerJobInfo: React.FC = () => {
                     <div><span className="font-semibold text-gray-700">Lương mong muốn:</span> <span className="text-gray-800">{laborer.expectedsalary || "Chưa có thông tin."}</span></div>
                 </div>
             </SectionCard>
-
-            {/* Education */}
             <SectionCard title="Trình độ học vấn" icon={<GraduationCap className="w-5 h-5 text-blue-500" />}> 
                 <div className=" rounded-lg p-3">
                     <span className="font-semibold text-gray-700">{laborer.educationlevel || "Chưa có thông tin."}</span>

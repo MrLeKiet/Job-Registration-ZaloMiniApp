@@ -28,7 +28,6 @@ const TabBar: React.FC = () => {
 
     return (
         <div className="w-full">
-            {/* Sticky Scrollable Tabs for mobile */}
             <div className="sticky top-0 z-10 bg-white shadow-md">
                 <div
                     ref={tabsRef}
@@ -47,8 +46,6 @@ const TabBar: React.FC = () => {
                             {tab.label}
                         </button>
                     ))}
-
-                    {/* Blue active indicator */}
                     <span
                         className="absolute bottom-0 h-1 bg-blue-700 transition-all duration-300 rounded-full"
                         style={{

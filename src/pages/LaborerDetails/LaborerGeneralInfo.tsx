@@ -43,7 +43,6 @@ const LaborerGeneralInfo: React.FC = () => {
                 </div>
             </div>
             <div className="border-b border-gray-200 mb-3" />
-            {/* Chips row for key info */}
             <div className="flex flex-wrap gap-4 mb-4">
                 <div className="flex flex-col items-start">
                     <span className="text-xs text-gray-500 font-bold mb-1">Giới tính</span>
@@ -84,14 +83,12 @@ const LaborerGeneralInfo: React.FC = () => {
                 <div className="flex flex-col items-start">
                     <span className="text-xs text-gray-500 font-bold mb-1">Số điện thoại</span>
                     <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
-                        <Phone className="w-4 h-4 text-green-500" />
                         {laborer.phone || "-"}
                     </div>
                 </div>
                 <div className="flex flex-col items-start">
                     <span className="text-xs text-gray-500 font-bold mb-1">Email</span>
                     <div className="flex items-center gap-1 px-3 py-1 rounded-full font-semibold text-sm bg-blue-50 text-blue-700 w-fit">
-                        <Mail className="w-4 h-4 text-blue-500" />
                         {laborer.email || "-"}
                     </div>
                 </div>
@@ -102,7 +99,6 @@ const LaborerGeneralInfo: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {/* View count row */}
             <div className="flex items-center gap-1 text-sm text-gray-500 mt-2">
                 <Eye className="w-4 h-4 text-blue-500" />
                 <span className="text-gray-800 text-sm">{laborer.viewcount ?? 0} lượt xem</span>
