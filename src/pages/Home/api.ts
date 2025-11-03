@@ -1,4 +1,4 @@
-// Lấy chi tiết việc làm cho người nước ngoài
+
 export async function getForeignJobDetails(id: string) {
     try {
         const response = await api.get(`/RecruitmentForeigners/${id}`);

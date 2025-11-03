@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getHotNewsList, getLaborerList, getRecruitmentForeignersList, getUrgentJobRecruitment, searchJobList, searchRecruitmentForeigners } from "./api";
-// Custom hook for searching both RecruitmentForeigners and JobList by keyword
+
 export function useHomeSearch(keyword: string) {
     const [results, setResults] = useState<{ foreigners: any[]; jobs: any[] }>({ foreigners: [], jobs: [] });
     const [loading, setLoading] = useState(false);
@@ -77,7 +77,7 @@ export function useUrgentJobs() {
                 };
             });
         }
-    } catch {}
+    } catch { }
     // Merge and sort jobs by createdAt (newest first)
     const apiJobs = Array.isArray(data?.Data?.Data) ? data.Data.Data : [];
     const allJobs = [...localPosts, ...apiJobs].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -86,9 +86,13 @@ export function useUrgentJobs() {
 
 
 export function useHotNews() {
+    const delayedFetcher = async () => {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 2s delay
+        return getHotNewsList();
+    };
     const { data, isLoading: loading, error } = useQuery(
         ["hot-news"],
-        getHotNewsList,
+        delayedFetcher,
         {
             staleTime: 2 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,

@@ -11,15 +11,6 @@ const JobListSection: React.FC = () => {
     const { jobs, loading, error } = useUrgentJobs();
     const navigate = useNavigate();
 
-    const handleClick = (job: any) => {
-        const id = job.id || job.jodId || job.jobId;
-        if (id) {
-            navigate(`/jobs/${id}`);
-        } else {
-            alert("Không tìm thấy id công việc!");
-        }
-    };
-
     if (loading) return (
         <div className="">
             <SectionHeader
@@ -52,10 +43,10 @@ const JobListSection: React.FC = () => {
                 onButtonClick={() => navigate("/jobs")}
             />
             <CardList
-                items={jobs as any[]}
+                items={jobs}
                 emptyMessage="Không có việc làm nào được tìm thấy."
                 renderItem={(job) => {
-                    const j = job as any;
+                    const j = job;
                     return (
                         <Card
                             key={j.id || j.jodId || j.jobId}

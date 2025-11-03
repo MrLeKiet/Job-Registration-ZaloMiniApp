@@ -1,4 +1,5 @@
 import Skeleton from "@/components/Skeleton";
+import SkeletonList from "@/components/SkeletonList";
 import React from "react";
 import { useNavigate } from "zmp-ui";
 import { useHotNews } from "./useHome";
@@ -27,20 +28,20 @@ const HotNewsSection: React.FC = () => {
                     </button>
                 </header>
 
-                <div className="flex flex-col gap-2">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                        <div
-                            key={`skeleton-${i}`}
-                            className="flex gap-3 items-center rounded bg-white/5 p-2"
-                        >
-                            <Skeleton className="h-8 w-[60px] mb-1" />
-                            <div className="flex-1">
-                                <Skeleton className="mb-2 h-4 w-2/3" />
-                                <Skeleton className="h-3 w-1/2" />
-                            </div>
+                <SkeletonList
+                count={3}
+                renderSkeleton={() => (
+                    <div className="flex gap-3 items-center bg-white/5 rounded p-2 w-full">
+                        <Skeleton className="w-16 h-16" />
+                        <div className="flex-1">
+                            <Skeleton className="h-4 w-2/3 mb-2" />
+                            <Skeleton className="h-3 w-1/2 mb-1" />
+                            <Skeleton className="h-3 w-1/3" />
                         </div>
-                    ))}
-                </div>
+                    </div>
+                )}
+                className="flex flex-col gap-2 mb-2"
+            />
             </section>
         );
     }
@@ -77,7 +78,7 @@ const HotNewsSection: React.FC = () => {
                             className="flex w-full gap-3 items-center rounded bg-white/5 p-2 text-left hover:bg-white/10 focus:outline-none"
                             onClick={() => handleNewsClick(item.id)}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") handleNewsClick(item.id);
+                                if (e.key === "Enter" || e.key === "Space") handleNewsClick(item.id);
                             }}
                             tabIndex={0}
                         >

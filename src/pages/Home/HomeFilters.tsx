@@ -53,9 +53,7 @@ const HomeFilters: React.FC = () => {
             <div
                 className="flex flex-col gap-2 sticky top-0 z-30 bg-white p-2 mt-2"
             >
-                {/* Wrap input and dropdown inside a relative container */}
                 <div className="relative w-full">
-                    {/* Search Input */}
                     <div className="relative">
                         <Search className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
@@ -70,8 +68,6 @@ const HomeFilters: React.FC = () => {
                             autoComplete="off"
                         />
                     </div>
-
-                    {/* Dropdown Panel */}
                     {showPanel && (searchValue.trim() || debouncedValue.trim()) && (
                         <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-40 max-h-96 overflow-auto">
                             {(isTyping || loading) ? (
