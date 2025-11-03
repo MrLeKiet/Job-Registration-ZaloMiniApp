@@ -1,3 +1,7 @@
+export async function updateProfile(body: any) {
+  const response = await api.post("/LaboreUpdateProfile", body);
+  return response.data;
+}
 import api from "@/api/axiosInstance";
 
 export async function getSettings() {
