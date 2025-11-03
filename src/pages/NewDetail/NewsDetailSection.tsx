@@ -28,23 +28,18 @@ const NewsDetailSection = () => {
     const { news, loading, error } = useNewDetail();
     const navigate = useNavigate();
     const [relatedLimit, setRelatedLimit] = React.useState(5);
-    const skeletonKeys = ["skeleton-1", "skeleton-2", "skeleton-3"];
 
     if (loading) {
         return (
             <div className="bg-[#f4f4f4] min-h-screen p-4" style={{ paddingTop: "var(--safe-top)" }}>
-                {/* Title skeleton */}
                 <Skeleton className="h-8 w-2/3 mb-4" />
-                {/* Date skeleton */}
                 <Skeleton className="h-4 w-1/4 mb-2" />
-                {/* Content skeleton */}
                 <div className="mb-4">
                     <Skeleton className="h-6 w-full mb-2" />
                     <Skeleton className="h-6 w-5/6 mb-2" />
                     <Skeleton className="h-6 w-2/3 mb-2" />
                     <Skeleton className="h-6 w-1/2" />
                 </div>
-                {/* Related news skeleton */}
                 <Skeleton className="h-6 w-1/3 mb-4" />
                 <SkeletonList
                     count={3}
