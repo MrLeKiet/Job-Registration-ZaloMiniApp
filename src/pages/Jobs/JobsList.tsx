@@ -65,7 +65,7 @@ const JobsList = () => {
   return (
     <>
       <JobsFilter filters={filters} setFilters={setFilters} />
-      <div className="px-4 flex flex-col gap-2 mb-2">
+      <div className="p-4 flex flex-col gap-2">
         <div className="font-lg font-bold mb-1 text-primary">
           VIỆC LÀM MỚI NHẤT
         </div>

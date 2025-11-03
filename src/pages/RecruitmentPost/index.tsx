@@ -104,7 +104,6 @@ const RecruitmentPostPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // No need to convert image, it's already a string
         const postToSave = { ...form, id: Date.now() };
         setPosts(prev => [...prev, postToSave]);
         setMessage("Recruitment post submitted!");
@@ -185,7 +184,6 @@ const RecruitmentPostPage: React.FC = () => {
                                     onChange={handleImageChange}
                                     className="hidden"
                                 />
-                                {/* No file name display since image is a string */}
                             </div>
                         </div>
                         <div>
