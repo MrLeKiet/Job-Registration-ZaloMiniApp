@@ -1,18 +1,6 @@
 import api from "@/api/axiosInstance";
 import axios from "axios";
 
-export async function getProfile() {
-    try {
-        const response = await api.get("/Profile");
-        console.log("[DEBUG] /api/v1/Profile response:", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("[DEBUG] /api/v1/Profile error:", error);
-        throw error;
-    }
-}
-
-// Use this to fetch profile with a specific token (not from localStorage)
 export async function getProfileWithToken(token) {
     try {
         const headers = {

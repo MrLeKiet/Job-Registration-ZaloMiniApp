@@ -1,16 +1,18 @@
 import { getSettings } from "@/api/registerApi";
 import { useQuery } from "react-query";
-import { getProfile } from "./api";
+import { getProfileWithToken } from "./api";
 
-export function useProfile() {
-    // Only fetch profile if user is signed in
-    const isSignedIn = !!localStorage.getItem('token');
-    const { data, isLoading, error } = useQuery(["profile"], getProfile, {
+export function useProfile(token?: string) {
+    // Only fetch profile if token is provided
+    const isSignedIn = !!token;
+    const { data, isLoading, error } = useQuery([
+        "profile",
+        token
+    ], () => getProfileWithToken(token!), {
         enabled: isSignedIn,
     });
 
-    const { data: settingsData } = useQuery(["settings"], getSettings, {
-    });
+    const { data: settingsData } = useQuery(["settings"], getSettings, {});
 
     return {
         profile: data?.Data?.Data || null,

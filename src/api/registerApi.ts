@@ -1,9 +1,25 @@
-export async function updateProfile(body: any) {
-  const response = await api.post("/LaboreUpdateProfile", body);
+import axios from "axios";
+import api from "./axiosInstance";
+export async function updateProfile(body: any, token: string) {
+  const headers = {
+    "Accept": "application/json",
+    "Accept-Language": "2",
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`,
+  };
+  console.log('[DEBUG] /api/v1/LaboreUpdateProfile Authorization header:', headers["Authorization"]);
+  const response = await axios.post(
+    "/LaboreUpdateProfile",
+    body,
+    {
+      baseURL: import.meta.env.VITE_API_BASE_URL,
+      headers,
+      timeout: 15000,
+    }
+  );
+  console.log("[DEBUG] /api/v1/LaboreUpdateProfile response:", response.data);
   return response.data;
 }
-import api from "@/api/axiosInstance";
-
 export async function getSettings() {
   const response = await api.get("/Settings");
   return response.data.Data;

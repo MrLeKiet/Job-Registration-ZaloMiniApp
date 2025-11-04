@@ -1,9 +1,10 @@
-import React from "react";
+import { FileText } from "lucide-react";
+import React, { useContext } from "react";
 import { Box, Button, DatePicker, Icon, Input, Text } from "zmp-ui";
-import { FileText } from "lucide-react"
 import Select from "../../components/Select";
 import { useRegisterForm } from "../../hooks/useRegister";
 import ProfileCompletionCard from "./ProfileCompletionCard";
+import { ZaloAuthContext } from "./ProfileSection";
 import { useProfile } from "./useProfile";
 
 const PersonalInfoSection: React.FC<any> = ({
@@ -16,7 +17,7 @@ const PersonalInfoSection: React.FC<any> = ({
     settings,
     errors,
 }) => (
-    <Box className="bg-white flex flex-col gap-3">
+    <Box className="bg-white flex flex-col gap-3 width-full p-4 rounded-lg shadow-lg">
         <Text className="text-lg font-semibold text-gray-700">Thông tin cá nhân</Text>
         {/* Full Name */}
         <Input
@@ -215,31 +216,25 @@ const PersonalInfoSection: React.FC<any> = ({
                 errorText={touched?.desiredJob ? errors?.desiredJob : undefined}
             />
         </div>
-
-        {/* Summary */}
-        <div>
-            <Text className="text-sm text-[#141415] mb-2">Giới thiệu bản thân</Text>
-            <textarea
-                className="w-full border border-gray-300 rounded-md p-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={4}
-                maxLength={500}
-                placeholder="Giới thiệu bản thân (tối đa 500 ký tự)"
-                value={formData.summary}
-                onChange={handleInputChange("summary")}
-            />
-        </div>
     </Box>
 );
 
 const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle' | 'success' | 'fail' }> = ({ profileData, signInStatus }) => {
-    // Calculate completion percent
+    // Get Zalo auth context at top level (fix hook error)
+    const zaloAuth = useContext(ZaloAuthContext);
+    // Always use the token from signIn response for updateProfile
+    const signInAccessToken = profileData?.accessToken;
     const getCompletionPercent = () => {
         // List all required fields
         const requiredFields = [
             'fullName', 'birthDate', 'gender', 'idCard', 'issueDate', 'issuePlace',
             'phone', 'email', 'ethnicity', 'address', 'educationLevel', 'cmktLevel',
-            'major', 'school', 'desiredJob', 'summary'
+            'major', 'school', 'desiredJob'
         ];
+        // Only require summary if signInStatus is 'success'
+        if (signInStatus === 'success') {
+            requiredFields.push('summary');
+        }
         let filled = 0;
         for (const field of requiredFields) {
             const value = formData[field];
@@ -259,7 +254,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
     React.useEffect(() => {
         console.log('[DEBUG] ProfileRegisterLayout props:', { profileData, signInStatus });
     }, [profileData, signInStatus]);
-    // ...existing code...
+
     const {
         formData,
         touched,
@@ -268,7 +263,6 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
         handleInputBlur,
         handleSelectChange,
         handleDateChange,
-        handleSubmit,
         setTouched,
         setFormData,
         validateForm,
@@ -338,6 +332,10 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 const fields = [
                     "fullName", "birthDate", "gender", "idCard", "issueDate", "issuePlace", "phone", "email", "ethnicity", "address", "educationLevel", "cmktLevel", "major", "school", "desiredJob"
                 ];
+                // Only require summary if signInStatus is 'success'
+                if (signInStatus === 'success') {
+                    fields.push("summary");
+                }
                 for (const field of fields) {
                     allTouched[field] = true;
                 }
@@ -369,7 +367,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 CIDDate: safeDateString(formData.issueDate),
                 CIDAddress: formData.issuePlace,
                 Phone: formData.phone,
-                Email: formData.email,
+                Email: typeof formData.email === 'string' ? formData.email.toLowerCase() : formData.email,
                 Ethnicity: formData.ethnicity,
                 Address: formData.address,
                 Study: formData.educationLevel,
@@ -403,33 +401,43 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
             }
 
             if (signInStatus === 'success') {
-                // Update profile if already signed in
-                console.log('[DEBUG] UpdateProfile payload:', updatePayload);
+                // Always use the token from signIn response for updateProfile
+                const Accesstoken = signInAccessToken;
+                // Map frontend fields to backend fields for sign up
+                const payload = {
+                    Accesstoken,
+                    ...updatePayload,
+                };
+                console.log('[DEBUG] UpdateProfile payload:', payload);
+                console.log('[DEBUG] About to POST /api/v1/LaboreUpdateProfile with token:', Accesstoken);
                 const { updateProfile } = await import('@/api/registerApi');
-                const res = await updateProfile(updatePayload);
-                console.log("UpdateProfile response:", res);
+                console.log('[DEBUG] Using Bearer token for updateProfile:', Accesstoken);
+                // Use new updateProfile signature: (body, token)
+                const res = await updateProfile(payload, Accesstoken);
+                console.log('[DEBUG] POST /api/v1/LaboreUpdateProfile finished, response:', res);
                 if (res?.StatusResult?.Code === 0) {
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 2000);
-                    const { getProfile } = await import('./api');
-                    await getProfile(); // fetch profile, parent will update profileData prop
-                    // profileData is now managed by parent, do not set here
+                    const { getProfileWithToken } = await import('./api');
+                    await getProfileWithToken(Accesstoken || '');
                 } else {
                     console.error('[DEBUG] updateProfile API error:', res);
                     apiError = res?.StatusResult?.Message || "Cập nhật thông tin thất bại.";
-                    setErrorMessage(apiError);
+                    // If token expired, show specific message
+                    if (apiError.includes('hết hạn') || apiError.toLowerCase().includes('expired')) {
+                        setErrorMessage('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                    } else {
+                        setErrorMessage(apiError);
+                    }
                 }
             }
 
             // Only run LaboreSignUp if signInStatus is 'fail'
             if (signInStatus === 'fail') {
-                // Fetch Zalo auth fields
-                const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
-                const Accesstoken = await getAccessToken();
-                const phoneRes = await getPhoneNumber();
-                const Code = phoneRes?.token || "";
-                const ZaloId = await getUserID();
-
+                // Use ZaloAuthContext for token
+                const Accesstoken = zaloAuth?.Accesstoken;
+                const Code = zaloAuth?.Code;
+                const ZaloId = zaloAuth?.ZaloId;
                 // Map frontend fields to backend fields for sign up
                 const payload = {
                     Accesstoken,
@@ -437,7 +445,6 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                     ZaloId,
                     ...updatePayload,
                 };
-                // Call LaboreSignUp
                 const { laborerSignUp, signIn } = await import('@/api/registerApi');
                 const res = await laborerSignUp(payload);
                 console.log("LaboreSignUp response:", res);
@@ -445,11 +452,9 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                     // Try sign in again
                     const signInRes = await signIn({ Accesstoken, Code, ZaloId });
                     console.log("SignIn response:", signInRes);
-                    if (signInRes?.Success) {
-                        // signInStatus is now managed by parent, do not set here
-                        const { getProfile } = await import('./api');
-                        await getProfile(); // fetch profile, parent will update profileData prop
-                        // profileData is now managed by parent, do not set here
+                    if (signInRes?.Success && signInRes?.Data?.AccessToken) {
+                        const { getProfileWithToken } = await import('./api');
+                        await getProfileWithToken(signInRes.Data.AccessToken);
                     }
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 2000);
@@ -484,43 +489,45 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         <ProfileCompletionCard percent={getCompletionPercent()} />
                     </div>
                 )}
-                <div className="bg-white rounded-lg mb-3">
-                    <button
-                        onClick={handleUploadCV}
-                        className="w-full flex items-center p-3 gap-3 hover:bg-gray-50 rounded-lg border border-gray-200 active:scale-95 transition-transform duration-150"
-                        aria-label="Tải lên CV"
-                        disabled={!!cvFile}
-                    >
-                        <div className="w-10 h-10 bg-[#E3F2FD] text-[#1565C0] rounded-md flex items-center justify-center">
-                            <FileText size={18} />
-                        </div>
-                        <div className="text-sm text-gray-700">Tải lên CV</div>
-                    </button>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        style={{ display: "none" }}
-                        onChange={e => {
-                            const file = e.target.files?.[0] ?? null;
-                            if (file) setCvFile(file);
-                        }}
-                        disabled={!!cvFile}
-                    />
-                    {cvFile && (
-                        <div className="flex items-center justify-between bg-gray-100 rounded px-3 py-2 mt-2">
-                            <span className="text-sm font-medium text-gray-800 truncate mr-2">{cvFile.name}</span>
-                            <button
-                                type="button"
-                                className="text-red-500 text-lg font-bold px-2 py-0.5 rounded hover:bg-red-100"
-                                onClick={() => setCvFile(null)}
-                                aria-label="Xóa CV"
-                            >
-                                ×
-                            </button>
-                        </div>
-                    )}
-                </div>
+                {signInStatus === 'success' && (
+                    <div className="bg-white rounded-lg mb-3">
+                        <button
+                            onClick={handleUploadCV}
+                            className="w-full flex items-center p-3 gap-3 hover:bg-gray-50 rounded-lg border border-gray-200 active:scale-95 transition-transform duration-150"
+                            aria-label="Tải lên CV"
+                            disabled={!!cvFile}
+                        >
+                            <div className="w-10 h-10 bg-[#E3F2FD] text-[#1565C0] rounded-md flex items-center justify-center">
+                                <FileText size={18} />
+                            </div>
+                            <div className="text-sm text-gray-700">Tải lên CV</div>
+                        </button>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={e => {
+                                const file = e.target.files?.[0] ?? null;
+                                if (file) setCvFile(file);
+                            }}
+                            disabled={!!cvFile}
+                        />
+                        {cvFile && (
+                            <div className="flex items-center justify-between bg-gray-100 rounded px-3 py-2 mt-2">
+                                <span className="text-sm font-medium text-gray-800 truncate mr-2">{cvFile.name}</span>
+                                <button
+                                    type="button"
+                                    className="text-red-500 text-lg font-bold px-2 py-0.5 rounded hover:bg-red-100"
+                                    onClick={() => setCvFile(null)}
+                                    aria-label="Xóa CV"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
                 <form>
                     <PersonalInfoSection
                         formData={formData}
@@ -556,7 +563,10 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         <Button
                             className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
                             loading={laboreSignUpLoading}
-                            onClick={handleLaboreSignUp}
+                            onClick={e => {
+                                console.log('[DEBUG] Button clicked');
+                                handleLaboreSignUp(e);
+                            }}
                         >
                             Cập nhật hồ sơ cá nhân
                         </Button>
@@ -570,6 +580,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         </Button>
                     )}
                 </form>
+                
             </div>
         </div>
     );
