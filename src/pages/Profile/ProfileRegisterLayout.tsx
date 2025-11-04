@@ -417,6 +417,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 console.log('[DEBUG] POST /api/v1/LaboreUpdateProfile finished, response:', res);
                 if (res?.StatusResult?.Code === 0) {
                     setShowToast(true);
+                    setErrorMessage("");
                     setTimeout(() => setShowToast(false), 2000);
                     const { getProfileWithToken } = await import('./api');
                     await getProfileWithToken(Accesstoken || '');
@@ -456,16 +457,16 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 const { laborerSignUp, signIn } = await import('@/api/registerApi');
                 const res = await laborerSignUp(payload);
                 console.log("LaboreSignUp response:", res);
-                if (res?.Success) {
-                    // Always try sign in again after successful sign up
+                if (res?.StatusResult?.Code === 0) {
+                    setShowToast(true);
+                    setErrorMessage("Đăng ký tài khoản thành công");
+                    setTimeout(() => setShowToast(false), 2000);
                     try {
                         const signInRes = await signIn({ Accesstoken, Code, ZaloId });
                         console.log("SignIn response:", signInRes);
                         if (signInRes?.Success && signInRes?.Data?.AccessToken) {
                             const { getProfileWithToken } = await import('./api');
                             await getProfileWithToken(signInRes.Data.AccessToken);
-                            setShowToast(true);
-                            setTimeout(() => setShowToast(false), 2000);
                         } else {
                             setErrorMessage("Đăng nhập sau đăng ký thất bại. Vui lòng thử lại với thông tin Zalo mới.");
                         }
@@ -473,8 +474,8 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         setErrorMessage("Đăng nhập sau đăng ký thất bại. Vui lòng thử lại với thông tin Zalo mới.");
                     }
                 } else {
-                    apiError = res?.Message || "Đăng ký thất bại.";
-                    setErrorMessage(apiError);
+                    setShowToast(false);
+                    setErrorMessage(res?.StatusResult?.Message || "Đăng ký thất bại.");
                 }
             }
         } catch (err) {
