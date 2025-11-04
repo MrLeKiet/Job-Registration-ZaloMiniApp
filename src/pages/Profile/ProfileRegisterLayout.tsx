@@ -434,10 +434,18 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
 
             // Only run LaboreSignUp if signInStatus is 'fail'
             if (signInStatus === 'fail') {
-                // Use ZaloAuthContext for token
-                const Accesstoken = zaloAuth?.Accesstoken;
-                const Code = zaloAuth?.Code;
-                const ZaloId = zaloAuth?.ZaloId;
+                // Always fetch fresh Zalo credentials before sign up
+                const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
+                const Accesstoken = await getAccessToken();
+                const phoneRes = await getPhoneNumber();
+                const Code = phoneRes?.token || "";
+                const ZaloId = await getUserID();
+                // Optionally update context if needed
+                if (zaloAuth && zaloAuth.Accesstoken !== Accesstoken) {
+                    zaloAuth.Accesstoken = Accesstoken;
+                    zaloAuth.Code = Code;
+                    zaloAuth.ZaloId = ZaloId;
+                }
                 // Map frontend fields to backend fields for sign up
                 const payload = {
                     Accesstoken,
@@ -449,15 +457,21 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 const res = await laborerSignUp(payload);
                 console.log("LaboreSignUp response:", res);
                 if (res?.Success) {
-                    // Try sign in again
-                    const signInRes = await signIn({ Accesstoken, Code, ZaloId });
-                    console.log("SignIn response:", signInRes);
-                    if (signInRes?.Success && signInRes?.Data?.AccessToken) {
-                        const { getProfileWithToken } = await import('./api');
-                        await getProfileWithToken(signInRes.Data.AccessToken);
+                    // Always try sign in again after successful sign up
+                    try {
+                        const signInRes = await signIn({ Accesstoken, Code, ZaloId });
+                        console.log("SignIn response:", signInRes);
+                        if (signInRes?.Success && signInRes?.Data?.AccessToken) {
+                            const { getProfileWithToken } = await import('./api');
+                            await getProfileWithToken(signInRes.Data.AccessToken);
+                            setShowToast(true);
+                            setTimeout(() => setShowToast(false), 2000);
+                        } else {
+                            setErrorMessage("Đăng nhập sau đăng ký thất bại. Vui lòng thử lại với thông tin Zalo mới.");
+                        }
+                    } catch (err) {
+                        setErrorMessage("Đăng nhập sau đăng ký thất bại. Vui lòng thử lại với thông tin Zalo mới.");
                     }
-                    setShowToast(true);
-                    setTimeout(() => setShowToast(false), 2000);
                 } else {
                     apiError = res?.Message || "Đăng ký thất bại.";
                     setErrorMessage(apiError);
