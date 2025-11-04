@@ -60,10 +60,24 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched }) => 
 					if (onProfileFetched) onProfileFetched(profileWithToken, 'success');
 				} else {
 					console.log('[DEBUG] signIn failed: no AccessToken in response');
+					// Fetch a new set of Zalo credentials for LaboreSignUp
+					const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
+					const newAccesstoken = await getAccessToken();
+					const newPhoneRes = await getPhoneNumber();
+					const newCode = newPhoneRes?.token || "";
+					const newZaloId = await getUserID();
+					setZaloAuth({ Accesstoken: newAccesstoken, Code: newCode, ZaloId: newZaloId });
 					setSignInStatus('fail');
 					if (onProfileFetched) onProfileFetched(null, 'fail');
 				}
 			} catch {
+				// Also fetch new Zalo credentials if signIn throws
+				const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
+				const newAccesstoken = await getAccessToken();
+				const newPhoneRes = await getPhoneNumber();
+				const newCode = newPhoneRes?.token || "";
+				const newZaloId = await getUserID();
+				setZaloAuth({ Accesstoken: newAccesstoken, Code: newCode, ZaloId: newZaloId });
 				setSignInStatus('fail');
 			}
 			// Only update state, do not save to localStorage

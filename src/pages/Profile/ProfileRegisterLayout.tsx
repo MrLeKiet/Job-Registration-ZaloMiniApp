@@ -17,7 +17,7 @@ const PersonalInfoSection: React.FC<any> = ({
     settings,
     errors,
 }) => (
-    <Box className="bg-white flex flex-col gap-3 width-full p-4 rounded-lg shadow-lg">
+    <Box className="bg-white flex flex-col gap-3 width-full p-4 rounded-lg shadow-lg mb-4">
         <Text className="text-lg font-semibold text-gray-700">Thông tin cá nhân</Text>
         {/* Full Name */}
         <Input

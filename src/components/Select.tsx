@@ -162,9 +162,9 @@ const Select: React.FC<SelectProps> = ({
         setPendingMulti(next);
     };
     const handleMultiConfirm = () => {
-        setInternalMulti(pendingMulti);
-        onChange(pendingMulti);
-        setOpen(false);
+    setInternalMulti(pendingMulti);
+    onChange(pendingMulti);
+    handleClose();
     };
 
     // Panel select logic
@@ -459,7 +459,7 @@ const Select: React.FC<SelectProps> = ({
                                         })}
                                     </ul>
                                     <button
-                                        className="btn-blue w-full mt-4 py-2"
+                                        className="bg-blue-500 text-white w-full py-3 rounded-md hover:bg-blue-600"
                                         onClick={handleMultiConfirm}
                                         disabled={pendingMulti.length === 0}
                                         type="button"
