@@ -14,7 +14,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   className = "",
 }) => (
   <div className={`flex items-center justify-between mb-1 ${className}`}>
-    <div className="font-lg font-bold text-primary truncate">{title}</div>
+    <div className="font-lg font-bold text-primary line-clamp-2">{title}</div>
     {buttonText && onButtonClick && (
       <button
         className="text-xs px-3 py-1 font-semibold text-primary whitespace-nowrap"

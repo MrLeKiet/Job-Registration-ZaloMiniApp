@@ -3,6 +3,7 @@ import SkeletonList from "@/components/SkeletonList";
 import React from "react";
 import { useNavigate } from "zmp-ui";
 import { useHotNews } from "./useHome";
+import SectionHeader from "@/components/SectionHeader";
 
 function formatDate(dateStr: string) {
     const parts = dateStr.split("/");
@@ -17,8 +18,8 @@ const HotNewsSection: React.FC = () => {
         return (
             <section className="mb-2">
                 <header className="mb-2 flex items-center justify-between">
-                    <h2 className="flex items-center gap-2 text-lg font-bold text-primary">
-                        THÔNG BÁO MỚI NHẤT
+                    <h2 className="flex items-center gap-2 text-xl font-bold text-primary">
+                        TIN TỨC NỔI BẬT
                     </h2>
                     <button
                         className="whitespace-nowrap rounded px-3 py-1 text-xs font-semibold text-primary"
@@ -53,17 +54,11 @@ const HotNewsSection: React.FC = () => {
 
     return (
         <div className="flex flex-col gap-2">
-            <header className="mb-2 flex items-center justify-between">
-                <h2 className="flex items-center gap-2 text-lg font-bold text-primary">
-                    THÔNG BÁO MỚI NHẤT
-                </h2>
-                <button
-                    className="whitespace-nowrap rounded px-3 py-1 text-xs font-semibold text-primary"
-                    onClick={() => navigate("/news")}
-                >
-                    Xem tất cả &gt;
-                </button>
-            </header>
+            <SectionHeader
+                title="TIN TỨC NỔI BẬT"
+                buttonText="Xem tất cả >"
+                onButtonClick={() => navigate("/news")}
+            />
 
             <div className="flex flex-col gap-2">
                 {isEmpty ? (

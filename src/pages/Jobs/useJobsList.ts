@@ -14,7 +14,7 @@ export function useJobsList(filters: any) {
         params,
     ], () => getJobList(params), {
         keepPreviousData: true,
-        staleTime: 2 * 60 * 1000,
+        staleTime: 5 * 60 * 1000,
         cacheTime: 30 * 60 * 1000,
     });
 
@@ -60,7 +60,7 @@ export function useSettings() {
         ["settings"],
         getSettings,
         {
-            staleTime: 2 * 60 * 1000,
+            staleTime: 5 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,
         }
     );
@@ -72,7 +72,7 @@ export function useWards() {
         ["wards"],
         getWards,
         {
-            staleTime: 2 * 60 * 1000,
+            staleTime: 5 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,
         }
     );

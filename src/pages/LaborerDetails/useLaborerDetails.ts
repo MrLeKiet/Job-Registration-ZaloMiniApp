@@ -10,7 +10,7 @@ export function useLaborerDetail() {
         () => (laboreId ? getLaborerDetail(laboreId) : Promise.resolve(null)),
         {
             enabled: !!laboreId,
-            staleTime: 2 * 60 * 1000,
+            staleTime: 5 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,
         }
     );

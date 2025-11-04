@@ -14,7 +14,7 @@ export function useNewDetail() {
         () => (id ? getNewsDetail(id) : Promise.resolve(null)),
         {
             enabled: !!id,
-            staleTime: 2 * 60 * 1000, // 2 minutes
+            staleTime: 5 * 60 * 1000, // 2 minutes
             cacheTime: 30 * 60 * 1000, // 30 minutes
         }
     );

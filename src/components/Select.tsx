@@ -296,7 +296,7 @@ const Select: React.FC<SelectProps> = ({
                         ref={modalRef}
                         className={`fixed left-0 right-0 bottom-0 z-50 transform transition-transform duration-300 will-change-transform ${open ? 'translate-y-0' : 'translate-y-full'}`}
                     >
-                        <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[90vh] flex flex-col">
+                        <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[65vh] flex flex-col">
                             {type === "panel" && selects && (
                                 <>
                                     <div className="mb-2 text-base font-medium text-gray-700">
@@ -327,11 +327,11 @@ const Select: React.FC<SelectProps> = ({
                                         value={search}
                                         onChange={e => setSearch(e.target.value)}
                                     />
-                                    <div className="grid grid-cols-2 mb-3 gap-5 rounded-lg overflow-hidden border border-gray-200">
+                                    <div className="grid grid-cols-3 rounded-lg overflow-hidden border border-gray-200">
                                         {selects.map(sel => (
                                             <button
                                                 key={sel.key}
-                                                className={`flex-1 py-4 px-4 text-sm font-medium transition-colors ${activeSelect === sel.key ? "bg-blue-500 text-white" : "bg-white text-gray-700"}`}
+                                                className={`flex-1 p-3 text-sm font-medium transition-colors ${activeSelect === sel.key ? "bg-blue-500 text-white" : "bg-white text-gray-700"}`}
                                                 style={{ borderRight: sel.key === selects.at(-1)?.key ? "none" : "1px solid #e5e7eb" }}
                                                 onClick={() => {
                                                     setSearch("");
@@ -342,7 +342,7 @@ const Select: React.FC<SelectProps> = ({
                                             </button>
                                         ))}
                                     </div>
-                                    <ul className="space-y-1 overflow-y-auto h-[33vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
+                                    <ul className="mt-2 space-y-1 overflow-y-auto h-[33vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
                                         {search.trim() === "" ? (
                                             panelFilteredOptions[0]?.filtered.map(opt => (
                                                 <OptionItem

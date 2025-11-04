@@ -10,7 +10,7 @@ export function useRecruitmentJobDetail() {
         () => (id ? GetRecruitmentForeignerDetail(id) : Promise.resolve(null)),
         {
             enabled: !!id,
-            staleTime: 2 * 60 * 1000,
+            staleTime: 5 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,
         }
     );

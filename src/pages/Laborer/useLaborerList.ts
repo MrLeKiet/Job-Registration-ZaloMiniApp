@@ -3,18 +3,18 @@ import { getLaborerList, getSettings, getWards } from "./api";
 
 export function useLaborerList(filters: any) {
   const params: Record<string, string> = {};
-  Object.keys(filters).forEach(key => {
+  for (const key of Object.keys(filters)) {
     if (filters[key] !== "") {
       params[key] = filters[key];
     }
-  });
+  }
 
   const { data, isLoading, error } = useQuery([
     "laborer-list",
     params,
   ], () => getLaborerList(params), {
     keepPreviousData: true,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,
   });
 
@@ -30,7 +30,7 @@ export function useSettings() {
     ["settings"],
     getSettings,
     {
-      staleTime: 2 * 60 * 1000,
+      staleTime: 5 * 60 * 1000,
       cacheTime: 30 * 60 * 1000,
     }
   );
@@ -42,7 +42,7 @@ export function useWards() {
     ["wards"],
     getWards,
     {
-      staleTime: 2 * 60 * 1000,
+      staleTime: 5 * 60 * 1000,
       cacheTime: 30 * 60 * 1000,
     }
   );

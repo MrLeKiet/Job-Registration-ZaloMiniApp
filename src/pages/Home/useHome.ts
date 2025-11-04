@@ -41,7 +41,7 @@ export function useRecruitmentForeigners() {
         ["recruitment-foreigners-list"],
         getRecruitmentForeignersList,
         {
-            staleTime: 2 * 60 * 1000,
+            staleTime: 5 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,
         }
     );
@@ -54,7 +54,7 @@ export function useUrgentJobs() {
         ["urgent-jobs"],
         getUrgentJobRecruitment,
         {
-            staleTime: 2 * 60 * 1000,
+            staleTime: 5 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,
         }
     );
@@ -94,7 +94,7 @@ export function useHotNews() {
         ["hot-news"],
         delayedFetcher,
         {
-            staleTime: 2 * 60 * 1000,
+            staleTime: 5 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,
         }
     );
@@ -107,7 +107,7 @@ export function useLaborer() {
         ["laborer-list"],
         getLaborerList,
         {
-            staleTime: 2 * 60 * 1000,
+            staleTime: 5 * 60 * 1000,
             cacheTime: 30 * 60 * 1000,
         }
     );
