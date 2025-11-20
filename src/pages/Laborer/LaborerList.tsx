@@ -1,13 +1,13 @@
 
 import Card from "@/components/Card";
 import Skeleton from "@/components/Skeleton";
-import { useState } from "react";
+import React from 'react';
 import { useNavigate } from "react-router-dom";
 import LaborerFilter from "./LaborerFilter";
 import { useLaborerList } from "./useLaborerList";
 
 const LaborerList = () => {
-  const [filters, setFilters] = useState({ job: "", ward: "", age: "", gender: "" });
+  const [filters, setFilters] = React.useState({ job: "", ward: "", age: "", gender: "", keyword: "" });
   const { laborers, loading, error } = useLaborerList(filters);
   const navigate = useNavigate();
 
@@ -21,7 +21,14 @@ const LaborerList = () => {
     else if (typeof error === 'object' && error !== null && 'message' in error) errorMsg = (error as any).message;
     return <div>Lỗi: {errorMsg}</div>;
   }
-  const isEmpty = !Array.isArray(laborers) || laborers.length === 0;
+  // Client-side filter by Laborer name if keyword is present
+  const filteredLaborers = Array.isArray(laborers) && filters.keyword
+    ? laborers.filter(l =>
+        l.fullname?.toLowerCase().includes(filters.keyword.toLowerCase())
+      )
+    : laborers;
+
+  const isEmpty = !Array.isArray(filteredLaborers) || filteredLaborers.length === 0;
   let content;
   if (loading) {
     content = (
@@ -48,7 +55,7 @@ const LaborerList = () => {
       </div>
     );
   } else {
-    content = laborers.map((laborer) => (
+    content = filteredLaborers.map((laborer) => (
       <Card
         key={laborer.id}
         thumbnail={laborer.thumbnail}
@@ -61,13 +68,22 @@ const LaborerList = () => {
     ));
   }
   return (
-    <>
-      <LaborerFilter filters={filters} setFilters={setFilters} />
-      <div className="p-4 flex flex-col gap-2">
-        <div className="font-lg font-bold mb-1 text-primary">ỨNG VIÊN MỚI NHẤT</div>
-        {content}
+      <div className="flex flex-col h-full">
+        {/* Fixed Top */}
+        <div className="shrink-0">
+            <LaborerFilter filters={filters} setFilters={setFilters} />
+          <div className="font-lg font-bold text-primary px-4 py-2 bg-white border-b">
+            Ứng viên mới nhất
+          </div>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto bg-[#fafafa]">
+          <div className="flex flex-col pt-3 pb-3 gap-3"> {/* pb-20 to avoid navbar overlap */}
+            {content}
+          </div>
+        </div>
       </div>
-    </>
   );
 };
 

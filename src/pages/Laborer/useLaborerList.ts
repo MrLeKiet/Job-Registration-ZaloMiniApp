@@ -2,12 +2,13 @@ import { useQuery } from "react-query";
 import { getLaborerList, getSettings, getWards } from "./api";
 
 export function useLaborerList(filters: any) {
+  // Only pass job, ward, age, gender to API
   const params: Record<string, string> = {};
-  for (const key of Object.keys(filters)) {
-    if (filters[key] !== "") {
+  ["job", "ward", "age", "gender"].forEach(key => {
+    if (filters[key] !== undefined && filters[key] !== "") {
       params[key] = filters[key];
     }
-  }
+  });
 
   const { data, isLoading, error } = useQuery([
     "laborer-list",
