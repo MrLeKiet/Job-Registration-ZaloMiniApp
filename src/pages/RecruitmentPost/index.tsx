@@ -42,6 +42,7 @@ const RecruitmentPostPage: React.FC = () => {
         degree: string;
         experience: string;
         job: string;
+        jobName: string;
         companyNameTextarea: string;
         companyAddress: string;
         companyScale: string;
@@ -61,6 +62,7 @@ const RecruitmentPostPage: React.FC = () => {
         degree: "Đại học",
         experience: "",
         job: "",
+        jobName: "Lập trình viên React",
         companyNameTextarea: "Công ty ABC",
         companyAddress: "123 Đường A, Quận B, TP. C",
         companyScale: "100-200 người",
@@ -125,6 +127,14 @@ const RecruitmentPostPage: React.FC = () => {
                 <Box className=" flex flex-col gap-4 rounded">
                     <Text.Header className="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Tạo bài đăng tuyển dụng</Text.Header>
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <Text className="text-sm text-[#141415] ">Tên tuyển dụng</Text>
+                        <input
+                            type="text"
+                            placeholder="Nhập tên tuyển dụng"
+                            value={form.jobName}
+                            onChange={handleInputChange("jobName")}
+                            className="w-full rounded-lg p-3 border text-base border-[#141415]/30 border-opacity-35 focus:border-[#3b82f6] hover:border-[#3b82f6] focus:outline-none transition-colors"
+                        />
                         <Text className="text-sm text-[#141415] ">Tên công ty</Text>
                         <textarea
                             id="company-name-textarea"

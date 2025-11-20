@@ -58,20 +58,6 @@ const RecruitmentForeignersSection: React.FC = () => {
 
     return (
         <div>
-            <div className="flex flex-col gap-2 mb-2 sticky top-0 z-30 bg-white p-2 shadow-sm">
-                <Searchbar
-                    value={search}
-                    onSearch={setSearch}
-                    placeholder="Tìm kiếm công việc"
-                />
-                <div className="mb-4">
-                    <FilterBar
-                        value={selectedFilter}
-                        onChange={setSelectedFilter}
-                        placeholder="Chọn doanh nghiệp"
-                    />
-                </div>
-            </div>
             <div className="p-4 flex flex-col gap-2 mb-2">
                 <div className="font-lg font-bold mb-1 text-primary">
                     VIỆC LÀM NƯỚC NGOÀI MỚI NHẤT

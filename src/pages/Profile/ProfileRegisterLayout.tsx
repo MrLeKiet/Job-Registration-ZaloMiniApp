@@ -411,8 +411,6 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 console.log('[DEBUG] UpdateProfile payload:', payload);
                 console.log('[DEBUG] About to POST /api/v1/LaboreUpdateProfile with token:', Accesstoken);
                 const { updateProfile } = await import('@/api/registerApi');
-                console.log('[DEBUG] Using Bearer token for updateProfile:', Accesstoken);
-                // Use new updateProfile signature: (body, token)
                 const res = await updateProfile(payload, Accesstoken);
                 console.log('[DEBUG] POST /api/v1/LaboreUpdateProfile finished, response:', res);
                 if (res?.StatusResult?.Code === 0) {
@@ -454,24 +452,16 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                     ZaloId,
                     ...updatePayload,
                 };
-                const { laborerSignUp, signIn } = await import('@/api/registerApi');
+                const { laborerSignUp } = await import('@/api/registerApi');
                 const res = await laborerSignUp(payload);
                 console.log("LaboreSignUp response:", res);
                 if (res?.StatusResult?.Code === 0) {
                     setShowToast(true);
                     setErrorMessage("Đăng ký tài khoản thành công");
                     setTimeout(() => setShowToast(false), 2000);
-                    try {
-                        const signInRes = await signIn({ Accesstoken, Code, ZaloId });
-                        console.log("SignIn response:", signInRes);
-                        if (signInRes?.Success && signInRes?.Data?.AccessToken) {
-                            const { getProfileWithToken } = await import('./api');
-                            await getProfileWithToken(signInRes.Data.AccessToken);
-                        } else {
-                            setErrorMessage("Đăng nhập sau đăng ký thất bại. Vui lòng thử lại với thông tin Zalo mới.");
-                        }
-                    } catch (err) {
-                        setErrorMessage("Đăng nhập sau đăng ký thất bại. Vui lòng thử lại với thông tin Zalo mới.");
+                    // Call logout handler from context after successful sign-up
+                    if (zaloAuth && typeof zaloAuth.logout === 'function') {
+                        zaloAuth.logout();
                     }
                 } else {
                     setShowToast(false);

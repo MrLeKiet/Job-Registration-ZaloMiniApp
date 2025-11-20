@@ -98,14 +98,14 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched }) => 
 	};
 
 	const handleLogout = () => {
-		// clear local Zalo user info
-		setZaloUserInfo(null);
-		setProfileData(null);
-		setSignInStatus('idle');
-		// Notify parent to reset header to Guest
-		if (onProfileFetched) onProfileFetched(null, 'idle');
-		// Optionally navigate away or show a toast. We'll stay on the profile page.
-		console.log('User logged out (local state cleared)');
+	// clear local Zalo user info
+	setZaloUserInfo(null);
+	setProfileData(null);
+	setSignInStatus('idle');
+	// Notify parent to reset header to Guest
+	if (onProfileFetched) onProfileFetched(null, 'idle');
+	// Optionally navigate away or show a toast. We'll stay on the profile page.
+	console.log('User logged out (local state cleared)');
 	};
 
 	// compute completion percent from registration form data in localStorage
@@ -137,7 +137,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched }) => 
 
 
 	return (
-		<ZaloAuthContext.Provider value={zaloAuth}>
+		<ZaloAuthContext.Provider value={{ ...zaloAuth, logout: handleLogout }}>
 			<div className="px-4 -mt-6 pb-4">
 				<div className={`rounded-lg overflow-hidden ${zaloUserInfo ? 'shadow-none' : 'shadow bg-transparent'}`}> 
 					{/* Accordion Wrapper */}
@@ -184,8 +184,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched }) => 
 								<QuickActions onNavigate={(p) => navigate(p)} profileData={profileData} signInStatus={signInStatus} />
 							</div>
 							<div className={`mt-3 transform transition-all duration-500 translate-y-0`} style={{ transitionDelay: '160ms' }}>
-								<button onClick={handleLogout} className="w-full bg-white mt-2 my-4 rounded-lg p-3 shadow text-center text-sm text-red-600 border border-red-100">
-									Đăng xuất
+								<button onClick={handleLogout} className="w-full bg-white mt-2 my-4 rounded-lg p-3 shadow text-center text-red-600 border border-red-100">
+									{signInStatus === 'success' ? 'Đăng xuất' : 'Thoát'}
 								</button>
 							</div>
 						</>
