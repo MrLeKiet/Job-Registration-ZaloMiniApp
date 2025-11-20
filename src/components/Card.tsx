@@ -10,19 +10,19 @@ interface CardLayoutProps {
 const Card: React.FC<CardLayoutProps> = ({ thumbnail, onClick, children }) => (
   <button
     type="button"
-    className="flex gap-3 items-center bg-white/5 rounded p-2 pl-3 w-full text-left cursor-pointer hover:bg-white/10"
+    className="flex w-full gap-3 p-4 items-center rounded-lg shadow border border-gray-200 bg-white text-left hover:bg-white/10 focus:outline-none"
     onClick={onClick}
     onKeyDown={e => {
       if (e.key === "Enter" || e.key === " ") onClick?.();
     }}
     style={{ touchAction: "manipulation" }}
   >
-    <div className="w-16 h-16 rounded overflow-hidden flex items-center justify-center">
+    <div className="overflow-hidden flex items-center justify-center">
       {thumbnail ? (
         <img
           src={thumbnail}
           alt="Thumbnail"
-          className="w-full h-full object-cover"
+          className="rounded-md object-cover h-[80px] w-[80px]"
           onError={e => {
             (e.target as HTMLImageElement).src = noImage;
           }}
@@ -35,7 +35,7 @@ const Card: React.FC<CardLayoutProps> = ({ thumbnail, onClick, children }) => (
         />
       )}
     </div>
-    <div className="flex-1 min-w-0 gap-2">
+    <div className="flex flex-col gap-1">
       {children}
     </div>
   </button>
