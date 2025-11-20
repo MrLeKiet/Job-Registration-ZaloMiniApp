@@ -2,7 +2,6 @@ import { NavbarVisibilityContext } from "@/layouts/MainLayout";
 import { ChevronDown, ChevronUp, Square, SquareCheck } from "lucide-react";
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import OptionItem from "./OptionItem";
 
 export type SelectType = "single" | "multi" | "panel";
 
@@ -31,6 +30,13 @@ export interface SelectProps {
     onFiltersChange?: (filters: Record<string, string>) => void;
     status?: "error" | "normal";
     errorText?: string;
+    renderButton?: (props: {
+        open: boolean;
+        buttonLabel: string;
+        handleOpen: () => void;
+        status?: "error" | "normal";
+        errorText?: string;
+    }) => React.ReactNode;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -42,12 +48,9 @@ const Select: React.FC<SelectProps> = ({
     placeholder,
     onOpen,
     onClose,
-    selects,
-    filterKey,
-    panelPlaceholder = "Tìm kiếm",
-    onFiltersChange,
     status,
     errorText,
+    renderButton,
 }) => {
     // Shared state
     const [open, setOpen] = useState(false);
@@ -57,7 +60,6 @@ const Select: React.FC<SelectProps> = ({
     const headerRef = useRef<HTMLDivElement>(null);
 
     const modalRef = useRef<HTMLDivElement>(null);
-    const listRef = useRef<HTMLUListElement>(null);
 
     // Height offset for modal
     const [heightOffset, setHeightOffset] = useState(100);
@@ -84,41 +86,6 @@ const Select: React.FC<SelectProps> = ({
         }
     }, [value, type, open]);
 
-    // Panel logic
-    const getInitialFilters = () => {
-        if (!selects) return {};
-        const obj: Record<string, string> = {};
-        for (const sel of selects) {
-            const tatCaOption = sel.options.find(o => o.label === "Tất cả");
-            obj[sel.key] = tatCaOption?.value ?? "";
-        }
-        return obj;
-    };
-    const [filters, setFilters] = useState<Record<string, string>>(getInitialFilters());
-    const [activeSelect, setActiveSelect] = useState(selects?.[0]?.key || "");
-    const [truncateLength, setTruncateLength] = useState(50);
-    const spanRef = useRef<HTMLSpanElement>(null);
-    useEffect(() => {
-        if (type === "panel" && value && typeof value === "object") {
-            setFilters(value as Record<string, string>);
-        }
-    }, [value, type]);
-    // Dynamic truncation length based on span width
-    useEffect(() => {
-        if (type !== "panel") return;
-        const updateTruncateLength = () => {
-            if (spanRef.current) {
-                const spanWidth = spanRef.current.offsetWidth;
-                const avgCharWidth = 8;
-                const maxChars = Math.floor(spanWidth / avgCharWidth) - 3;
-                setTruncateLength(Math.max(10, maxChars));
-            }
-        };
-        updateTruncateLength();
-        window.addEventListener("resize", updateTruncateLength);
-        return () => window.removeEventListener("resize", updateTruncateLength);
-    }, [type]);
-
     // Shared open/close logic
     const handleOpen = () => {
         setShowModal(true);
@@ -130,11 +97,6 @@ const Select: React.FC<SelectProps> = ({
         setOpen(false);
         if (navbarCtx) navbarCtx.setShowNavbar(true);
         if (typeof onClose === "function") onClose();
-        if (type === "panel" && selects) {
-            setFilters(getInitialFilters());
-            setActiveSelect(selects[0]?.key || "");
-            setSearch("");
-        }
         setTimeout(() => setShowModal(false), 300); // wait for animation
     };
 
@@ -167,26 +129,6 @@ const Select: React.FC<SelectProps> = ({
     handleClose();
     };
 
-    // Panel select logic
-    const updateFilter = (key: string, val: string) => {
-        setFilters(prev => {
-            const newFilters = { ...prev, [key]: val };
-            if (onFiltersChange) onFiltersChange(newFilters);
-            return newFilters;
-        });
-    };
-    // Panel reset filters
-    const handleResetFilters = () => {
-        if (!selects) return;
-        const newFilters: Record<string, string> = {};
-        for (const sel of selects) {
-            const tatCaOption = sel.options.find(o => o.label === "Tất cả");
-            newFilters[sel.key] = tatCaOption?.value ?? "";
-        }
-        setFilters(newFilters);
-        if (onFiltersChange) onFiltersChange(newFilters);
-    };
-
     // Filtering logic
     const filteredOptions = useMemo(() => {
         if (type === "single") {
@@ -198,79 +140,53 @@ const Select: React.FC<SelectProps> = ({
         return [];
     }, [search, options, type]);
 
-    // Panel filtered options
-    const panelFilteredOptions = useMemo(() => {
-        if (!selects) return [];
-        // If searching, filter all tabs; else only active tab
-        if (search.trim() !== "") {
-            return selects.map(sel => ({
-                ...sel,
-                filtered: sel.options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()))
-            }));
-        } else {
-            const sel = selects.find(s => s.key === activeSelect);
-            if (!sel) return [];
-            return [{
-                ...sel,
-                filtered: sel.options
-            }];
-        }
-    }, [search, selects, activeSelect]);
-
     // Render main button label
     let buttonLabel = placeholder || "Chọn";
     if (type === "single" && internalSingle) {
         const label = options.find(o => o.value === internalSingle)?.label || "";
-        // Use dynamic truncation like panel
-        if (spanRef.current) {
-            buttonLabel = label.length > truncateLength + 10 ? label.slice(0, truncateLength + 10) + "..." : label;
-        } else {
-            buttonLabel = label;
-        }
+        buttonLabel = label;
     }
     if (type === "multi" && internalMulti.length) {
         buttonLabel = options.filter(o => internalMulti.includes(o.value)).map(o => o.label).join(", ");
-        // Use dynamic truncation like panel and single
-        if (spanRef.current) {
-            buttonLabel = buttonLabel.length > truncateLength + 10 ? buttonLabel.slice(0, truncateLength + 10) + "..." : buttonLabel;
-        }
-    }
-    if (type === "panel" && filters && selects) {
-        const allSelectedLabels = selects.map(s => s.options.find(o => o.value === filters[s.key])?.label).filter(l => l && l !== "Tất cả") as string[];
-        buttonLabel = allSelectedLabels.length ? allSelectedLabels.join(", ") : panelPlaceholder;
-        if (type === "panel" && spanRef.current) {
-            buttonLabel = buttonLabel.length > truncateLength + 10 ? buttonLabel.slice(0, truncateLength + 10) + "..." : buttonLabel;
-        }
     }
 
     // Main button
     return (
         <>
-            <button
-                type="button"
-                className={`bg-white h-12 px-3 w-full mb-1 flex items-center rounded-lg justify-between border text-base transition focus:outline-none hover:border-[#3b82f6] focus:border-[#3b82f6] ${
-                    status === "error" ? "border-[#DC1F18]" : "border-[#141415]/30 border-opacity-35"
-                }`}
-                onClick={handleOpen}
-                aria-haspopup="listbox"
-                aria-expanded={open}
-            >
-                <span
-                    className={`whitespace-nowrap overflow-hidden text-ellipsis w-full block text-left ${
-                        (type === "single" && !internalSingle) ||
-                        (type === "multi" && (!internalMulti || internalMulti.length === 0)) ||
-                        (type === "panel" && (!filters || selects?.every(s => !filters[s.key] || filters[s.key] === s.options.find(o => o.label === "Tất cả")?.value)))
-                            ? "text-gray-400"
-                            : "text-black"
+            {renderButton ? (
+                renderButton({
+                    open,
+                    buttonLabel,
+                    handleOpen,
+                    status,
+                    errorText,
+                })
+            ) : (
+                <button
+                    type="button"
+                    className={`bg-white h-11 px-3 w-full mb-1 flex items-center rounded-lg justify-between border text-base transition focus:outline-none hover:border-[#3b82f6] focus:border-[#3b82f6] ${
+                        status === "error" ? "border-[#DC1F18]" : "border-[#141415]/30 border-opacity-35"
                     }`}
-                    style={{ maxWidth: '100%' }}
+                    onClick={handleOpen}
+                    aria-haspopup="listbox"
+                    aria-expanded={open}
                 >
-                    {buttonLabel}
-                </span>
-                <span className="ml-2 flex items-center text-gray-400">
-                    {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                </span>
-            </button>
+                    <span
+                        className={`whitespace-nowrap overflow-hidden text-ellipsis w-full block text-left ${
+                            (type === "single" && !internalSingle) ||
+                            (type === "multi" && (!internalMulti || internalMulti.length === 0))
+                                ? "text-gray-400"
+                                : "text-black"
+                        }`}
+                        style={{ maxWidth: '100%' }}
+                    >
+                        {buttonLabel}
+                    </span>
+                    <span className="ml-2 flex items-center text-gray-400">
+                        {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </span>
+                </button>
+            )}
             {status === "error" && errorText && (
                 <div className="flex items-center text-sm">
                     <svg width="16" height="16" viewBox="0 0 16 16" className="inline-block mr-1" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -297,91 +213,7 @@ const Select: React.FC<SelectProps> = ({
                         className={`fixed left-0 right-0 bottom-0 z-50 transform transition-transform duration-300 will-change-transform ${open ? 'translate-y-0' : 'translate-y-full'}`}
                     >
                         <div className="bg-white rounded-t-2xl shadow-lg p-4 h-[65vh] flex flex-col">
-                            {type === "panel" && selects && (
-                                <>
-                                    <div className="mb-2 text-base font-medium text-gray-700">
-                                        <span ref={spanRef}>{buttonLabel}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <span className="font-semibold">Chọn một lựa chọn</span>
-                                        <div className="flex items-center gap-2">
-                                            {selects.some(sel => {
-                                                const value = filters[sel.key];
-                                                const tatCaOption = sel.options.find(o => o.label === "Tất cả");
-                                                return tatCaOption ? value !== tatCaOption.value : value !== "";
-                                            }) && (
-                                                <button
-                                                    onClick={handleResetFilters}
-                                                    className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300 transition"
-                                                >
-                                                    Đặt lại bộ lọc
-                                                </button>
-                                            )}
-                                            <button onClick={handleClose} className="text-2xl leading-none">&times;</button>
-                                        </div>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        className="bg-white h-12 px-3 w-full mb-3 flex items-center rounded-lg justify-between border border-opacity-35 border-[#141415]/30 text-base transition focus:outline-none hover:border-[#3b82f6] focus:border-[#3b82f6]"
-                                        placeholder="Tìm kiếm..."
-                                        value={search}
-                                        onChange={e => setSearch(e.target.value)}
-                                    />
-                                    <div className="grid grid-cols-3 rounded-lg overflow-hidden border border-gray-200">
-                                        {selects.map(sel => (
-                                            <button
-                                                key={sel.key}
-                                                className={`flex-1 p-3 text-sm font-medium transition-colors ${activeSelect === sel.key ? "bg-blue-500 text-white" : "bg-white text-gray-700"}`}
-                                                style={{ borderRight: sel.key === selects.at(-1)?.key ? "none" : "1px solid #e5e7eb" }}
-                                                onClick={() => {
-                                                    setSearch("");
-                                                    setActiveSelect(sel.key);
-                                                }}
-                                            >
-                                                {sel.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <ul className="mt-2 space-y-1 overflow-y-auto h-[33vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
-                                        {search.trim() === "" ? (
-                                            panelFilteredOptions[0]?.filtered.map(opt => (
-                                                <OptionItem
-                                                    key={opt.value}
-                                                    selectKey={panelFilteredOptions[0].key}
-                                                    option={opt}
-                                                    selected={filters[panelFilteredOptions[0].key] === opt.value}
-                                                    onChange={updateFilter}
-                                                />
-                                            ))
-                                        ) : (
-                                            selects.map(sel => {
-                                                const filtered = sel.options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()));
-                                                if (!filtered.length) return null;
-                                                return (
-                                                    <React.Fragment key={sel.key}>
-                                                        <div className="font-semibold text-gray-700 py-2 px-2 bg-gray-50 rounded mt-2 mb-1">
-                                                            {sel.label}
-                                                        </div>
-                                                        {filtered.map(opt => (
-                                                            <OptionItem
-                                                                key={opt.value}
-                                                                selectKey={sel.key}
-                                                                option={opt}
-                                                                selected={filters[sel.key] === opt.value}
-                                                                onChange={updateFilter}
-                                                            />
-                                                        ))}
-                                                    </React.Fragment>
-                                                );
-                                            })
-                                        )}
-                                        {search.trim() !== "" &&
-                                            selects.every(s => !s.options.some(o => o.label.toLowerCase().includes(search.toLowerCase()))) && (
-                                                <div className="text-gray-400">Không có kết quả</div>
-                                            )}
-                                    </ul>
-                                </>
-                            )}
+                            {/* Panel select removed */}
                             {type === "single" && (
                                 <>
                                     <div ref={headerRef}>
@@ -397,7 +229,7 @@ const Select: React.FC<SelectProps> = ({
                                             onChange={e => setSearch(e.target.value)}
                                         />
                                     </div>
-                                    <ul className="space-y-1 overflow-y-auto h-[40vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
+                                    <ul className="space-y-1 overflow-y-auto h-[50vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
                                         {filteredOptions.map(option => {
                                             const isSelected = internalSingle === option.value;
                                             return (
@@ -435,7 +267,7 @@ const Select: React.FC<SelectProps> = ({
                                             onChange={e => setSearch(e.target.value)}
                                         />
                                     </div>
-                                    <ul className="space-y-1 overflow-y-auto h-[40vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
+                                    <ul className="space-y-1 overflow-y-auto h-[45vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
                                         {filteredOptions.map(option => {
                                             const isSelected = pendingMulti.includes(option.value);
                                             const isDisabled = !isSelected && pendingMulti.length >= max;
@@ -459,7 +291,7 @@ const Select: React.FC<SelectProps> = ({
                                         })}
                                     </ul>
                                     <button
-                                        className="bg-blue-500 text-white w-full py-3 rounded-md hover:bg-blue-600"
+                                        className="bg-blue-500 text-white w-full py-3 mt-3 rounded-md hover:bg-blue-600"
                                         onClick={handleMultiConfirm}
                                         disabled={pendingMulti.length === 0}
                                         type="button"

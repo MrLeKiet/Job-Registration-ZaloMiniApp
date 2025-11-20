@@ -61,10 +61,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     {isReturn ? <ReturnHeader /> : <Header />}
                 </div>
                 <div
-                    className="bg-white flex-1 flex flex-col overflow-y-auto"
+                    className="bg-[#fafafa] flex-1 flex flex-col overflow-y-auto"
                     style={{
                         maxHeight: isReturn
-                            ? "calc(100vh - var(--return-header-height) - var(--header-height) + 10px )"
+                            ? "calc(100vh - var(--safe-top) - var(--return-header-height) - var(--header-height) + 22px )"
                             : "calc(100vh - var(--safe-top) - var(--navbar-height) - var(--header-height) + 10px)",
                     }}
                 >

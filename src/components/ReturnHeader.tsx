@@ -13,7 +13,7 @@ const ReturnHeader: React.FC = () => {
     return (
         <div ref={returnHeaderRef} className="px-4 flex items-center" style={{ paddingTop: 'var(--safe-top)', paddingBottom: '10px' }}>
             <button
-                className="flex items-center pt-2 text-gray-600 hover:text-orange-500 focus:outline-none mb-3"
+                className="flex items-center  text-gray-600 hover:text-blue-500 focus:outline-none"
                 onClick={() => navigate(-1)}
                 aria-label="Quay lại"
             >

@@ -10,12 +10,13 @@ const Header: React.FC = () => {
     }, []);
     return (
 
-    <div ref={headerRef} className="bg-[#E6F0FA] px-4 flex items-center shadow-sm" style={{ paddingTop: 'var(--safe-top)', paddingBottom: '10px' }}>
+    <div ref={headerRef} className="bg-[#62B6CB] px-4 flex items-center shadow-sm gap-2" style={{ paddingTop: 'var(--safe-top)', paddingBottom: '10px' }}>
         <img
             src="https://thongtinvieclamkhanhhoa.vn/assets/images/brand/trung-tam-dich-viec-lam-logo-header.svg"
             alt="Logo Trung tâm dịch vụ việc làm Khánh Hòa"
-            style={{ height: 40 }}
+            style={{ height: 30 }}
         />
+
     </div>
     )
 };

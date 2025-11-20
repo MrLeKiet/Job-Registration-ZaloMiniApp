@@ -10,6 +10,33 @@ interface SliderImage {
 
 
 const HomeSlider: React.FC = () => {
+    // Touch/swipe gesture handlers
+    const touchStartX = useRef<number | null>(null);
+    const touchEndX = useRef<number | null>(null);
+
+    const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+        touchStartX.current = e.touches[0].clientX;
+    };
+    const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+        touchEndX.current = e.touches[0].clientX;
+    };
+    const handleTouchEnd = () => {
+        if (touchStartX.current !== null && touchEndX.current !== null) {
+            const distance = touchStartX.current - touchEndX.current;
+            if (Math.abs(distance) > 40) {
+                if (distance > 0) {
+                    // Swipe left, next
+                    setCurrentIndex((prev) => (prev + 1) % sliderImages.length);
+                } else {
+                    // Swipe right, previous
+                    setCurrentIndex((prev) => (prev - 1 + sliderImages.length) % sliderImages.length);
+                }
+                resetSliderInterval(10000);
+            }
+        }
+        touchStartX.current = null;
+        touchEndX.current = null;
+    };
     // Helper to reset auto-slide interval with custom delay
     const resetSliderInterval = (delay: number = 3000) => {
         if (sliderInterval.current) {
@@ -85,39 +112,14 @@ const HomeSlider: React.FC = () => {
     if (sliderImages.length === 0) return null;
 
     return (
-        <div className="w-full flex justify-center items-center">
+        <div className="w-full flex justify-center items-center px-4 border-gray-100 mb-2">
             <div
-                className="relative w-full max-w-md h-48 overflow-hidden "
+                className="relative w-full h-48 overflow-hidden "
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
             >
-                {sliderImages.length > 1 && (
-                    <button
-                        type="button"
-                        aria-label="Previous image"
-                        className="absolute left-2 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white rounded-full p-1 shadow border border-gray-200"
-                        onClick={() => {
-                            setCurrentIndex((prev) => (prev - 1 + sliderImages.length) % sliderImages.length);
-                            resetSliderInterval(10000);
-                        }}
-                        style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-                    </button>
-                )}
-                {sliderImages.length > 1 && (
-                    <button
-                        type="button"
-                        aria-label="Next image"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white rounded-full p-1 shadow border border-gray-200"
-                        onClick={() => {
-                            setCurrentIndex((prev) => (prev + 1) % sliderImages.length);
-                            resetSliderInterval(10000);
-                        }}
-                        style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                    </button>
-                )}
-
+                {/* Swipeable slider images */}
                 {sliderImages.map((img, idx) => (
                     <button
                         key={img.id}
@@ -154,17 +156,19 @@ const HomeSlider: React.FC = () => {
                                 width: "100%",
                                 height: "100%",
                                 objectFit: "cover",
+                                borderRadius: "8px",
                                 pointerEvents: idx === currentIndex ? "auto" : "none",
                             }}
                         />
                     </button>
                 ))}
 
+                {/* Slider indicators */}
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-20">
                     {sliderImages.map((img, idx) => (
                         <span
                             key={img.id}
-                            className={`transition-all duration-300 shadow-md w-2.5 h-2.5 border border-white ${idx === currentIndex ? "bg-blue-500 opacity-100 scale-105" : "bg-gray-300 opacity-60 scale-90"}`}
+                            className={`transition-all duration-300 w-2.5 h-2.5 border border-white ${idx === currentIndex ? "bg-blue-500 rounded-full opacity-100 scale-105" : "bg-gray-300 rounded-full opacity-60 scale-90"}`}
                             style={{ opacity: idx === currentIndex ? 1 : 0.6, borderRadius: '0.15rem' }}
                         ></span>
                     ))}
