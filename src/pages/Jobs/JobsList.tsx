@@ -1,13 +1,11 @@
 import Card from "@/components/Card";
 import Skeleton from "@/components/Skeleton";
 import SkeletonList from "@/components/SkeletonList";
-import { useState } from "react";
+import { Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import JobsFilter from "./JobsFilter";
 import { useJobsList } from "./useJobsList";
 
-const JobsList = () => {
-  const [filters, setFilters] = useState({ job: "", ward: "", gender: "", salary: "", workingTime: "", keyword: "" });
+const JobsList = ({ filters, setFilters }) => {
   const { jobs, loading, error } = useJobsList(filters);
   const navigate = useNavigate();
 
@@ -44,8 +42,17 @@ const JobsList = () => {
     );
   } else if (isEmpty) {
     content = (
-      <div className="text-center text-muted py-8 select-none font-lg">
-        Không có việc làm phù hợp.
+      <div className={`flex flex-col items-center justify-center py-6 px-4 text-center select-none `}>
+        <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+          <Briefcase className="w-10 h-10 text-gray-400" />
+        </div>
+
+        <p className="text-lg font-medium text-gray-700 mb-1">
+          không có việc làm nào được tìm thấy.
+        </p>
+        <p className="text-sm text-gray-500">
+          Hãy thử tìm kiếm hoặc quay lại sau
+        </p>
       </div>
     );
   } else {
@@ -63,15 +70,12 @@ const JobsList = () => {
   }
 
   return (
-    <>
-      <JobsFilter filters={filters} setFilters={setFilters} />
-      <div className="p-4 flex flex-col gap-2">
-        <div className="font-lg font-bold mb-1 text-primary">
-          VIỆC LÀM MỚI NHẤT
-        </div>
-        {content}
+    <div className="p-4 flex flex-col gap-2">
+      <div className="font-lg font-bold mb-1 text-primary">
+        VIỆC LÀM MỚI NHẤT
       </div>
-    </>
+      {content}
+    </div>
   );
 };
 
