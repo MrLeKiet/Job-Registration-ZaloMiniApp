@@ -220,6 +220,8 @@ const PersonalInfoSection: React.FC<any> = ({
 );
 
 const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle' | 'success' | 'fail' }> = ({ profileData, signInStatus }) => {
+    // Default signInStatus to 'fail' if not provided
+    const effectiveSignInStatus = signInStatus ?? 'fail';
     // Get Zalo auth context at top level (fix hook error)
     const zaloAuth = useContext(ZaloAuthContext);
     // Always use the token from signIn response for updateProfile
@@ -231,8 +233,8 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
             'phone', 'email', 'ethnicity', 'address', 'educationLevel', 'cmktLevel',
             'major', 'school', 'desiredJob'
         ];
-        // Only require summary if signInStatus is 'success'
-        if (signInStatus === 'success') {
+        // Only require summary if effectiveSignInStatus is 'success'
+        if (effectiveSignInStatus === 'success') {
             requiredFields.push('summary');
         }
         let filled = 0;
@@ -275,7 +277,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
 
     // Autofill from profileData after sign in
     React.useEffect(() => {
-        if (signInStatus === 'success' && profileData) {
+        if (effectiveSignInStatus === 'success' && profileData) {
             console.log('[DEBUG] Autofilling form with profileData:', profileData);
             // Convert DD/MM/YYYY to YYYY-MM-DD for ciddate
             const parseDDMMYYYY = (str: string) => {
@@ -321,10 +323,11 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 summary: profileData.summary || prev.summary,
             }));
         }
-    }, [signInStatus, profileData, setFormData]);
+    }, [effectiveSignInStatus, profileData, setFormData]);
 
     const handleLaboreSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('[DEBUG] handleLaboreSignUp called with formData:', formData);
         const isValid = validateForm();
         if (!isValid) {
             setTouched((prev) => {
@@ -332,8 +335,8 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 const fields = [
                     "fullName", "birthDate", "gender", "idCard", "issueDate", "issuePlace", "phone", "email", "ethnicity", "address", "educationLevel", "cmktLevel", "major", "school", "desiredJob"
                 ];
-                // Only require summary if signInStatus is 'success'
-                if (signInStatus === 'success') {
+                // Only require summary if effectiveSignInStatus is 'success'
+                if (effectiveSignInStatus === 'success') {
                     fields.push("summary");
                 }
                 for (const field of fields) {
@@ -400,7 +403,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 updatePayload.Summary = null;
             }
 
-            if (signInStatus === 'success') {
+            if (effectiveSignInStatus === 'success') {
                 // Always use the token from signIn response for updateProfile
                 const Accesstoken = signInAccessToken;
                 // Map frontend fields to backend fields for sign up
@@ -431,8 +434,8 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 }
             }
 
-            // Only run LaboreSignUp if signInStatus is 'fail'
-            if (signInStatus === 'fail') {
+            // Only run LaboreSignUp if effectiveSignInStatus is 'fail'
+            if (effectiveSignInStatus === 'fail') {
                 // Always fetch fresh Zalo credentials before sign up
                 const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
                 const Accesstoken = await getAccessToken();
@@ -489,12 +492,12 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
     return (
         <div className="min-h-screen">
             <div className="max-w-md mx-auto pt">
-                {signInStatus === 'success' && (
+                {effectiveSignInStatus === 'success' && (
                     <div className="mb-4">
                         <ProfileCompletionCard percent={getCompletionPercent()} />
                     </div>
                 )}
-                {signInStatus === 'success' && (
+                {effectiveSignInStatus === 'success' && (
                     <div className="bg-white rounded-lg mb-3">
                         <button
                             onClick={handleUploadCV}
@@ -545,7 +548,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         errors={errors}
                     />
                     {/* Only show summary if signed in */}
-                    {signInStatus === 'success' && (
+                    {effectiveSignInStatus === 'success' && (
                         <div className="mb-4">
                             <Text className="text-sm text-[#141415] mb-2">Giới thiệu bản thân</Text>
                             <textarea
@@ -564,7 +567,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                     {errorMessage && (
                         <div className="text-red-600 text-center mb-2 font-semibold">{errorMessage}</div>
                     )}
-                    {signInStatus === 'success' ? (
+                    {effectiveSignInStatus === 'success' ? (
                         <Button
                             className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
                             loading={laboreSignUpLoading}
@@ -579,7 +582,10 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         <Button
                             className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
                             loading={laboreSignUpLoading}
-                            onClick={handleLaboreSignUp}
+                            onClick={e => {
+                                console.log('[DEBUG] Button clicked');
+                                handleLaboreSignUp(e);
+                            }}
                         >
                             Tạo tài khoản
                         </Button>
@@ -592,8 +598,3 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
 };
 
 export default ProfileRegisterLayout;
-// Dummy implementation since success message logic is now handled by toast
-function setSuccessMessage(_: string) {
-    //: success feedback is shown via showToast state
-    // No-op
-}

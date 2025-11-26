@@ -1,111 +1,49 @@
 import { ChevronRight, User } from "lucide-react";
 import React, { createContext } from "react";
 import { useQueryClient } from 'react-query';
-import { getUserInfo } from "zmp-sdk/apis";
 import { useNavigate } from "zmp-ui";
 // Zalo Auth Context
 export const ZaloAuthContext = createContext<any>(null);
 
+import { zmpLinkedAccount } from "@/api/linkedAccountApi";
+import { Input, Text } from "zmp-ui";
 import QuickActions from "./QuickActions";
 
 
 interface ProfileSectionProps {
 	onProfileFetched?: (profileData: any, signInStatus: 'idle' | 'success' | 'fail') => void;
+	permissionData?: any;
 }
 
-const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched }) => {
+const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permissionData }) => {
 	const [zaloAuth, setZaloAuth] = React.useState<any>(null);
 	const queryClient = useQueryClient();
 	const [zaloUserInfo, setZaloUserInfo] = React.useState<Record<string, any> | null>(null);
 	const [signInStatus, setSignInStatus] = React.useState<'idle' | 'success' | 'fail'>('idle');
 	const [profileData, setProfileData] = React.useState<any>(null);
 	const navigate = useNavigate();
-	const [registerLoading, setRegisterLoading] = React.useState(false);
 
-	const handleRegisterClick = async () => {
-		setRegisterLoading(true);
-		try {
-			// artificial delay to show processing (2 seconds)
-			await new Promise((r) => setTimeout(r, 2000));
-			// Always fetch fresh Zalo info before signIn
-			const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
-			const Accesstoken = await getAccessToken();
-			const phoneRes = await getPhoneNumber();
-			const Code = phoneRes?.token || "";
-			const ZaloId = await getUserID();
-			// Save Zalo auth for later use (for LaboreSignUp)
-			setZaloAuth({ Accesstoken, Code, ZaloId });
-			// Debug log before signIn API call
-			console.log('[DEBUG] SignIn payload:', { Accesstoken, Code, ZaloId });
-			// Try sign in
-			const { signIn } = await import('@/api/registerApi');
-			let signInRes;
-			let accessToken = null;
-			try {
-				signInRes = await signIn({ Accesstoken, Code, ZaloId });
-				console.log('[DEBUG] signIn response:', signInRes);
-				accessToken = signInRes?.Data?.AccessToken;
-				console.log('[DEBUG] signInRes.Data.AccessToken:', accessToken);
-				if (accessToken) {
-					// Use returned AccessToken for all profile actions
-					console.log('[DEBUG] Fetching profile with token:', accessToken);
-					const { getProfileWithToken } = await import('./api');
-					const profileRes = await getProfileWithToken(accessToken);
-					console.log('[DEBUG] /api/v1/Profile (with token) response:', profileRes);
-					const profile = profileRes?.Data || null;
-					// Pass both profile and correct accessToken
-					const profileWithToken = { ...profile, accessToken };
-					setProfileData(profileWithToken);
-					setSignInStatus('success');
-					if (onProfileFetched) onProfileFetched(profileWithToken, 'success');
-				} else {
-					console.log('[DEBUG] signIn failed: no AccessToken in response');
-					// Fetch a new set of Zalo credentials for LaboreSignUp
-					const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
-					const newAccesstoken = await getAccessToken();
-					const newPhoneRes = await getPhoneNumber();
-					const newCode = newPhoneRes?.token || "";
-					const newZaloId = await getUserID();
-					setZaloAuth({ Accesstoken: newAccesstoken, Code: newCode, ZaloId: newZaloId });
-					setSignInStatus('fail');
-					if (onProfileFetched) onProfileFetched(null, 'fail');
-				}
-			} catch {
-				// Also fetch new Zalo credentials if signIn throws
-				const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
-				const newAccesstoken = await getAccessToken();
-				const newPhoneRes = await getPhoneNumber();
-				const newCode = newPhoneRes?.token || "";
-				const newZaloId = await getUserID();
-				setZaloAuth({ Accesstoken: newAccesstoken, Code: newCode, ZaloId: newZaloId });
-				setSignInStatus('fail');
-			}
-			// Only update state, do not save to localStorage
-			const res = await getUserInfo({ autoRequestPermission: true });
-			const userInfo = (res as any)?.userInfo ?? res;
-			setZaloUserInfo(userInfo);
-		} catch (e) {
-			const err: any = e;
-			console.error('getUserInfo error', err);
-			if (err?.code === -1401) {
-				alert('Bạn đã từ chối cấp quyền lấy tên và ảnh đại diện. Vui lòng cho phép để tiếp tục đăng ký.');
-			} else {
-				alert('Đã có lỗi xảy ra khi lấy thông tin người dùng. Vui lòng thử lại.');
-			}
-		} finally {
-			setRegisterLoading(false);
-		}
+    // Example usage: log permissionData if available
+    React.useEffect(() => {
+        if (permissionData) {
+            console.log('[ProfileSection] Permission data received:', permissionData);
+        }
+    }, [permissionData]);
+
+
+	const handleRegisterClick = () => {
+		navigate('/profile-register');
 	};
 
 	const handleLogout = () => {
-	// clear local Zalo user info
-	setZaloUserInfo(null);
-	setProfileData(null);
-	setSignInStatus('idle');
-	// Notify parent to reset header to Guest
-	if (onProfileFetched) onProfileFetched(null, 'idle');
-	// Optionally navigate away or show a toast. We'll stay on the profile page.
-	console.log('User logged out (local state cleared)');
+		// clear local Zalo user info
+		setZaloUserInfo(null);
+		setProfileData(null);
+		setSignInStatus('idle');
+		// Notify parent to reset header to Guest
+		if (onProfileFetched) onProfileFetched(null, 'idle');
+		// Optionally navigate away or show a toast. We'll stay on the profile page.
+		console.log('User logged out (local state cleared)');
 	};
 
 	// compute completion percent from registration form data in localStorage
@@ -135,30 +73,50 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched }) => 
 		return Math.round((total / max) * 100);
 	};
 
+	const [showLinkedDialog, setShowLinkedDialog] = React.useState(false);
+	const [linkedEmail, setLinkedEmail] = React.useState("");
+	const [linkedLoading, setLinkedLoading] = React.useState(false);
+	const [linkedError, setLinkedError] = React.useState("");
+	const [linkedSuccess, setLinkedSuccess] = React.useState(false);
+
+	const handleLinkedSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setLinkedLoading(true);
+		setLinkedError("");
+		setLinkedSuccess(false);
+		try {
+			const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
+			const Accesstoken = await getAccessToken();
+			const phoneRes = await getPhoneNumber();
+			const Code = phoneRes?.token || "";
+			const ZaloId = await getUserID();
+			const res = await zmpLinkedAccount({ Accesstoken, Code, ZaloId, Email: linkedEmail });
+			if (res?.StatusResult?.Code === 0) {
+				setLinkedSuccess(true);
+				setLinkedError("");
+				setTimeout(() => setShowLinkedDialog(false), 2000);
+			} else {
+				setLinkedError(res?.StatusResult?.Message || "Liên kết thất bại.");
+			}
+		} catch (err) {
+			setLinkedError("Liên kết thất bại.");
+		} finally {
+			setLinkedLoading(false);
+		}
+	};
+
 
 	return (
 		<ZaloAuthContext.Provider value={{ ...zaloAuth, logout: handleLogout }}>
 			<div className="px-4 -mt-6 pb-4">
-				<div className={`rounded-lg overflow-hidden ${zaloUserInfo ? 'shadow-none' : 'shadow bg-transparent'}`}> 
-					{/* Accordion Wrapper */}
-					<div
-						className={`
-	  overflow-hidden transition-all duration-500
-	  ${zaloUserInfo
-								? 'max-h-0 p-0 opacity-0 pointer-events-none'
-								: 'max-h-40 opacity-100'
-							}
-	`}
-						aria-hidden={!!zaloUserInfo}
-					>
+				<div className={`rounded-lg overflow-hidden ${zaloUserInfo ? 'shadow-none' : 'shadow bg-transparent'}`}>
+					<div>
 						<button
 							onClick={handleRegisterClick}
-							disabled={registerLoading}
 							className={`
-		w-full text-left flex items-center p-4 transition-all duration-200 active:scale-95
-		${zaloUserInfo ? 'opacity-0 pointer-events-none translate-y-3' : 'opacity-100 translate-y-0'}
-		${registerLoading ? 'opacity-60 cursor-not-allowed' : ''}
-	  `}
+								w-full text-left flex items-center p-4 transition-all duration-200 active:scale-95
+								${zaloUserInfo ? 'opacity-0 pointer-events-none translate-y-3' : 'opacity-100 translate-y-0'}
+							`}
 							style={{ background: '#E3F2FD' }}
 						>
 							<div className="w-12 h-12 bg-[#1565C0] text-white rounded-full flex items-center justify-center mr-4">
@@ -169,11 +127,81 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched }) => 
 							</div>
 							<ChevronRight />
 						</button>
+
+						{/* Đăng ký doanh nghiệp button */}
+						<button
+							onClick={() => navigate('/enterprise-signup')}
+							className={`
+								w-full text-left flex items-center p-4 mt-2 transition-all duration-200 active:scale-95
+								${zaloUserInfo ? 'opacity-0 pointer-events-none translate-y-3' : 'opacity-100 translate-y-0'}
+							`}
+							style={{ background: '#E3F2FD' }}
+						>
+							<div className="w-12 h-12 bg-[#43A047] text-white rounded-full flex items-center justify-center mr-4">
+								<User size={18} />
+							</div>
+							<div className="flex-1">
+								<div className="font-semibold">Đăng ký doanh nghiệp</div>
+							</div>
+							<ChevronRight />
+						</button>
+						{/* Liên kết tài khoản button */}
+						<button
+							onClick={() => setShowLinkedDialog(true)}
+							className="w-full text-left flex items-center p-4 mt-2 transition-all duration-200 active:scale-95 opacity-100 translate-y-0"
+							style={{ background: '#E3F2FD' }}
+						>
+							<div className="w-12 h-12 bg-[#FF9800] text-white rounded-full flex items-center justify-center mr-4">
+								<User size={18} />
+							</div>
+							<div className="flex-1">
+								<div className="font-semibold">Liên kết tài khoản</div>
+							</div>
+							<ChevronRight />
+						</button>
+						{showLinkedDialog && (
+							<div
+								className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+								onClick={e => {
+									if (e.target === e.currentTarget) setShowLinkedDialog(false);
+								}}
+							>
+								<div className="bg-white rounded-lg shadow-lg w-full max-w-md relative">
+									<form onSubmit={handleLinkedSubmit} className="p-4">
+										<div className="flex items-center justify-between mb-2">
+											<Text className="text-lg font-semibold">Nhập email để liên kết với tài khoản</Text>
+											<button
+												className="text-gray-500 text-xl ml-2"
+												type="button"
+												onClick={() => setShowLinkedDialog(false)}
+												aria-label="Close"
+											>
+												&times;
+											</button>
+										</div>
+										<Input
+											label="Email"
+											value={linkedEmail}
+											onChange={e => setLinkedEmail(e.target.value)}
+											placeholder="Email"
+											required
+										/>
+										{linkedError && <div className="text-red-600 text-sm mt-2">{linkedError}</div>}
+										{linkedSuccess && <div className="text-green-600 text-sm mt-2">Liên kết thành công!</div>}
+										<button
+											className="w-full mt-4 zmp-button"
+											disabled={linkedLoading}
+											type="submit"
+										>
+											{linkedLoading ? "Đang liên kết..." : "Liên kết"}
+										</button>
+									</form>
+								</div>
+							</div>
+						)}
 					</div>
 
-					{registerLoading && (
-						<div className="p-3 text-center text-sm text-gray-600">Đang yêu cầu quyền truy cập...</div>
-					)}
+
 				</div>
 
 				<div className="mt-2">
