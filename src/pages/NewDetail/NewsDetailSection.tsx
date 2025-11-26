@@ -116,7 +116,7 @@ const NewsDetailSection = () => {
                 ))}
             </div>
             {canShowMore && (
-                <div className="flex justify-center mt-2">
+                <div className="flex justify-center mt-2 mb-2">
                     <button
                         type="button"
                         className="text-blue-700 text-sm font-semibold px-3 py-1 rounded hover:underline bg-transparent border-none cursor-pointer"

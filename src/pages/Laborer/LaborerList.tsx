@@ -72,9 +72,6 @@ const LaborerList = () => {
         {/* Fixed Top */}
         <div className="shrink-0">
             <LaborerFilter filters={filters} setFilters={setFilters} />
-          <div className="font-lg font-bold text-primary px-4 py-2 bg-white border-b">
-            Ứng viên mới nhất
-          </div>
         </div>
 
         {/* Scrollable Content */}
