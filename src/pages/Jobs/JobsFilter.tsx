@@ -89,6 +89,23 @@ const JobsFilter = ({ filters, setFilters, mode, setMode }: JobsFilterProps) => 
 
   return (
     <div className="flex flex-col gap-2 mb-2 bg-white shadow-sm">
+      {/* Toggle buttons for Job and Recruitment Foreigner */}
+      <div className="flex mt-2">
+        <button
+          type="button"
+          className={`flex-1 py-1 font-semibold text-base transition ${mode === 'job' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          onClick={() => setMode('job')}
+        >
+          Việc làm
+        </button>
+        <button
+          type="button"
+          className={`flex-1 py-1 font-semibold text-base transition ${mode === 'foreigner' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          onClick={() => setMode('foreigner')}
+        >
+          Việc làm ngoài nước
+        </button>
+      </div>
       <div className="relative pr-4 px-4 pt-2">
         <Input
           type="text"
@@ -146,30 +163,8 @@ const JobsFilter = ({ filters, setFilters, mode, setMode }: JobsFilterProps) => 
         </div>
       ) : (
         <div className="flex w-max mb-4">
-          <FilterBar
-            value={foreignFilter}
-            onChange={setForeignFilter}
-            placeholder="Chọn doanh nghiệp"
-          />
         </div>
       )}
-      {/* Toggle buttons for Job and Recruitment Foreigner */}
-      <div className="flex mt-2 mb-2">
-        <button
-          type="button"
-          className={`flex-1 py-2 font-semibold text-base transition ${mode === 'job' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-          onClick={() => setMode('job')}
-        >
-          Việc làm
-        </button>
-        <button
-          type="button"
-          className={`flex-1 py-2 font-semibold text-base transition ${mode === 'foreigner' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-          onClick={() => setMode('foreigner')}
-        >
-          Việc làm ngoài nước
-        </button>
-      </div>
     </div>
   );
 };
