@@ -1,0 +1,50 @@
+import Card from "@/components/Card";
+import Skeleton from "@/components/Skeleton";
+import SkeletonList from "@/components/SkeletonList";
+import React from "react";
+import { useUnemploymentInsurance } from "./useUnemploymentInsurance";
+
+const UnemploymentInsuranceSection: React.FC = () => {
+    const { items, loading, error } = useUnemploymentInsurance();
+
+    if (loading) {
+        return (
+            <SkeletonList
+                count={5}
+                renderSkeleton={() => (
+                    <div className="flex gap-3 items-center bg-white/5 rounded p-2 w-full">
+                        <Skeleton className="w-16 h-16" />
+                        <div className="flex-1">
+                            <Skeleton className="h-4 w-2/3 mb-2" />
+                            <Skeleton className="h-3 w-1/2 mb-1" />
+                            <Skeleton className="h-3 w-1/3" />
+                        </div>
+                    </div>
+                )}
+                className="flex flex-col gap-2 mb-2"
+            />
+        );
+    }
+    if (error) {
+        return <div className="text-red-500">Lỗi khi tải dữ liệu bảo hiểm thất nghiệp.</div>;
+    }
+    if (!items || items.length === 0) {
+        return <div className="text-center text-muted py-8 select-none font-lg">Không có dữ liệu bảo hiểm thất nghiệp.</div>;
+    }
+    return (
+        <div className="flex flex-col gap-3 mb-2">
+            {items.map((item: any) => (
+                <Card
+                    key={item.id}
+                    thumbnail={item.thumbnail}
+                    onClick={() => window.open(`/news/${item.id}`, "_self")}
+                >
+                    <div className="card-title font-bold line-clamp-2">{item.title}</div>
+                    <div className="card-meta truncate">Ngày đăng: {item.publishdate}</div>
+                </Card>
+            ))}
+        </div>
+    );
+};
+
+export default UnemploymentInsuranceSection;
