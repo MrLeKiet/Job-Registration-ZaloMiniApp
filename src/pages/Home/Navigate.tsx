@@ -7,7 +7,7 @@ const NAV_ITEMS = [
     { label: "Tin tức", icon: Newspaper, path: "/news" },
     { label: "Việc làm", icon: Briefcase, path: "/jobs" },
     { label: "Ứng viên", icon: Users, path: "/laborer" },
-    { label: "Bảo hiểm thất nghiệp", icon: Shield, path: "/insurance" },
+    { label: "Bảo hiểm thất nghiệp", icon: Shield, path: "/unemployment-insurance" },
     { label: "Xuất khẩu lao động", icon: Globe2, path: "/export-labor" },
     { label: "Giới thiệu", icon: Info, path: "/about" },
 ];
