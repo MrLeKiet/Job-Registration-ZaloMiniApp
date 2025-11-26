@@ -17,12 +17,13 @@ const Card: React.FC<CardLayoutProps> = ({ thumbnail, onClick, children }) => (
     }}
     style={{ touchAction: "manipulation" }}
   >
-    <div className="overflow-hidden flex items-center justify-center">
+    <div className="overflow-hidden flex items-center justify-center min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px]">
       {thumbnail ? (
         <img
           src={thumbnail}
           alt="Thumbnail"
-          className="rounded-md object-cover h-[80px] w-[80px]"
+          className="rounded-md object-cover w-[80px] h-[80px]"
+          style={{ aspectRatio: "1/1" }}
           onError={e => {
             (e.target as HTMLImageElement).src = noImage;
           }}
@@ -31,7 +32,8 @@ const Card: React.FC<CardLayoutProps> = ({ thumbnail, onClick, children }) => (
         <img
           src={import.meta.env.VITE_PLACEHOLDER_IMG || noImage}
           alt="Missing"
-          className="w-full h-full object-cover opacity-60"
+          className="rounded-md object-cover w-[80px] h-[80px] opacity-60"
+          style={{ aspectRatio: "1/1" }}
         />
       )}
     </div>
