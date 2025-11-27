@@ -21,6 +21,12 @@ import RegisterPage from "@/pages/Register";
 import RecruitmentPostPage from "@/pages/RecruitmentPost";
 import RecruitmentForeignersPage from "@/pages/RecruitmentForeigners";
 import RecruitmentForeignersJobDetailPage from "@/pages/RecruitmentForeignersJobDetail";
+import UnemploymentInsurancePage from "@/pages/UnemploymentInsurance";
+import OverseasJobsPage from "@/pages/OverseasJobs";
+import AboutUsPage from "@/pages/AboutUs";
+import ProfileRegisterLayout from "@/pages/Profile/ProfileRegisterLayout";
+import EnterpriseSignUpSection from "@/pages/Profile/EnterpriseSignUpSection";
+import EnterpriseUpdateProfile from "@/pages/Profile/EnterpriseUpdateProfile";
 const Layout = () => {
   return (
     <App theme={getSystemInfo().zaloTheme as AppProps["theme"]}>
@@ -42,6 +48,12 @@ const Layout = () => {
               <Route path="/RecruitmentPost" element={<RecruitmentPostPage />} />
               <Route path="/recruitmentForeigners/:id" element={<RecruitmentForeignersJobDetailPage />} />
               <Route path="/RecruitmentForeigners" element={<RecruitmentForeignersPage />} />
+              <Route path="/unemployment-insurance" element={<UnemploymentInsurancePage />} />
+              <Route path="/export-labor" element={<OverseasJobsPage />} />
+              <Route path="/about" element={<AboutUsPage />} />
+              <Route path="/profile-register" element={<ProfileRegisterLayout />} />
+              <Route path="/enterprise-signup" element={<EnterpriseSignUpSection />} />
+              <Route path="/enterprise-updateprofile" element={<EnterpriseUpdateProfile />} />
             </AnimationRoutes>
           </MainLayout>
         </ZMPRouter>

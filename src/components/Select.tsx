@@ -205,7 +205,7 @@ const Select: React.FC<SelectProps> = ({
                         style={{ border: "none", padding: 0, margin: 0 }}
                     />
                     <div
-                        className={`fixed top-0 left-0 right-0 z-50 bg-black/70 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
+                        className={`fixed top-0 left-0 right-0 z-50 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
                         style={{ height: 'var(--header-height)' }}
                     />
                     <div
