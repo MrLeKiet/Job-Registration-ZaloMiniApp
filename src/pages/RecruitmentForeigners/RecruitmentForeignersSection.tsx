@@ -59,9 +59,6 @@ const RecruitmentForeignersSection: React.FC = () => {
     return (
         <div>
             <div className="p-4 flex flex-col gap-2 mb-2">
-                <div className="font-lg font-bold mb-1 text-primary">
-                    VIỆC LÀM NƯỚC NGOÀI MỚI NHẤT
-                </div>
                 {content}
             </div>
         </div>

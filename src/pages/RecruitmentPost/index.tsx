@@ -1,9 +1,27 @@
 import Select from "@/components/Select";
 import React, { useState } from "react";
+// ...existing code...
 import { Box, Button, DatePicker, Input, Text } from "zmp-ui";
 import { useSettings } from "./useRecruitment";
 
 const RecruitmentPostPage: React.FC = () => {
+    const { settings } = useSettings();
+    const [wardsOptions, setWardsOptions] = useState<{ label: string; value: string }[]>([]);
+    const [statusOptions, setStatusOptions] = useState<{ label: string; value: string }[]>([]);
+
+    React.useEffect(() => {
+        (async () => {
+            const { getWards } = await import("./api");
+            const wards = await getWards();
+            setWardsOptions(Array.isArray(wards) ? wards : []);
+        })();
+    }, []);
+
+    React.useEffect(() => {
+        if (settings?.ListStatusJob) {
+            setStatusOptions(settings.ListStatusJob.map((s: any) => ({ label: s.label || s.value || s, value: s.value || s.label || s })));
+        }
+    }, [settings]);
     type PostType = {
         id: number;
         companyName: string;
@@ -17,6 +35,8 @@ const RecruitmentPostPage: React.FC = () => {
         position: string;
         quantity: string;
         gender: string;
+        Status: string;
+        Wards: string;
         workingTime: string;
         degree: string;
         experience: string;
@@ -25,14 +45,16 @@ const RecruitmentPostPage: React.FC = () => {
         companyAddress: string;
         companyScale: string;
     };
-    const { settings } = useSettings();
+    // Removed duplicate declaration of settings
     const [form, setForm] = useState<{
         companyName: string;
         content: string;
         requirements: string;
         endDate: Date;
-    image: string | null;
+        image: string | null;
         benefits: string[];
+        Wards: string;
+        Status: string;
         jobType: string;
         salary: string;
         position: string;
@@ -61,23 +83,15 @@ const RecruitmentPostPage: React.FC = () => {
         workingTime: "",
         degree: "Đại học",
         experience: "",
+        Status: "",
+        Wards: "",
         job: "",
         jobName: "Lập trình viên React",
         companyNameTextarea: "Công ty ABC",
         companyAddress: "123 Đường A, Quận B, TP. C",
         companyScale: "100-200 người",
     });
-    const [posts, setPosts] = useState<PostType[]>(() => {
-        try {
-            const stored = localStorage.getItem("recruitmentPosts");
-            return stored ? JSON.parse(stored) : [];
-        } catch {
-            return [];
-        }
-    });
-    React.useEffect(() => {
-        localStorage.setItem("recruitmentPosts", JSON.stringify(posts));
-    }, [posts]);
+    // Removed unused posts and setPosts assignment
     const [message, setMessage] = useState<string | null>(null);
 
     const handleChange = (field: string) => (value: any) => {
@@ -106,9 +120,46 @@ const RecruitmentPostPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const postToSave = { ...form, id: Date.now() };
-        setPosts(prev => [...prev, postToSave]);
-        setMessage("Recruitment post submitted!");
+        // Map form data to API field names
+        const today = new Date();
+        const end = form.endDate || new Date();
+        const formatDate = (d: Date) => d.toISOString().slice(0, 10);
+        const recruitmentPeriod = `${formatDate(today)}|${formatDate(end)}`;
+        const apiData = {
+            JobPosition: form.jobName || "null",
+            Job: form.job || "null",
+            Position: form.position || "null",
+            Qualifications: form.degree || "null",
+            WorkingTime: form.workingTime || "null",
+            WorkExperience: form.experience || "null",
+            Salary: form.salary || "null",
+            Benefits: Array.isArray(form.benefits) ? form.benefits.filter(b => b && b.trim() !== "") : [],
+            RecruitmentPeriod: recruitmentPeriod,
+            Summary: form.content || "null",
+            JobRequirements: form.requirements || "null",
+            Status: form.Status || "null",
+            Details: [{ Content: form.content }],
+            Wards: form.Wards ? [form.Wards] : [],
+            Address: form.companyAddress || "null"
+        };
+        try {
+            // Get token from localStorage (same as ProfileLaborerMenu)
+            const accessToken = localStorage.getItem("accessToken");
+            if (!accessToken) {
+                setMessage("Không tìm thấy AccessToken. Vui lòng đăng nhập lại.");
+                return;
+            }
+            const { registerRecruitment } = await import("./api");
+            const res = await registerRecruitment(apiData, accessToken);
+            if (res?.StatusResult?.Code === 0) {
+                setMessage("Đăng tuyển dụng thành công!");
+            } else {
+                setMessage(res?.StatusResult?.Message || "Đăng tuyển dụng thất bại.");
+            }
+        } catch (err: any) {
+            setMessage(err?.response?.data?.StatusResult?.Message || "Có lỗi xảy ra khi đăng tuyển dụng!");
+            console.error("Recruitment post error:", err);
+        }
         setTimeout(() => setMessage(null), 2000);
     };
 
@@ -127,6 +178,26 @@ const RecruitmentPostPage: React.FC = () => {
                 <Box className=" flex flex-col gap-4 rounded">
                     <Text.Header className="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Tạo bài đăng tuyển dụng</Text.Header>
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <div>
+                            <Text className="text-sm text-[#141415] mb-2">Phường/Xã</Text>
+                            <Select
+                                type="single"
+                                options={wardsOptions}
+                                value={form.Wards}
+                                onChange={handleChange("Wards")}
+                                placeholder="Chọn phường/xã"
+                            />
+                        </div>
+                        <div>
+                            <Text className="text-sm text-[#141415] mb-2">Trạng thái</Text>
+                            <Select
+                                type="single"
+                                options={statusOptions}
+                                value={form.Status}
+                                onChange={handleChange("Status")}
+                                placeholder="Chọn trạng thái"
+                            />
+                        </div>
                         <Text className="text-sm text-[#141415] ">Tên tuyển dụng</Text>
                         <input
                             type="text"
@@ -173,7 +244,7 @@ const RecruitmentPostPage: React.FC = () => {
                         <div>
                             <Text className="text-sm text-[#141415] mb-2">Thêm ảnh</Text>
                             <div className="flex flex-col items-center">
-                                <label htmlFor="image-upload" className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                <label htmlFor="image-upload" className="w-full max-h-60 h-60 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100">
                                     {form.image ? (
                                         <img
                                             src={form.image}

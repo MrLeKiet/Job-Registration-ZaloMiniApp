@@ -93,14 +93,14 @@ const JobsFilter = ({ filters, setFilters, mode, setMode }: JobsFilterProps) => 
       <div className="flex mt-2">
         <button
           type="button"
-          className={`flex-1 py-1 font-semibold text-base transition ${mode === 'job' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`flex-1 py-1 font-semibold text-base transition ${mode === 'job' ? 'bg-blue-500 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
           onClick={() => setMode('job')}
         >
           Việc làm
         </button>
         <button
           type="button"
-          className={`flex-1 py-1 font-semibold text-base transition ${mode === 'foreigner' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`flex-1 py-1 font-semibold text-base transition ${mode === 'foreigner' ? 'bg-blue-500 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
           onClick={() => setMode('foreigner')}
         >
           Việc làm ngoài nước
