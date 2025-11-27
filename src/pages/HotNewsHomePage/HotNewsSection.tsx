@@ -15,7 +15,6 @@ const HotNewsSection: React.FC = () => {
 
     if (loading) return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">Tin tức nổi bật</h1>
             <SkeletonList
                 count={3}
                 renderSkeleton={() => (
@@ -33,7 +32,6 @@ const HotNewsSection: React.FC = () => {
     const isEmpty = !Array.isArray(news) || news.length === 0;
     return (
         <div>
-            <h1 className="text-2xl font-bold font-lg text-primary mb-4">Tin tức nổi bật</h1>
             {isEmpty ? (
                 <div className="text-center text-muted py-8 select-none font-lg">
                     Không có tin tức nào được tìm thấy.
