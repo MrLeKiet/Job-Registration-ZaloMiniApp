@@ -8,12 +8,12 @@ import ReturnHeader from "../components/ReturnHeader";
 const MAIN_ROUTES = [
     "/",
     "/home",
+];
+const RETURN_ROUTES = [
     "/profile",
     "/enterprise",
     "/jobs",
-    "/laborer"
-];
-const RETURN_ROUTES = [
+    "/laborer",
     "/news/",
     "/jobs/",
     "/laborer/",
@@ -22,7 +22,13 @@ const RETURN_ROUTES = [
     "/auth",
     "/profile/edit",
     "/enterprise",
-    "/recruitmentForeigners/"
+    "/recruitmentForeigners/",
+    "/unemployment-insurance",
+    "/export-labor",
+    "/about",
+    "/profile-register",
+    "/enterprise-signup",
+    "/enterprise-updateprofile"
 ];
 
 
@@ -54,17 +60,65 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         return <>{children}</>;
     }
 
+    // Map route to custom header title
+    let returnHeaderTitle: string | undefined = undefined;
+    if (path === "/jobs") {
+        returnHeaderTitle = "Việc làm";
+    }
+    if (path.startsWith("/jobs/")) {
+        returnHeaderTitle = "Chi tiết việc làm";
+    }
+    // Add more routes as needed
+    if (path === "/profile") {
+        returnHeaderTitle = "Hồ sơ cá nhân";
+    }
+    if (path.startsWith("/news/")) {
+        returnHeaderTitle = "Tin tức";
+    }
+    if (path === "/enterprise") {
+        returnHeaderTitle = "Doanh nghiệp";
+    }
+    if (path === "/recruitmentForeigners/") {
+        returnHeaderTitle = "Tuyển dụng người nước ngoài";
+    }
+    if (path === "/unemployment-insurance") {
+        returnHeaderTitle = "Bảo hiểm thất nghiệp";
+    }
+    if (path === "/export-labor") {
+        returnHeaderTitle = "Xuất khẩu lao động";
+    }
+    if (path === "/about") {
+        returnHeaderTitle = "Giới thiệu";
+    }
+    if (path === "/register") {
+        returnHeaderTitle = "Đăng ký thành viên";
+    }
+    if (path === "/laborer") {
+        returnHeaderTitle = "Lao động";
+    }
+    if (path.startsWith("/laborer/")) {
+        returnHeaderTitle = "Chi tiết lao động";
+    }
+    if (path === "/news") {
+        returnHeaderTitle = "Tin tức nổi bật";
+    }
+    if (path === "/profile-register") {
+        returnHeaderTitle = "Đăng ký hồ sơ cá nhân";
+    }
+    if (path === "/enterprise-signup") {
+        returnHeaderTitle = "Đăng ký doanh nghiệp";
+    }
     return (
         <NavbarVisibilityContext.Provider value={navbarContextValue}>
             <div className="h-[100vh] flex flex-col" >
                 <div style={{ position: "sticky", top: 0, zIndex: 50 }}>
-                    {isReturn ? <ReturnHeader /> : <Header />}
+                    {isReturn ? <ReturnHeader title={returnHeaderTitle} /> : <Header />}
                 </div>
                 <div
                     className="bg-[#fafafa] flex-1 flex flex-col overflow-y-auto"
                     style={{
                         maxHeight: isReturn
-                            ? "calc(100vh - var(--safe-top) - var(--return-header-height) - var(--header-height) + 22px )"
+                            ? "calc(100vh - var(--safe-top) - var(--return-header-height) - var(--header-height) + 35px )"
                             : "calc(100vh - var(--safe-top) - var(--navbar-height) - var(--header-height) + 10px)",
                     }}
                 >
