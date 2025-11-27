@@ -1,9 +1,7 @@
-import { FileText } from "lucide-react";
 import React, { useContext } from "react";
 import { Box, Button, DatePicker, Icon, Input, Text } from "zmp-ui";
 import Select from "../../components/Select";
 import { useRegisterForm } from "../../hooks/useRegister";
-import ProfileCompletionCard from "./ProfileCompletionCard";
 import { ZaloAuthContext } from "./ProfileSection";
 import { useProfile } from "./useProfile";
 
@@ -411,11 +409,8 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                     Accesstoken,
                     ...updatePayload,
                 };
-                console.log('[DEBUG] UpdateProfile payload:', payload);
-                console.log('[DEBUG] About to POST /api/v1/LaboreUpdateProfile with token:', Accesstoken);
                 const { updateProfile } = await import('@/api/registerApi');
                 const res = await updateProfile(payload, Accesstoken);
-                console.log('[DEBUG] POST /api/v1/LaboreUpdateProfile finished, response:', res);
                 if (res?.StatusResult?.Code === 0) {
                     setShowToast(true);
                     setErrorMessage("");
@@ -460,7 +455,6 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 console.log("LaboreSignUp response:", res);
                 if (res?.StatusResult?.Code === 0) {
                     setShowToast(true);
-                    setErrorMessage("Đăng ký tài khoản thành công");
                     setTimeout(() => setShowToast(false), 2000);
                     // Call logout handler from context after successful sign-up
                     if (zaloAuth && typeof zaloAuth.logout === 'function') {
@@ -480,62 +474,9 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
         }
     };
 
-    const [cvFile, setCvFile] = React.useState<File | null>(null);
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-    const handleUploadCV = () => {
-        if (!cvFile && fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
-
     return (
         <div className="min-h-screen">
             <div className="max-w-md mx-auto pt">
-                {effectiveSignInStatus === 'success' && (
-                    <div className="mb-4">
-                        <ProfileCompletionCard percent={getCompletionPercent()} />
-                    </div>
-                )}
-                {effectiveSignInStatus === 'success' && (
-                    <div className="bg-white rounded-lg mb-3">
-                        <button
-                            onClick={handleUploadCV}
-                            className="w-full flex items-center p-3 gap-3 hover:bg-gray-50 rounded-lg border border-gray-200 active:scale-95 transition-transform duration-150"
-                            aria-label="Tải lên CV"
-                            disabled={!!cvFile}
-                        >
-                            <div className="w-10 h-10 bg-[#E3F2FD] text-[#1565C0] rounded-md flex items-center justify-center">
-                                <FileText size={18} />
-                            </div>
-                            <div className="text-sm text-gray-700">Tải lên CV</div>
-                        </button>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            style={{ display: "none" }}
-                            onChange={e => {
-                                const file = e.target.files?.[0] ?? null;
-                                if (file) setCvFile(file);
-                            }}
-                            disabled={!!cvFile}
-                        />
-                        {cvFile && (
-                            <div className="flex items-center justify-between bg-gray-100 rounded px-3 py-2 mt-2">
-                                <span className="text-sm font-medium text-gray-800 truncate mr-2">{cvFile.name}</span>
-                                <button
-                                    type="button"
-                                    className="text-red-500 text-lg font-bold px-2 py-0.5 rounded hover:bg-red-100"
-                                    onClick={() => setCvFile(null)}
-                                    aria-label="Xóa CV"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
                 <form>
                     <PersonalInfoSection
                         formData={formData}
@@ -547,22 +488,8 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         settings={settings}
                         errors={errors}
                     />
-                    {/* Only show summary if signed in */}
-                    {effectiveSignInStatus === 'success' && (
-                        <div className="mb-4">
-                            <Text className="text-sm text-[#141415] mb-2">Giới thiệu bản thân</Text>
-                            <textarea
-                                className="w-full border border-gray-300 rounded-md p-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                rows={4}
-                                maxLength={500}
-                                placeholder="Giới thiệu bản thân (tối đa 500 ký tự)"
-                                value={formData.summary}
-                                onChange={e => handleInputChange("summary")(e as any)}
-                            />
-                        </div>
-                    )}
                     {showToast && (
-                        <div className="text-green-600 text-center mb-2 font-semibold">Cập nhật thông tin thành công</div>
+                        <div className="text-green-600 text-center mb-2 font-semibold">Đăng ký tài khoản thành công</div>
                     )}
                     {errorMessage && (
                         <div className="text-red-600 text-center mb-2 font-semibold">{errorMessage}</div>
@@ -580,7 +507,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         </Button>
                     ) : (
                         <Button
-                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
+                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-2 mb-8"
                             loading={laboreSignUpLoading}
                             onClick={e => {
                                 console.log('[DEBUG] Button clicked');

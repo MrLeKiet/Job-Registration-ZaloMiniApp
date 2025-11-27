@@ -1,5 +1,6 @@
 import React from "react";
 import EnterpriseSignUpSection from "./EnterpriseSignUpSection";
+import ProfileEnterpriseMenu from "./ProfileEnterpriseMenu";
 import ProfileHeader from "./ProfileHeader";
 import ProfileLaborerMenu from "./ProfileLaborerMenu";
 import ProfileRegisterLayout from "./ProfileRegisterLayout";
@@ -9,8 +10,40 @@ import ProfileSection from "./ProfileSection";
 const ProfilePage: React.FC = () => {
     const [profileData, setProfileData] = React.useState<any>(null);
     const [signInStatus, setSignInStatus] = React.useState<'idle' | 'success' | 'fail'>('idle');
+    const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
+        setLoading(true);
+        // Restore accessToken from localStorage if available, but only if required scopes are present
+        const savedToken = localStorage.getItem("accessToken");
+        if (signInStatus !== 'success' && savedToken) {
+            (async () => {
+                try {
+                    const { getSetting } = await import('zmp-sdk/apis');
+                    const { authSetting } = await getSetting();
+                    const hasUserInfo = !!authSetting["scope.userInfo"];
+                    const hasPhoneNumber = !!authSetting["scope.userPhonenumber"];
+                    if (!hasUserInfo || !hasPhoneNumber) {
+                        localStorage.removeItem("accessToken");
+                        setProfileData(null);
+                        setSignInStatus('fail');
+                        setLoading(false);
+                        return;
+                    }
+                    const { getProfileWithToken } = await import('./api');
+                    const profileRes = await getProfileWithToken(savedToken);
+                    const profile = profileRes?.Data || null;
+                    const profileWithToken = { ...profile, accessToken: savedToken, usertype: profile?.usertype };
+                    setProfileData(profileWithToken);
+                    setSignInStatus('success');
+                } catch {
+                    localStorage.removeItem("accessToken");
+                } finally {
+                    setLoading(false);
+                }
+            })();
+            return;
+        }
         // Only run sign-in API if not already signed in
         if (signInStatus !== 'success') {
             (async () => {
@@ -36,10 +69,11 @@ const ProfilePage: React.FC = () => {
                             const signInRes = await signIn({ Accesstoken, Code, ZaloId });
                             const accessToken = signInRes?.Data?.AccessToken;
                             if (accessToken) {
+                                localStorage.setItem("accessToken", accessToken);
                                 const { getProfileWithToken } = await import('./api');
                                 const profileRes = await getProfileWithToken(accessToken);
                                 const profile = profileRes?.Data || null;
-                                const profileWithToken = { ...profile, accessToken };
+                                const profileWithToken = { ...profile, accessToken, usertype: profile?.usertype };
                                 setProfileData(profileWithToken);
                                 setSignInStatus('success');
                             } else {
@@ -58,8 +92,12 @@ const ProfilePage: React.FC = () => {
                     } else {
                         console.log("Lỗi khác");
                     }
+                } finally {
+                    setLoading(false);
                 }
             })();
+        } else {
+            setLoading(false);
         }
     }, [signInStatus]);
 
@@ -67,6 +105,12 @@ const ProfilePage: React.FC = () => {
     const handleProfileFetched = (profile: any, status: 'idle' | 'success' | 'fail') => {
         setProfileData(profile);
         setSignInStatus(status);
+        if (status === 'success' && profile?.accessToken) {
+            localStorage.setItem("accessToken", profile.accessToken);
+        }
+        if (status !== 'success') {
+            localStorage.removeItem("accessToken");
+        }
     };
 
     const isEnterpriseSignup = location.pathname === "/enterprise-signup";
@@ -78,9 +122,21 @@ const ProfilePage: React.FC = () => {
     } else if (isProfileRegister) {
         sectionContent = <ProfileRegisterLayout profileData={profileData} signInStatus={signInStatus} />;
     } else if (signInStatus === 'success' && profileData?.accessToken) {
-        sectionContent = <ProfileLaborerMenu accessToken={profileData.accessToken} />;
+        if (profileData?.usertype === 'Enterprise') {
+            sectionContent = <ProfileEnterpriseMenu accessToken={profileData.accessToken} />;
+        } else {
+            sectionContent = <ProfileLaborerMenu accessToken={profileData.accessToken} />;
+        }
     } else {
         sectionContent = <ProfileSection onProfileFetched={handleProfileFetched} />;
+    }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
+            </div>
+        );
     }
 
     return (

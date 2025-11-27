@@ -16,24 +16,28 @@ const sectionDefs = [
 ];
 
 const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) => {
+        const [showToast, setShowToast] = useState(false);
+        const [errorMessage, setErrorMessage] = useState("");
     const [profile, setProfile] = useState<any>(null);
     const [editProfile, setEditProfile] = useState<any>(null);
     const [expanded, setExpanded] = useState(() => sectionDefs.map(s => s.defaultOpen));
     const [saving, setSaving] = useState(false);
-    const { settings } = useProfile(accessToken);
+    const { settings } = useProfile();
     const [cvFile, setCvFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const avatarInputRef = useRef<HTMLInputElement>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
     useEffect(() => {
         async function fetchProfile() {
             const res = await getProfileWithToken(accessToken);
             const data = res?.Data || {};
-            // Ensure cmktLevel is set from highestlevelofexpertise if present
             setProfile(data);
-            setEditProfile(prev => ({
-                ...data,
-                cmktLevel: data.cmktLevel || data.highestlevelofexpertise || ""
-            }));
+            setEditProfile(data);
+            // Load avatar from localStorage if exists, else use from profile
+            const localAvatar = localStorage.getItem("laborer_avatar");
+            setAvatarPreview(localAvatar || data.avatar || null);
         }
         fetchProfile();
     }, [accessToken]);
@@ -66,21 +70,25 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
 
     const handleUpdateProfile = async () => {
         setSaving(true);
+        setShowToast(false);
+        setErrorMessage("");
         try {
-            // Map frontend fields to backend fields for update
+            let avatarUrl = avatarPreview || editProfile?.avatar || "";
+            if (avatarFile && avatarPreview) {
+                localStorage.setItem("laborer_avatar", avatarPreview);
+                avatarUrl = avatarPreview;
+            }
             const safeDateString = (val: any) => {
                 if (!val) return undefined;
                 if (val instanceof Date && !Number.isNaN(val.getTime())) {
                     return val.toISOString().slice(0, 10);
                 }
                 if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
-                // Try to parse DD/MM/YYYY
                 const match = typeof val === "string" ? val.match(/^(\d{2})\/(\d{2})\/(\d{4})$/) : null;
                 if (match) {
                     const [_, dd, mm, yyyy] = match;
                     return `${yyyy}-${mm}-${dd}`;
                 }
-                // Fallback: try to parse as date
                 const d = new Date(val);
                 return Number.isNaN(d.getTime()) ? undefined : d.toISOString().slice(0, 10);
             };
@@ -96,8 +104,8 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                 Ethnicity: editProfile?.ethnicity,
                 Address: editProfile?.address,
                 Study: editProfile?.traininglevel,
-                TechnicalLevel: editProfile?.cmktLevel,
-                CPSkill: editProfile?.cPSkill,
+                TechnicalLevel: editProfile?.highestlevelofexpertise,
+                cpskill: editProfile?.cpskill,
                 RecruitmentType: editProfile?.recruitmentType,
                 TrainingMajor: editProfile?.trainingmajor,
                 GraduateSchool: editProfile?.schoolgraduate,
@@ -105,20 +113,30 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                     ? editProfile.desiredcareer.map((job: any) => typeof job === 'object' ? (job.value || job.label || job) : job)
                     : [],
                 Summary: editProfile?.summary,
-                InterviewFormat: editProfile?.interviewFormat,
+                interviewformat: editProfile?.interviewformat,
                 ExperienceSummary: editProfile?.experienceSummary,
                 Salary: editProfile?.salary || "",
                 CVPath: editProfile?.cvPath || "",
+                avatar: avatarUrl,
             };
-            // Remove DateOfBirth and CIDDate if undefined
             const updatePayload = { ...updatePayloadRaw };
             if (updatePayload.DateOfBirth === undefined) delete updatePayload.DateOfBirth;
             if (updatePayload.CIDDate === undefined) delete updatePayload.CIDDate;
-            await updateProfile(updatePayload, accessToken);
-            // Fetch profile again after update
-            const res = await getProfileWithToken(accessToken);
-            setProfile(res?.Data || {});
-            setEditProfile(res?.Data || {});
+            const res = await updateProfile(updatePayload, accessToken);
+            if (res?.StatusResult?.Code === 0) {
+                setShowToast(true);
+                setErrorMessage("");
+                setTimeout(() => setShowToast(false), 2000);
+            } else {
+                setErrorMessage(res?.StatusResult?.Message || res?.Message || "Cập nhật thất bại!");
+            }
+            const profileRes = await getProfileWithToken(accessToken);
+            setProfile(profileRes?.Data || {});
+            setEditProfile(profileRes?.Data || {});
+            setAvatarPreview(localStorage.getItem("laborer_avatar") || profileRes?.Data?.avatar || null);
+            setAvatarFile(null);
+        } catch (err: any) {
+            setErrorMessage("Có lỗi xảy ra khi cập nhật!");
         } finally {
             setSaving(false);
         }
@@ -130,11 +148,33 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
             <div className="flex flex-col items-center pt-6">
                 <div className="relative">
                     <img
-                        src={editProfile?.avatar || "/default-avatar.png"}
+                        src={avatarPreview || editProfile?.avatar || "/default-avatar.png"}
                         alt="Avatar"
-                        className="w-24 h-24 rounded-full object-cover border-2 border-blue-500"
+                        className="w-24 h-24 rounded-full object-cover border-2 border-blue-500 cursor-pointer"
+                        style={{ aspectRatio: "1/1" }}
+                        onClick={() => avatarInputRef.current?.click()}
+                        onError={e => {
+                            (e.target as HTMLImageElement).src = "/default-avatar.png";
+                        }}
                     />
-                    <button className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 shadow" title="Đổi ảnh đại diện">
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={avatarInputRef}
+                        style={{ display: "none" }}
+                        onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                                setAvatarFile(file);
+                                const reader = new FileReader();
+                                reader.onload = ev => {
+                                    setAvatarPreview(ev.target?.result as string);
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        }}
+                    />
+                    <button className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 shadow" title="Đổi ảnh đại diện" onClick={() => avatarInputRef.current?.click()}>
                         <User size={18} />
                     </button>
                 </div>
@@ -170,7 +210,13 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                     </div>
                 ))}
             </div>
-            <div className="mx-auto max-w-md mt-4 flex justify-center">
+            <div className="mx-auto max-w-md mt-4 flex flex-col items-center gap-2">
+                {showToast && (
+                    <div className="text-green-600 text-center mb-2 font-semibold">Cập nhật thông tin thành công</div>
+                )}
+                {errorMessage && (
+                    <div className="text-red-600 text-center mb-2 font-semibold">{errorMessage}</div>
+                )}
                 <Button
                     className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
                     loading={saving}
@@ -297,8 +343,8 @@ function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, on
                         <Select
                             type="single"
                             options={settings?.TechnicalLevel || []}
-                            value={profile?.cmktLevel || ""}
-                            onChange={onSelect("cmktLevel")}
+                            value={profile?.highestlevelofexpertise || ""}
+                            onChange={onSelect("highestlevelofexpertise")}
                             placeholder="Trình độ CMKT"
                         />
                     </div>
@@ -307,8 +353,8 @@ function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, on
                         <Select
                             type="single"
                             options={settings?.ComputerSkill || []}
-                            value={profile?.cPSkill || ""}
-                            onChange={onSelect("cPSkill")}
+                            value={profile?.cpskill || ""}
+                            onChange={onSelect("cpskill")}
                             placeholder="Trình độ Tin học"
                         />
                     </div>
@@ -317,8 +363,8 @@ function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, on
                         <Select
                             type="single"
                             options={settings?.InterviewFormats || []}
-                            value={profile?.interviewFormat || ""}
-                            onChange={onSelect("interviewFormat")}
+                            value={profile?.interviewformat || ""}
+                            onChange={onSelect("interviewformat")}
                             placeholder="Hình thức tuyển dụng"
                         />
                     </div>

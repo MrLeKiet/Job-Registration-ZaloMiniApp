@@ -1,4 +1,4 @@
-import { ChevronRight, User } from "lucide-react";
+import { Building2, ChevronRight, Link, User } from "lucide-react";
 import React, { createContext } from "react";
 import { useQueryClient } from 'react-query';
 import { useNavigate } from "zmp-ui";
@@ -109,15 +109,14 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permi
 	return (
 		<ZaloAuthContext.Provider value={{ ...zaloAuth, logout: handleLogout }}>
 			<div className="px-4 -mt-6 pb-4">
-				<div className={`rounded-lg overflow-hidden ${zaloUserInfo ? 'shadow-none' : 'shadow bg-transparent'}`}>
-					<div>
+				<div>
+					<div className="flex flex-col items-center gap-3">
 						<button
 							onClick={handleRegisterClick}
 							className={`
-								w-full text-left flex items-center p-4 transition-all duration-200 active:scale-95
+								w-full rounded-lg shadow-lg text-left flex bg-[#b5e0ff] items-center p-4 transition-all duration-200 active:scale-95
 								${zaloUserInfo ? 'opacity-0 pointer-events-none translate-y-3' : 'opacity-100 translate-y-0'}
 							`}
-							style={{ background: '#E3F2FD' }}
 						>
 							<div className="w-12 h-12 bg-[#1565C0] text-white rounded-full flex items-center justify-center mr-4">
 								<User size={18} />
@@ -132,13 +131,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permi
 						<button
 							onClick={() => navigate('/enterprise-signup')}
 							className={`
-								w-full text-left flex items-center p-4 mt-2 transition-all duration-200 active:scale-95
+								w-full rounded-lg shadow-lg text-left flex items-center p-4 bg-[#8cc98f] mt-2 transition-all duration-200 active:scale-95
 								${zaloUserInfo ? 'opacity-0 pointer-events-none translate-y-3' : 'opacity-100 translate-y-0'}
 							`}
-							style={{ background: '#E3F2FD' }}
 						>
-							<div className="w-12 h-12 bg-[#43A047] text-white rounded-full flex items-center justify-center mr-4">
-								<User size={18} />
+							<div className="w-12 h-12 bg-[#508653] text-white rounded-full flex items-center justify-center mr-4">
+								<Building2 size={18} />
 							</div>
 							<div className="flex-1">
 								<div className="font-semibold">Đăng ký doanh nghiệp</div>
@@ -148,11 +146,10 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permi
 						{/* Liên kết tài khoản button */}
 						<button
 							onClick={() => setShowLinkedDialog(true)}
-							className="w-full text-left flex items-center p-4 mt-2 transition-all duration-200 active:scale-95 opacity-100 translate-y-0"
-							style={{ background: '#E3F2FD' }}
+							className="w-full rounded-lg shadow-lg text-left flex items-center p-4 bg-[#d1a666] mt-2 transition-all duration-200 active:scale-95 opacity-100 translate-y-0"
 						>
 							<div className="w-12 h-12 bg-[#FF9800] text-white rounded-full flex items-center justify-center mr-4">
-								<User size={18} />
+								<Link size={18} />
 							</div>
 							<div className="flex-1">
 								<div className="font-semibold">Liên kết tài khoản</div>
@@ -161,7 +158,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permi
 						</button>
 						{showLinkedDialog && (
 							<div
-								className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+								className="fixed inset-0 z-50 flex px-4 items-center justify-center bg-black bg-opacity-40"
 								onClick={e => {
 									if (e.target === e.currentTarget) setShowLinkedDialog(false);
 								}}
@@ -189,7 +186,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permi
 										{linkedError && <div className="text-red-600 text-sm mt-2">{linkedError}</div>}
 										{linkedSuccess && <div className="text-green-600 text-sm mt-2">Liên kết thành công!</div>}
 										<button
-											className="w-full mt-4 zmp-button"
+											className="w-full mt-4 bg-blue-500  rounded-md text-white p-2 zmp-button"
 											disabled={linkedLoading}
 											type="submit"
 										>

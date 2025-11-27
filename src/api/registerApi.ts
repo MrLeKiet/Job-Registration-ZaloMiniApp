@@ -7,7 +7,6 @@ export async function updateProfile(body: any, token: string) {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${token}`,
   };
-  console.log('[DEBUG] /api/v1/LaboreUpdateProfile Authorization header:', headers["Authorization"]);
   const response = await axios.post(
     "/LaboreUpdateProfile",
     body,
@@ -17,7 +16,6 @@ export async function updateProfile(body: any, token: string) {
       timeout: 15000,
     }
   );
-  console.log("[DEBUG] /api/v1/LaboreUpdateProfile response:", response.data);
   return response.data;
 }
 export async function getSettings() {

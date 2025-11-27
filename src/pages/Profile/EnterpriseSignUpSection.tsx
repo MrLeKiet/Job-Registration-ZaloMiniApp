@@ -1,7 +1,7 @@
 import { enterpriseSignUp } from "@/api/enterpriseApi";
 import { User } from "lucide-react";
 import React from "react";
-import { Box, Button, Input, Text } from "zmp-ui";
+import { Box, Input, Text } from "zmp-ui";
 
 
 const EnterpriseSignUpSection: React.FC = () => {
@@ -70,7 +70,7 @@ const EnterpriseSignUpSection: React.FC = () => {
                 <Box className="bg-white flex flex-col gap-3 width-full p-4 rounded-lg shadow-lg mb-4">
                     <Text className="text-lg font-semibold text-gray-700 mb-2 flex items-center">
                         <span className="mr-2"><User size={20} /></span>
-                        Đăng ký doanh nghiệp
+                        Thông tin doanh nghiệp
                     </Text>
                     <form onSubmit={handleSubmit}>
                         <Input
@@ -119,17 +119,21 @@ const EnterpriseSignUpSection: React.FC = () => {
                         {errorMessage && (
                             <div className="text-red-600 text-center mb-2 font-semibold">{errorMessage}</div>
                         )}
-                        <Button
-                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
-                            loading={loading}
+                        <button
+                            type="submit"
+                            className={`bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6 flex items-center justify-center ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            disabled={loading}
                         >
+                            {loading && (
+                                <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></span>
+                            )}
                             Đăng ký doanh nghiệp
-                        </Button>
+                        </button>
                     </form>
                 </Box>
             </div>
         </div>
     );
-};
+}
 
 export default EnterpriseSignUpSection;
