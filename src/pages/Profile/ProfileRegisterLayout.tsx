@@ -475,7 +475,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
     };
 
     return (
-        <div className="min-h-screen">
+        <div className="bg-gray-100 min-h-screen">
             <div className="max-w-md mx-auto pt">
                 <form>
                     <PersonalInfoSection

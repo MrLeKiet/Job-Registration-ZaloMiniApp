@@ -1,5 +1,5 @@
 import { enterpriseUpdateProfile } from "@/api/enterpriseApi";
-import { ChevronDown, ChevronUp, User } from "lucide-react";
+import { ChevronDown, ChevronUp, User, Camera } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Box, Button, Input, Text } from "zmp-ui";
 import Select from "../../components/Select";
@@ -7,8 +7,8 @@ import { getProfileWithToken } from "./api";
 import { useProfile } from "./useProfile";
 
 const sectionDefs = [
-    { key: "company", title: "1. Thông tin doanh nghiệp", defaultOpen: false },
-    { key: "contact", title: "2. Thông tin liên hệ", defaultOpen: false },
+    { key: "company", title: "1. Thông tin doanh nghiệp", defaultOpen: true },
+    { key: "contact", title: "2. Thông tin liên hệ", defaultOpen: true },
 ];
 
 const EnterpriseUpdateProfile: React.FC = () => {
@@ -63,7 +63,6 @@ const EnterpriseUpdateProfile: React.FC = () => {
                 setErrorMessage("");
                 setFieldErrors({});
                 setTimeout(() => setShowToast(false), 2000);
-                // Fetch profile again after update
                 const profileRes = await getProfileWithToken(accessToken);
                 setProfile(profileRes?.Data || {});
                 setEditProfile(profileRes?.Data || {});
@@ -78,7 +77,6 @@ const EnterpriseUpdateProfile: React.FC = () => {
                 setErrorMessage(res?.StatusResult?.Message || res?.Message || "Cập nhật thất bại!");
             }
         } catch (err: any) {
-            // Optionally log error
             console.error("EnterpriseUpdateProfile error:", err);
             setErrorMessage("Có lỗi xảy ra khi cập nhật!");
         } finally {
@@ -87,32 +85,48 @@ const EnterpriseUpdateProfile: React.FC = () => {
     };
 
     return (
-        <div className="bg-gray-50">
-            <div className="flex flex-col items-center pt-6">
+    <div className="bg-gradient-to-b from-blue-50 to-gray-50">
+
+        {/* Header đẹp hơn */}
+        <div className="bg-gradient-to-br from-blue-600 to-blue-800 pt-12 pb-20 px-6 rounded-b-3xl shadow-xl">
+            <div className="flex flex-col items-center text-white -mt-6">
                 <div className="relative">
-                    <img
-                        src={editProfile?.avatar || "/default-avatar.png"}
-                        alt="Avatar"
-                        className="w-24 h-24 rounded-full object-cover border-2 border-blue-500"
-                    />
-                    <button className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 shadow" title="Đổi ảnh đại diện">
-                        <User size={18} />
+                    <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                        <img
+                            src={editProfile?.avatar || "/default-avatar.png"}
+                            alt="Avatar"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                    <button className="absolute bottom-1 right-1 bg-white text-blue-600 rounded-full p-3 shadow-xl hover:scale-110 transition">
+                        <Camera size={20} />
                     </button>
                 </div>
-                <Text className="mt-2 text-xl font-bold">{editProfile?.companyname || "Tên doanh nghiệp"}</Text>
+                <Text className="mt-4 text-2xl font-bold">{editProfile?.companyname || "Tên doanh nghiệp"}</Text>
+                <Text className="text-blue-100 text-sm mt-1">Cập nhật hồ sơ doanh nghiệp</Text>
             </div>
-            <div className="mt-4 mx-auto max-w-md">
+        </div>
+
+        {/* Form */}
+        <div className="px-5 -mt-12">
+            <div className="space-y-5">
+
                 {sectionDefs.map((section, idx) => (
-                    <div key={section.key} className="mb-4 bg-white rounded-lg shadow">
+                    <div key={section.key} className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                         <button
-                            className="w-full flex justify-between items-center px-4 py-3 border-b"
+                            className={`w-full flex justify-between items-center px-6 py-5 text-white font-bold text-lg transition-all ${
+                                idx === 0 
+                                    ? "bg-gradient-to-r from-blue-600 to-blue-700" 
+                                    : "bg-gradient-to-r from-emerald-600 to-teal-600"
+                            }`}
                             onClick={() => handleExpand(idx)}
                         >
-                            <span className="font-semibold text-gray-700">{section.title}</span>
-                            {expanded[idx] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                            <span>{section.title}</span>
+                            {expanded[idx] ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                         </button>
+
                         {expanded[idx] && (
-                            <div className="px-4 py-3">
+                            <div className="px-6 py-6">
                                 <SectionContent
                                     section={section.key}
                                     profile={editProfile}
@@ -125,31 +139,45 @@ const EnterpriseUpdateProfile: React.FC = () => {
                     </div>
                 ))}
             </div>
-            <div className="mx-auto max-w-md mt-4 flex flex-col items-center gap-2">
+
+            {/* Thông báo thành công / lỗi */}
+            <div className="mt-6 space-y-4">
                 {showToast && (
-                    <div className="text-green-600 text-center mb-2 font-semibold">Cập nhật thông tin thành công</div>
+                    <div className="bg-green-100 border border-green-300 text-green-700 px-6 py-4 rounded-xl text-center font-semibold flex items-center justify-center gap-2">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                        Cập nhật thông tin thành công!
+                    </div>
                 )}
                 {errorMessage && (
-                    <div className="text-red-600 text-center mb-2 font-semibold">{errorMessage}</div>
+                    <div className="bg-red-100 border border-red-300 text-red-700 px-6 py-4 rounded-xl text-center font-medium">
+                        {errorMessage}
+                    </div>
                 )}
+            </div>
+
+            {/* Nút lưu ĐÃ ĐƯA LÊN TRÊN ĐỂ BẠN THẤY NGAY, KHÔNG CẦN CUỘN XUỐNG */}
+            <div className="mt-8 px-5 pb-3">
                 <Button
-                    className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+                    fullWidth
+                    size="large"
                     loading={saving}
                     disabled={saving}
                     onClick={handleUpdateProfile}
+                    className=" text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl"
                 >
                     Cập nhật thông tin doanh nghiệp
                 </Button>
             </div>
         </div>
-    );
+    </div>
+);
 };
 
 function SectionContent({ section, profile, onInput, fieldErrors, settings }) {
     switch (section) {
         case "company":
             return (
-                <Box className="bg-white flex flex-col gap-3 width-full p-2 rounded-lg">
+                <Box className="flex flex-col gap-5">
                     <Input
                         label="Tên doanh nghiệp"
                         value={profile?.companyname || ""}
@@ -167,7 +195,7 @@ function SectionContent({ section, profile, onInput, fieldErrors, settings }) {
                         errorText={fieldErrors.companyemail}
                     />
                     <div>
-                        <Text className="text-sm text-[#141415] mb-2">Chọn quy mô doanh nghiệp</Text>
+                        <Text className="text-sm font-medium mb-2">Chọn quy mô doanh nghiệp</Text>
                         <Select
                             type="single"
                             options={settings?.BusinessSize || []}
@@ -182,7 +210,7 @@ function SectionContent({ section, profile, onInput, fieldErrors, settings }) {
             );
         case "contact":
             return (
-                <Box className="bg-white flex flex-col gap-3 width-full p-2 rounded-lg">
+                <Box className="flex flex-col gap-5">
                     <Input
                         label="Email cá nhân liên hệ"
                         value={profile?.email || ""}
@@ -213,4 +241,5 @@ function SectionContent({ section, profile, onInput, fieldErrors, settings }) {
             return null;
     }
 }
+
 export default EnterpriseUpdateProfile;

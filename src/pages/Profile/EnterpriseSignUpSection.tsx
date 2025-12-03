@@ -65,14 +65,14 @@ const EnterpriseSignUpSection: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen">
+        <div className="">
             <div className="max-w-md mx-auto pt-6">
                 <Box className="bg-white flex flex-col gap-3 width-full p-4 rounded-lg shadow-lg mb-4">
                     <Text className="text-lg font-semibold text-gray-700 mb-2 flex items-center">
-                        <span className="mr-2"><User size={20} /></span>
+                        <span className="mr-2"><User size={20} /></span>{" "}
                         Thông tin doanh nghiệp
                     </Text>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-3+">
                         <Input
                             label="Email"
                             name="Email"
