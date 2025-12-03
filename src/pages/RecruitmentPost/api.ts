@@ -1,3 +1,24 @@
+export async function getProvinces() {
+    try {
+        const res = await api.get("/Province");
+        return res.data?.Data?.Data || [];
+    } catch (error) {
+        console.error("Error fetching provinces:", error);
+        return [];
+    }
+}
+
+export async function getWardsByProvince(provinceId: string) {
+    try {
+        const res = await api.get("/Wards", {
+            params: { provinceIds: provinceId }
+        });
+        return res.data?.Data?.Data || [];
+    } catch (error) {
+        console.error("Error fetching wards by province:", error);
+        return [];
+    }
+}
 import api from "@/api/axiosInstance";
 import axios from "axios";
 export async function registerRecruitment(body: any, token: string) {
@@ -22,12 +43,7 @@ export async function registerRecruitment(body: any, token: string) {
 export async function getWards() {
     try {
         const res = await api.get("/Wards");
-        // Handle nested Data.Data array
-        const wardsRaw = res.data?.Data?.Data || [];
-        // Map to { label, value } for Select
-        return Array.isArray(wardsRaw)
-            ? wardsRaw.map((w: any) => ({ label: w.text || w.label || w.value, value: w.value || w.text }))
-            : [];
+        return res.data?.Data?.Data || [];
     } catch (error) {
         console.error("Error fetching wards:", error);
         return [];
