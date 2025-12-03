@@ -62,9 +62,11 @@ const JobsList = ({ filters, setFilters }) => {
         thumbnail={job.thumbnail}
         onClick={() => handleClick(job)}
       >
-        <div className="card-title font-bold line-clamp-2">{job.title}</div>
+        <div className="flex flex-col">
+          <div className="card-title font-bold line-clamp-2">{job.title}</div>
         <div className="card-meta truncate">Địa chỉ: {job.location || "Thỏa thuận"}</div>
         <div className="card-meta truncate">Lương: {job.salary || "Thỏa thuận"}</div>
+        </div>
       </Card>
     ));
   }

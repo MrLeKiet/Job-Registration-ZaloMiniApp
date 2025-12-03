@@ -18,10 +18,8 @@ export function useJobsList(filters: any) {
         cacheTime: 30 * 60 * 1000,
     });
 
-    // Get local posts from localStorage
-    
-
     return {
+        jobs: data || [],
         loading: isLoading,
         error,
     };
