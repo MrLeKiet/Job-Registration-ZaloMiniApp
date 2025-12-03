@@ -126,7 +126,7 @@ const LaborerGeneralInfo: React.FC = () => {
                     </FieldRow>
                 </div>
             </div>
-            <div className="flex gap-3 pb-4 px-4">
+            <div className="flex gap-3 pb-6 px-4">
                 <button
                     className="flex-1 font-bold text-white py-3 shadow-sm rounded-lg flex items-center justify-center gap-2 text-base transition"
                     style={{ background: '#1565C0' }}

@@ -3,10 +3,12 @@ import Skeleton from "@/components/Skeleton";
 import SkeletonList from "@/components/SkeletonList";
 import React from "react";
 import { useOverseasJobs } from "./useOverseasJobs";
+import { useNavigate } from "zmp-ui";
 
 const OverseasJobsSection: React.FC = () => {
     const { items, loading, error } = useOverseasJobs();
-
+    const navigate = useNavigate();
+    const handleNewsClick = (id: string) => navigate(`/news/${id}`);
     if (loading) {
         return (
             <SkeletonList
@@ -37,10 +39,12 @@ const OverseasJobsSection: React.FC = () => {
                 <Card
                     key={item.id}
                     thumbnail={item.thumbnail}
-                    onClick={() => window.open(`/news/${item.id}`, "_self")}
+                    onClick={() => handleNewsClick(item.id)}
                 >
-                    <div className="card-title font-bold line-clamp-2">{item.title}</div>
+                    <div className="flex flex-col">
+                        <div className="card-title font-bold line-clamp-2">{item.title}</div>
                     <div className="card-meta truncate">Ngày đăng: {item.publishdate}</div>
+                    </div>
                 </Card>
             ))}
         </div>

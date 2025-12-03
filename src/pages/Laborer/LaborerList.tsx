@@ -61,9 +61,11 @@ const LaborerList = () => {
         thumbnail={laborer.thumbnail}
         onClick={() => handleClick(laborer)}
       >
-        <div className="card-title">{laborer.fullname}</div>
+        <div className="flex flex-col">
+          <div className="card-title">{laborer.fullname}</div>
         <div className="card-subtitle">Ngành nghề: {Array.isArray(laborer.job) ? laborer.job.join(", ") : (laborer.job || "Chưa cập nhật")}</div>
         <div className="card-meta">Nơi làm việc: {laborer.location || "Thỏa thuận"}</div>
+        </div>
       </Card>
     ));
   }
