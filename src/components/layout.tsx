@@ -27,6 +27,8 @@ import AboutUsPage from "@/pages/AboutUs";
 import ProfileRegisterLayout from "@/pages/Profile/ProfileRegisterLayout";
 import EnterpriseSignUpSection from "@/pages/Profile/EnterpriseSignUpSection";
 import EnterpriseUpdateProfile from "@/pages/Profile/EnterpriseUpdateProfile";
+import EnterpriseJobList from "@/pages/Profile/EnterpriseJobList";
+import EnterpriseUpdateJob from "@/pages/Profile/EnterpriseUpdateJob";
 const Layout = () => {
   return (
     <App theme={getSystemInfo().zaloTheme as AppProps["theme"]}>
@@ -54,6 +56,8 @@ const Layout = () => {
               <Route path="/profile-register" element={<ProfileRegisterLayout />} />
               <Route path="/enterprise-signup" element={<EnterpriseSignUpSection />} />
               <Route path="/enterprise-updateprofile" element={<EnterpriseUpdateProfile />} />
+              <Route path="/enterprise-joblist" element={<EnterpriseJobList />} />
+              <Route path="/update-job/:id" element={<EnterpriseUpdateJob />} />
             </AnimationRoutes>
           </MainLayout>
         </ZMPRouter>

@@ -6,7 +6,7 @@ const NAV_ITEMS = [
     { label: "Trang chủ", icon: <House size={24} />, path: "/home" },
     { label: "Ứng viên", icon: <Users size={24} />, path: "/laborer" },
     { label: "Việc làm", icon: <Briefcase size={24} />, path: "/jobs" },
-    { label: "Đăng tuyển", icon: <Edit size={24} />, path: "/RecruitmentPost" },
+    // { label: "Đăng tuyển", icon: <Edit size={24} />, path: "/RecruitmentPost" },
     { label: "Tài khoản", icon: <User size={24} />, path: "/profile" },
 ];
 

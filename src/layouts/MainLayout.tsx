@@ -28,7 +28,10 @@ const RETURN_ROUTES = [
     "/about",
     "/profile-register",
     "/enterprise-signup",
-    "/enterprise-updateprofile"
+    "/enterprise-updateprofile",
+    "/enterprise-joblist",
+    "/update-job/",
+    "/RecruitmentPost",
 ];
 
 

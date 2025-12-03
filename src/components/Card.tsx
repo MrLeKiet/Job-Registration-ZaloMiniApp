@@ -37,7 +37,7 @@ const Card: React.FC<CardLayoutProps> = ({ thumbnail, onClick, children }) => (
         />
       )}
     </div>
-    <div className="flex flex-col gap-1">
+    <div className="flex justify-between w-full">
       {children}
     </div>
   </button>
