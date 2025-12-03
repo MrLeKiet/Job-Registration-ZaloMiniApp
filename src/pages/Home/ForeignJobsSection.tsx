@@ -54,9 +54,12 @@ const HomeRecruitmentForeignersSection: React.FC = () => {
                             thumbnail={j.thumbnail}
                             onClick={() => navigate(`/recruitmentForeigners/${j.id || j.jodId || j.jobId}`)}
                         >
-                            <div className="card-title">{j.title}</div>
-                            <div className="card-subtitle">Khu vực: {j.location || "Chưa cập nhật"}</div>
-                            <div className="card-meta">Mức lương: {j.salary || "Thỏa thuận"}</div>
+                            <div className="flex flex-col">
+                                <div className="card-title">{j.title}</div>
+                                <div className="card-subtitle">Khu vực: {j.location || "Chưa cập nhật"}</div>
+                                <div className="card-meta">Mức lương: {j.salary || "Thỏa thuận"}</div>
+                            </div>
+
                         </Card>
                     );
                 }}

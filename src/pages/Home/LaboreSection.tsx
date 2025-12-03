@@ -75,9 +75,11 @@ const LaborerSection: React.FC = () => {
                                 }
                             }}
                         >
-                            <div className="card-title">{l.fullname}</div>
+                            <div className="flex flex-col">
+                                <div className="card-title">{l.fullname}</div>
                             <div className="card-subtitle">Ngành nghề: {Array.isArray(l.job) ? l.job.join(", ") : (l.job || "Chưa cập nhật")}</div>
                             <div className="card-meta">Nơi làm việc: {l.location || "Thỏa thuận"}</div>
+                            </div>
                         </Card>
                     );
                 }}
