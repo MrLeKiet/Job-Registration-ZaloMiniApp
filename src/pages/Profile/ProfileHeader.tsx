@@ -46,6 +46,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, avatar, signInStatu
                             className={`w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center overflow-hidden cursor-pointer ${isSignedIn ? "hover:ring-2 hover:ring-blue-300" : ""}`}
                             onClick={handleAvatarClick}
                             title={isSignedIn ? "Đổi ảnh đại diện" : undefined}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (isSignedIn && (e.key === "Enter" || e.key === " ")) {
+                                    e.preventDefault();
+                                    handleAvatarClick();
+                                }
+                            }}
                         >
                             {isSignedIn && preview ? (
                                 <img src={preview} alt="avatar" className="w-full h-full object-cover rounded-full" />

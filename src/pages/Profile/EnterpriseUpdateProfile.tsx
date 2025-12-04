@@ -1,6 +1,7 @@
 import { enterpriseUpdateProfile } from "@/api/enterpriseApi";
-import { ChevronDown, ChevronUp, User, Camera } from "lucide-react";
+import { Camera, ChevronDown, ChevronUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { openMediaPicker } from "zmp-sdk/apis";
 import { Box, Button, Input, Text } from "zmp-ui";
 import Select from "../../components/Select";
 import { getProfileWithToken } from "./api";
@@ -21,6 +22,20 @@ const EnterpriseUpdateProfile: React.FC = () => {
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const { settings } = useProfile();
     const accessToken = localStorage.getItem("accessToken") || "";
+
+    const pickMedia = async () => {
+        try {
+            const { data } = await openMediaPicker({
+                type: "photo",
+                serverUploadUrl: "https://chatbot.ttld.sweetsoft.vn/api/v1/UploadFile",
+            });
+            const result = JSON.parse(data);
+            console.log(result);
+        } catch (error) {
+            // xử lý khi gọi api thất bại
+            console.log(error);
+        }
+    };
 
     useEffect(() => {
         async function fetchProfile() {
@@ -53,9 +68,9 @@ const EnterpriseUpdateProfile: React.FC = () => {
                 Email: editProfile?.email,
                 CompanyName: editProfile?.companyname,
                 CompanyEmail: editProfile?.companyemail,
-                CompanyAddress : editProfile?.address,
-                CompanyPhone : editProfile?.companyphone,
-                BusinessSize : editProfile?.businesssize,
+                CompanyAddress: editProfile?.address,
+                CompanyPhone: editProfile?.companyphone,
+                BusinessSize: editProfile?.businesssize,
             };
             const res = await enterpriseUpdateProfile(updatePayload, accessToken);
             if (res?.StatusResult?.Code === 0 && res?.Data?.IsUpdated === true) {
@@ -85,92 +100,93 @@ const EnterpriseUpdateProfile: React.FC = () => {
     };
 
     return (
-    <div className="bg-gradient-to-b from-blue-50 to-gray-50">
-
-        {/* Header đẹp hơn */}
-        <div className="bg-gradient-to-br from-blue-600 to-blue-800 pt-12 pb-20 px-6 rounded-b-3xl shadow-xl">
-            <div className="flex flex-col items-center text-white -mt-6">
-                <div className="relative">
-                    <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-                        <img
-                            src={editProfile?.avatar || "/default-avatar.png"}
-                            alt="Avatar"
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                    <button className="absolute bottom-1 right-1 bg-white text-blue-600 rounded-full p-3 shadow-xl hover:scale-110 transition">
-                        <Camera size={20} />
-                    </button>
-                </div>
-                <Text className="mt-4 text-2xl font-bold">{editProfile?.companyname || "Tên doanh nghiệp"}</Text>
-                <Text className="text-blue-100 text-sm mt-1">Cập nhật hồ sơ doanh nghiệp</Text>
-            </div>
-        </div>
-
-        {/* Form */}
-        <div className="px-5 -mt-12">
-            <div className="space-y-5">
-
-                {sectionDefs.map((section, idx) => (
-                    <div key={section.key} className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div className="bg-gradient-to-b from-blue-50 to-gray-50">
+            <div className="bg-gradient-to-br from-blue-600 to-blue-800 pt-12 pb-20 px-6 rounded-b-3xl shadow-xl">
+                <div className="flex flex-col items-center text-white -mt-6">
+                    <div className="relative">
+                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                            <img
+                                src={profile?.avatar
+                                    ? profile.avatar
+                                    : "https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
+                                alt="Ảnh đại diện"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
                         <button
-                            className={`w-full flex justify-between items-center px-6 py-5 text-white font-bold text-lg transition-all ${
-                                idx === 0 
-                                    ? "bg-gradient-to-r from-blue-600 to-blue-700" 
-                                    : "bg-gradient-to-r from-emerald-600 to-teal-600"
-                            }`}
-                            onClick={() => handleExpand(idx)}
+                            className="absolute bottom-1 right-1 bg-white text-blue-600 rounded-full p-3 shadow-xl hover:scale-110 transition"
+                            type="button"
+                            onClick={pickMedia}
                         >
-                            <span>{section.title}</span>
-                            {expanded[idx] ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                            <Camera size={20} />
                         </button>
-
-                        {expanded[idx] && (
-                            <div className="px-6 py-6">
-                                <SectionContent
-                                    section={section.key}
-                                    profile={editProfile}
-                                    onInput={handleInput}
-                                    fieldErrors={fieldErrors}
-                                    settings={settings}
-                                />
-                            </div>
-                        )}
                     </div>
-                ))}
+                    <Text className="mt-4 text-2xl font-bold">{editProfile?.companyname || "Tên doanh nghiệp"}</Text>
+                    <Text className="text-blue-100 text-sm mt-1">Cập nhật hồ sơ doanh nghiệp</Text>
+                </div>
             </div>
 
-            {/* Thông báo thành công / lỗi */}
-            <div className="mt-6 space-y-4">
-                {showToast && (
-                    <div className="bg-green-100 border border-green-300 text-green-700 px-6 py-4 rounded-xl text-center font-semibold flex items-center justify-center gap-2">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
-                        Cập nhật thông tin thành công!
-                    </div>
-                )}
-                {errorMessage && (
-                    <div className="bg-red-100 border border-red-300 text-red-700 px-6 py-4 rounded-xl text-center font-medium">
-                        {errorMessage}
-                    </div>
-                )}
-            </div>
+            {/* Form */}
+            <div className="px-5 -mt-12">
+                <div className="space-y-5">
 
-            {/* Nút lưu ĐÃ ĐƯA LÊN TRÊN ĐỂ BẠN THẤY NGAY, KHÔNG CẦN CUỘN XUỐNG */}
-            <div className="mt-8 px-5 pb-3">
-                <Button
-                    fullWidth
-                    size="large"
-                    loading={saving}
-                    disabled={saving}
-                    onClick={handleUpdateProfile}
-                    className=" text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl"
-                >
-                    Cập nhật thông tin doanh nghiệp
-                </Button>
+                    {sectionDefs.map((section, idx) => (
+                        <div key={section.key} className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                            <button
+                                className={`w-full flex justify-between items-center px-6 py-5 text-white font-bold text-lg transition-all ${idx === 0
+                                    ? "bg-gradient-to-r from-blue-600 to-blue-700"
+                                    : "bg-gradient-to-r from-emerald-600 to-teal-600"
+                                    }`}
+                                onClick={() => handleExpand(idx)}
+                            >
+                                <span>{section.title}</span>
+                                {expanded[idx] ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                            </button>
+
+                            {expanded[idx] && (
+                                <div className="px-6 py-6">
+                                    <SectionContent
+                                        section={section.key}
+                                        profile={editProfile}
+                                        onInput={handleInput}
+                                        fieldErrors={fieldErrors}
+                                        settings={settings}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-6 space-y-4">
+                    {showToast && (
+                        <div className="bg-green-100 border border-green-300 text-green-700 px-6 py-4 rounded-xl text-center font-semibold flex items-center justify-center gap-2">
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                            Cập nhật thông tin thành công!
+                        </div>
+                    )}
+                    {errorMessage && (
+                        <div className="bg-red-100 border border-red-300 text-red-700 px-6 py-4 rounded-xl text-center font-medium">
+                            {errorMessage}
+                        </div>
+                    )}
+                </div>
+
+                <div className="mt-8 px-5 pb-3">
+                    <Button
+                        fullWidth
+                        size="large"
+                        loading={saving}
+                        disabled={saving}
+                        onClick={handleUpdateProfile}
+                        className=" text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl"
+                    >
+                        Cập nhật thông tin doanh nghiệp
+                    </Button>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
 };
 
 function SectionContent({ section, profile, onInput, fieldErrors, settings }) {

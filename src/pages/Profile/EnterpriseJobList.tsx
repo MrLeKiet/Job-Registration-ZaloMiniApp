@@ -1,7 +1,7 @@
 import Card from "@/components/Card";
 import Skeleton from "@/components/Skeleton";
 import SkeletonList from "@/components/SkeletonList";
-import { Briefcase, MapPin, DollarSign, Clock, Trash2, Edit3, AlertCircle } from "lucide-react";
+import { AlertCircle, Briefcase, DollarSign, Edit3, MapPin, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getEnterpriseJobList } from "../../api/enterpriseApi";
@@ -89,7 +89,7 @@ const EnterpriseJobList: React.FC = () => {
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">Chưa có tin tuyển dụng nào</h3>
                 <p className="text-gray-600 mb-6">Hãy tạo tin tuyển dụng đầu tiên của bạn ngay hôm nay!</p>
                 <button
-                    onClick={() => navigate("/post-job")}
+                    onClick={() => navigate("/RecruitmentPost")}
                     className="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:bg-blue-700 transition-all hover:shadow-xl"
                 >
                     Tạo tin tuyển dụng mới
@@ -99,36 +99,23 @@ const EnterpriseJobList: React.FC = () => {
     }
 
     return (
-        <div className="p-4">
+        <div className="flex flex-col gap-4 p-4">
             {jobs.map((job) => (
                 <Card
                     key={job.id}
                     thumbnail={job.thumbnail}
                     onClick={() => handleClick(job)}
                 >
-                    <div className="flex gap-5">
-                        {/* Nội dung */}
+                    <div className="flex gap-5 justify-center items-center">
                         <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition">
-                                {job.title}
-                            </h3>
-                            <div className="mt-3 space-y-2 text-sm text-gray-600">
-                                <div className="flex items-center gap-2">
-                                    <MapPin size={16} className="text-gray-500" />
-                                    <span className="truncate max-w-[150px]">{job.location}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <DollarSign size={16} className="text-green-600" />
-                                    <span className="font-medium text-green-700">{job.salary || "Thỏa thuận"}</span>
-                                </div>
-                                {/* <div className="flex items-center gap-2">
-                                    <Clock size={16} className="text-gray-500" />
-                                    <span>Hết hạn: {job.endDate || "Chưa xác định"}</span>
-                                </div> */}
+                            <div className="flex flex-col">
+                                <div className="card-title">{job.title}</div>
+                                <div className="card-subtitle">Khu vực: {job.location || "Chưa cập nhật"}</div>
+                                <div className="card-meta">Mức lương: {job.salary || "Thỏa thuận"}</div>
+                                <div className="">{job.status}</div>
                             </div>
                         </div>
 
-                        {/* Nút hành động */}
                         <div className="flex flex-col gap-3 justify-center">
                             <button
                                 onClick={(e) => {
@@ -139,16 +126,17 @@ const EnterpriseJobList: React.FC = () => {
                             >
                                 <Edit3 size={18} />
                             </button>
-
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDelete(job);
-                                }}
-                                className="p-3 bg-red-600 text-white rounded-xl font-medium shadow-md hover:bg-red-700 hover:shadow-lg transition-all flex items-center gap-2 active:scale-95"
-                            >
-                                <Trash2 size={18} />
-                            </button>
+                            {job.status === "Lưu nháp" && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(job);
+                                    }}
+                                    className="p-3 bg-red-600 text-white rounded-xl font-medium shadow-md hover:bg-red-700 hover:shadow-lg transition-all flex items-center gap-2 active:scale-95"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </Card>
@@ -157,7 +145,6 @@ const EnterpriseJobList: React.FC = () => {
             {showDeleteModal && jobToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4" onClick={() => !deleting && setShowDeleteModal(false)}>
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden" onClick={e => e.stopPropagation()}>
-                        {/* Header đỏ */}
                         <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 text-center">
                             <AlertCircle size={48} className="mx-auto mb-3" />
                             <h3 className="text-2xl font-bold">Xóa tin tuyển dụng?</h3>

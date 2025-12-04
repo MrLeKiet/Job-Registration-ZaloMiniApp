@@ -1,7 +1,7 @@
 import { enterpriseSignUp } from "@/api/enterpriseApi";
 import { User } from "lucide-react";
 import React from "react";
-import { Box, Input, Text } from "zmp-ui";
+import { Box, Input, Text, useNavigate } from "zmp-ui";
 
 
 const EnterpriseSignUpSection: React.FC = () => {
@@ -18,6 +18,7 @@ const EnterpriseSignUpSection: React.FC = () => {
     const [loading, setLoading] = React.useState(false);
     const [showToast, setShowToast] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState("");
+    const navigate = useNavigate();
 
     // Auto-fetch Zalo credentials on mount (like ProfileSection)
     React.useEffect(() => {
@@ -51,6 +52,7 @@ const EnterpriseSignUpSection: React.FC = () => {
                 setShowToast(true);
                 setErrorMessage("");
                 setTimeout(() => setShowToast(false), 2000);
+                setTimeout(() => navigate(-1), 2000);
             } else {
                 setShowToast(false);
                 setErrorMessage(res?.StatusResult?.Message || "Đăng ký thất bại.");

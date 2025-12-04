@@ -127,7 +127,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permi
 							<ChevronRight />
 						</button>
 
-						{/* Đăng ký doanh nghiệp button */}
 						<button
 							onClick={() => navigate('/enterprise-signup')}
 							className={`
@@ -143,7 +142,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permi
 							</div>
 							<ChevronRight />
 						</button>
-						{/* Liên kết tài khoản button */}
 						<button
 							onClick={() => setShowLinkedDialog(true)}
 							className="w-full rounded-lg shadow-lg text-left flex items-center p-4 bg-[#d1a666] mt-2 transition-all duration-200 active:scale-95 opacity-100 translate-y-0"
@@ -202,7 +200,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onProfileFetched, permi
 				</div>
 
 				<div className="mt-2">
-					{/* show completion, quick actions and logout only after successful login */}
 					{zaloUserInfo ? (
 						<>
 							<div className={`mt-3 transform transition-all duration-500 translate-y-0`} style={{ transitionDelay: '80ms' }}>

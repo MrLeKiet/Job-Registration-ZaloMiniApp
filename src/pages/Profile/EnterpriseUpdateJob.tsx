@@ -1,10 +1,3 @@
-// Utility to decode HTML entities
-function decodeHtmlEntities(str) {
-    if (!str) return "";
-    const txt = document.createElement("textarea");
-    txt.innerHTML = str;
-    return txt.value;
-}
 import Select from "@/components/Select";
 import Skeleton from "@/components/Skeleton";
 import axios from "axios";
@@ -13,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, DatePicker, Input, Text } from "zmp-ui";
 import { updateRecruitment } from "../../api/enterpriseApi";
 import { useProvinces, useSettings, useWards, useWardsByProvince } from "../RecruitmentPost/useRecruitment";
-
+import { Users, Building2, MapPin, Calendar, Camera, Clock, Target, CheckCircle } from "lucide-react";
 const EnterpriseUpdateJob: React.FC = () => {
     const { id } = useParams();
     const [job, setJob] = useState<any>(null);
@@ -53,7 +46,6 @@ const EnterpriseUpdateJob: React.FC = () => {
         wards: "",
         job: "",
         companyAddress: "",
-        companyScale: "",
     });
     // Details array and modal state
     const [details, setDetails] = useState<Array<{ Gender: string; Quantity: number; Age: string }>>([]);
@@ -132,7 +124,6 @@ const EnterpriseUpdateJob: React.FC = () => {
             experience: job.WorkExperience || "",
             gender: job.Details && job.Details[0] ? job.Details[0].Gender : "",
             companyAddress: job.Address || job.companyaddress || "",
-            companyScale: job.companyscale || "",
             quantity: job.Details && job.Details[0] ? job.Details[0].Quantity?.toString() : "1",
             wards: Array.isArray(job.Wards) ? job.Wards[0] : "",
             Status: job.status || "",
@@ -205,6 +196,14 @@ const EnterpriseUpdateJob: React.FC = () => {
         setForm((prev: any) => ({ ...prev, [field]: value }));
     };
 
+    const handleDetailInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDetailForm(prev => ({ ...prev, [field]: e.target.value }));
+    };
+
+    const handleDetailChange = (field: string) => (value: any) => {
+        setDetailForm(prev => ({ ...prev, [field]: value }));
+    };
+
     const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setForm((prev: any) => ({ ...prev, [field]: e.target.value }));
     };
@@ -228,7 +227,6 @@ const EnterpriseUpdateJob: React.FC = () => {
         if (!form.content) newErrors.content = "Nội dung tuyển dụng bắt buộc";
         if (!form.requirements) newErrors.requirements = "Yêu cầu tuyển dụng bắt buộc";
         if (!form.companyAddress) newErrors.companyAddress = "Địa chỉ công ty bắt buộc";
-        if (!form.companyScale) newErrors.companyScale = "Quy mô công ty bắt buộc";
         if (!form.quantity) newErrors.quantity = "Số lượng tuyển bắt buộc";
         if (!form.degree) newErrors.degree = "Bằng cấp bắt buộc";
         if (!form.jobType) newErrors.jobType = "Loại công việc bắt buộc";
@@ -281,7 +279,6 @@ const EnterpriseUpdateJob: React.FC = () => {
             if (res?.StatusResult?.Code === 0) {
                 setSuccess(true);
                 setMessage("Cập nhật thành công!");
-                setTimeout(() => navigate(-1), 1500);
             } else {
                 setError(res?.StatusResult?.Message || "Cập nhật thất bại.");
             }
@@ -307,336 +304,195 @@ const EnterpriseUpdateJob: React.FC = () => {
     const ageOptions = settings?.ListAgeRecruitment || [];
 
     return (
-        <div className="p-4">
-            <div className="">
-                <Box className=" flex flex-col gap-4 rounded">
-                    <Text.Header className="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Cập nhật bài đăng tuyển dụng</Text.Header>
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                        {/* Nhân sự section */}
-                        <div className="mb-4">
-                            <div className="flex items-center justify-between">
-                                <Text className="font-semibold text-base">Nhân sự</Text>
-                                <Button type="highlight" size="small" onClick={() => setShowDetailsModal(true)}>Thêm mới</Button>
-                            </div>
-                            {/* List current details */}
-                            {details.length > 0 && (
-                                <ul className="mt-2">
-                                    {details.map((d) => {
-                                        const ageLabel = ageOptions.find(a => a.value === d.Age)?.label || d.Age;
-                                        const key = `${d.Gender}-${d.Age}-${d.Quantity}`;
-                                        return (
-                                            <li key={key} className="flex gap-2 items-center text-sm py-1">
-                                                <span>Giới tính: {genderOptions.find(g => g.value === d.Gender)?.label || d.Gender}</span>
-                                                <span>Số lượng: {d.Quantity}</span>
-                                                <span>Độ tuổi: {ageLabel}</span>
-                                                <Button type="neutral" size="small" onClick={() => {
-                                                    setDetails(prev => prev.filter((item) => `${item.Gender}-${item.Age}-${item.Quantity}` !== key));
-                                                }}>Xóa</Button>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            )}
-                        </div>
-                        {/* Details modal */}
-                        {showDetailsModal && (
-                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                                <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
-                                    <Text.Header className="text-lg font-bold mb-4">Thêm thông tin nhân sự</Text.Header>
-                                    <div className="mb-3">
-                                        <Text className="text-sm mb-1">Giới tính</Text>
-                                        <Select
-                                            type="single"
-                                            options={genderOptions}
-                                            value={detailForm.Gender}
-                                            onChange={val => setDetailForm(f => ({ ...f, Gender: val }))}
-                                            placeholder="Chọn giới tính"
-                                        />
+        <div className="bg-gradient-to-b from-blue-50 to-gray-50">
+
+            <div className="bg-gradient-to-br from-blue-600 to-blue-800 pt-12 pb-20 px-6 rounded-b-3xl shadow-2xl">
+                <div className="text-center text-white">
+                    <h1 className="text-3xl font-bold">Tạo bài đăng tuyển dụng</h1>
+                    <p className="text-blue-100 mt-2 text-lg">Tìm ứng viên chất lượng trong tích tắc</p>
+                </div>
+            </div>
+
+            <div className="px-5 -mt-12">
+                <div className="space-y-6">
+                    {showDetailsModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+                                <h3 className="text-xl font-bold mb-5 text-center">Thêm yêu cầu nhân sự</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <Text className="font-medium mb-2">Giới tính</Text>
+                                        <Select type="single" options={genderOptions} value={detailForm.Gender} onChange={handleDetailChange("Gender")} placeholder="Chọn giới tính" />
                                     </div>
-                                    <div className="mb-3">
-                                        <Text className="text-sm mb-1">Số lượng</Text>
-                                        <Input
-                                            value={detailForm.Quantity}
-                                            onChange={e => setDetailForm(f => ({ ...f, Quantity: e.target.value }))}
-                                            placeholder="Nhập số lượng"
-                                            inputMode="numeric"
-                                            pattern="[0-9]*"
-                                        />
+                                    <div>
+                                        <Text className="font-medium mb-2">Số lượng</Text>
+                                        <Input value={detailForm.Quantity} onChange={handleDetailInputChange("Quantity")} placeholder="VD: 5" inputMode="numeric" />
                                     </div>
-                                    <div className="mb-3">
-                                        <Text className="text-sm mb-1">Độ tuổi</Text>
-                                        <Input
-                                            value={detailForm.Age}
-                                            onChange={e => setDetailForm(f => ({ ...f, Age: e.target.value }))}
-                                            placeholder="Nhập độ tuổi"
-                                        />
-                                    </div>
-                                    <div className="flex gap-2 mt-4">
-                                        <Button
-                                            type="highlight"
-                                            onClick={() => {
-                                                if (detailForm.Gender && detailForm.Quantity && detailForm.Age) {
-                                                    setDetails(prev => [...prev, { Gender: detailForm.Gender, Quantity: Number(detailForm.Quantity), Age: detailForm.Age }]);
-                                                    setDetailForm({ Gender: "", Quantity: "", Age: "" });
-                                                    setShowDetailsModal(false);
-                                                }
-                                            }}
-                                        >Thêm</Button>
-                                        <Button
-                                            type="neutral"
-                                            onClick={() => {
-                                                setDetailForm({ Gender: "", Quantity: "", Age: "" });
-                                                setShowDetailsModal(false);
-                                            }}
-                                        >Đóng</Button>
+                                    <div>
+                                        <Text className="font-medium mb-2">Độ tuổi</Text>
+                                        <Select type="single" options={ageOptions} value={detailForm.Age} onChange={handleDetailChange("Age")} placeholder="Chọn độ tuổi" />
                                     </div>
                                 </div>
+                                <div className="flex gap-3 mt-6">
+                                    <Button fullWidth type="highlight" onClick={() => {
+                                        if (detailForm.Gender && detailForm.Quantity && detailForm.Age) {
+                                            setDetails(prev => [...prev, { Gender: detailForm.Gender, Quantity: Number(detailForm.Quantity), Age: detailForm.Age }]);
+                                            setDetailForm({ Gender: "", Quantity: "", Age: "" });
+                                            setShowDetailsModal(false);
+                                        }
+                                    }}>Thêm</Button>
+                                    <Button fullWidth type="neutral" onClick={() => { setDetailForm({ Gender: "", Quantity: "", Age: "" }); setShowDetailsModal(false); }}>Hủy</Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 space-y-6">
+                        <div>
+                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                                <Target size={20} /> Tên vị trí tuyển dụng <span className="text-red-500">*</span>
+                            </label>
+                            <input type="text" placeholder="VD: Lập trình viên React" value={form.jobName} onChange={handleInputChange("jobName")}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 transition" />
+                            {errors.jobName && <p className="text-red-500 text-xs mt-1">{errors.jobName}</p>}
+                        </div>
+
+                        <div>
+                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                                <Building2 size={20} /> Tên công ty
+                            </label>
+                            <div className="w-full px-4 py-3 bg-gray-100 rounded-xl font-medium text-gray-800">
+                                {form.companyName || profileCompanyName || "Đang tải..."}
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="text-sm font-semibold text-gray-700 mb-2 block">Nội dung tuyển dụng <span className="text-red-500">*</span></label>
+                                <textarea rows={5} placeholder="Mô tả công việc..." value={form.content} onChange={handleInputChange("content")}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none" />
+                                {errors.content && <p className="text-red-500 text-xs mt-1">{errors.content}</p>}
+                            </div>
+                            <div>
+                                <label className="text-sm font-semibold text-gray-700 mb-2 block">Yêu cầu ứng viên <span className="text-red-500">*</span></label>
+                                <textarea rows={5} placeholder="Kỹ năng cần có..." value={form.requirements} onChange={handleInputChange("requirements")}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none" />
+                                {errors.requirements && <p className="text-red-500 text-xs mt-1">{errors.requirements}</p>}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                                <Calendar size={20} /> Ngày kết thúc nhận hồ sơ <span className="text-red-500">*</span>
+                            </label>
+                            <DatePicker value={form.endDate} onChange={handleChange("endDate")} label="Chọn ngày" startDate={new Date()} />
+                            {errors.endDate && <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>}
+                        </div>
+
+                        <div>
+                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                                <Camera size={20} /> Hình ảnh tuyển dụng
+                            </label>
+                            <label htmlFor="image-upload" className="block cursor-pointer">
+                                <div className="w-full h-64 border-2 border-dashed border-gray-300 rounded-2xl overflow-hidden bg-gray-50 hover:border-blue-400 transition">
+                                    {form.image ? (
+                                        <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                                            <Camera size={48} />
+                                            <p className="mt-2 text-lg">Nhấn để tải ảnh lên</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </label>
+                            <input id="image-upload" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div><Text className="font-medium mb-2">Phúc lợi</Text><Select type="multi" options={benefitsOptions} value={form.benefits} onChange={handleChange("benefits")} placeholder="Chọn phúc lợi" max={5} /></div>
+                            <div><Text className="font-medium mb-2">Loại công việc</Text><Select type="single" options={jobTypeOptions} value={form.jobType} onChange={handleChange("jobType")} placeholder="Chọn loại" /></div>
+                            <div><Text className="font-medium mb-2">Mức lương</Text><Select type="single" options={salaryOptions} value={form.salary} onChange={handleChange("salary")} placeholder="Chọn mức lương" /></div>
+                            <div><Text className="font-medium mb-2">Vị trí</Text><Select type="single" options={positionOptions} value={form.position} onChange={handleChange("position")} placeholder="Chọn vị trí" /></div>
+                            <div><Text className="font-medium mb-2">Giờ làm việc</Text><Select type="single" options={workingTimeOptions} value={form.workingTime} onChange={handleChange("workingTime")} placeholder="Chọn giờ làm" /></div>
+                            <div><Text className="font-medium mb-2">Bằng cấp</Text><Select type="single" options={degreeOptions} value={form.degree} onChange={handleChange("degree")} placeholder="Chọn bằng cấp" /></div>
+                            <div><Text className="font-medium mb-2">Kinh nghiệm</Text><Select type="single" options={experienceOptions} value={form.experience} onChange={handleChange("experience")} placeholder="Chọn kinh nghiệm" /></div>
+                            <div><Text className="font-medium mb-2">Công việc</Text><Select type="single" options={jobTypeOptions} value={form.job} onChange={handleChange("job")} placeholder="Chọn công việc" /></div>
+                        </div>
+                        <div className="">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-3">
+                                    <Users size={28} className="text-blue-600" />
+                                    Yêu cầu nhân sự
+                                </h3>
+                                <Button type="highlight" size="small" onClick={() => setShowDetailsModal(true)}>
+                                    + Thêm mới
+                                </Button>
+                            </div>
+                            {details.length > 0 && (
+                                <div className="space-y-3">
+                                    {details.map((d, i) => (
+                                        <div key={i} className="bg-white border border-blue-100 rounded-xl px-5 py-4 flex items-center justify-between text-sm font-medium text-gray-800">
+                                            <div className="flex items-center gap-6 flex-1">
+                                                <div className="flex items-center gap-4 text-gray-700">
+                                                    <span>{genderOptions.find(g => g.value === d.Gender)?.label || d.Gender}</span>
+                                                    <span className="text-gray-400">|</span>
+                                                    <span>{d.Quantity} người</span>
+                                                    <span className="text-gray-400">|</span>
+                                                    <span>{ageOptions.find(a => a.value === d.Age)?.label || d.Age}</span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => setDetails(prev => prev.filter((_, idx) => idx !== i))}
+                                                className="w-9 h-9 bg-red-500 hover:bg-red-600 rounded-lg flex items-center justify-center transition-all shadow-md hover:shadow-lg active:scale-95"
+                                                aria-label="Xóa yêu cầu này"
+                                            >
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                                <MapPin size={20} /> Địa chỉ công ty
+                            </label>
+                            <textarea rows={2} value={form.companyAddress} onChange={handleInputChange("companyAddress")} placeholder="Số nhà, đường..."
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" />
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-5">
+                            <div><Text className="font-medium mb-2">Tỉnh/Thành phố</Text><Select type="single" options={provinceOptions} value={selectedProvince} onChange={val => setSelectedProvince(val)} placeholder="Chọn tỉnh/thành" /></div>
+                            <div><Text className="font-medium mb-2">Phường/Xã</Text><Select type="single" options={wardsOptions} value={form.wards} onChange={handleChange("wards")} placeholder="Chọn phường/xã" status={errors.Wards ? "error" : undefined} errorText={errors.Wards} /></div>
+                        </div>
+
+                        <div>
+                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                                <Clock size={20} /> Trạng thái đăng tuyển <span className="text-red-500">*</span>
+                            </label>
+                            <Select type="single" options={statusOptions} value={form.Status} onChange={handleChange("Status")} />
+                        </div>
+
+                        {message && (
+                            <div className={`p-4 rounded-xl text-center font-bold text-white shadow-lg ${message.includes("thành công") ? "bg-green-600" : "bg-red-600"}`}>
+                                <CheckCircle size={24} className="inline mr-2" />
+                                {message}
                             </div>
                         )}
-                        <Text className="text-sm text-[#141415] ">Tên việc tuyển dụng</Text>
-                        <input
-                            type="text"
-                            placeholder="Nhập tên tuyển dụng"
-                            value={form.jobName}
-                            onChange={handleInputChange("jobName")}
-                            className="w-full rounded-lg p-3 border text-base border-[#141415]/30 border-opacity-35 focus:border-[#3b82f6] hover:border-[#3b82f6] focus:outline-none transition-colors"
-                        />
-                        {errors.jobName && <Text className="text-red-600 text-xs">{errors.jobName}</Text>}
-                        <Text className="text-sm text-[#141415] ">Tên công ty</Text>
-                        <div className="w-full min-h-[40px] rounded-lg p-3 border text-base border-[#141415]/30 border-opacity-35 bg-gray-100">
-                            {form.companyName || profileCompanyName || "Chưa có thông tin công ty"}
-                        </div>
-                        {errors.companyName && <Text className="text-red-600 text-xs">{errors.companyName}</Text>}
-                        <Text className="text-sm text-[#141415] ">Nội dung tuyển dụng</Text>
-                        <textarea
-                            id="recruitment-content"
-                            placeholder="Nhập nội dung"
-                            value={form.content}
-                            onChange={handleInputChange("content")}
-                            rows={4}
-                            className="w-full min-h-[80px] resize-vertical rounded-lg p-3 border text-base border-[#141415]/30 border-opacity-35 focus:border-[#3b82f6] hover:border-[#3b82f6] focus:outline-none transition-colors"
-                        />
-                        {errors.content && <Text className="text-red-600 text-xs">{errors.content}</Text>}
-                        <Text className="text-sm text-[#141415] ">Yêu cầu tuyển dụng</Text>
-                        <textarea
-                            id="recruitment-requirements"
-                            placeholder="Nhập yêu cầu"
-                            value={form.requirements}
-                            onChange={handleInputChange("requirements")}
-                            rows={4}
-                            className="w-full min-h-[80px] resize-vertical rounded-lg p-3 border text-base border-[#141415]/30 border-opacity-35 focus:border-[#3b82f6] hover:border-[#3b82f6] focus:outline-none transition-colors"
-                        />
-                        {errors.requirements && <Text className="text-red-600 text-xs">{errors.requirements}</Text>}
-                        <DatePicker
-                            value={form.endDate}
-                            onChange={handleChange("endDate")}
-                            label="Ngày kết thúc tìm việc"
-                            aria-label="Ngày kết thúc tìm việc"
-                            startDate={new Date()}
-                            defaultValue={new Date()}
-                        />
-                        {errors.endDate && <Text className="text-red-600 text-xs">{errors.endDate}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Thêm ảnh</Text>
-                            <div className="flex flex-col items-center">
-                                <label htmlFor="image-upload" className="w-full max-h-60 h-60 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                    {form.image ? (
-                                        <img
-                                            src={form.image}
-                                            alt="Preview"
-                                            className="w-full h-full object-cover rounded-lg"
-                                        />
-                                    ) : (
-                                        <>
-                                            <span className="text-2xl text-gray-400 mb-1">+</span>
-                                            <span className="text-xs text-gray-500">Thêm ảnh</span>
-                                        </>
-                                    )}
-                                </label>
-                                <input
-                                    id="image-upload"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="hidden"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Phúc lợi</Text>
-                            <Select
-                                type="multi"
-                                options={benefitsOptions}
-                                value={form.benefits}
-                                onChange={handleChange("benefits")}
-                                placeholder="Chọn phúc lợi"
-                                max={5}
-                            />
-                        </div>
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Loại công việc</Text>
-                            <Select
-                                type="single"
-                                options={jobTypeOptions}
-                                value={form.jobType}
-                                onChange={handleChange("jobType")}
-                                placeholder="Chọn loại công việc"
-                            />
-                        </div>
-                        {errors.jobType && <Text className="text-red-600 text-xs">{errors.jobType}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Mức lương</Text>
-                            <Select
-                                type="single"
-                                options={salaryOptions}
-                                value={form.salary}
-                                onChange={handleChange("salary")}
-                                placeholder="Chọn mức lương"
-                            />
-                        </div>
-                        {errors.salary && <Text className="text-red-600 text-xs">{errors.salary}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Vị trí</Text>
-                            <Select
-                                type="single"
-                                options={positionOptions}
-                                value={form.position}
-                                onChange={handleChange("position")}
-                                placeholder="Chọn vị trí"
-                            />
-                        </div>
-                        {errors.position && <Text className="text-red-600 text-xs">{errors.position}</Text>}
-                        <Input
-                            label="Số lượng tuyển"
-                            value={form.quantity}
-                            onChange={handleInputChange("quantity")}
-                            placeholder="Nhập số lượng"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            onFocus={e => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-                        />
-                        {errors.quantity && <Text className="text-red-600 text-xs">{errors.quantity}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Giới tính tuyển dụng</Text>
-                            <Select
-                                type="single"
-                                options={genderOptions}
-                                value={form.gender}
-                                onChange={handleChange("gender")}
-                                placeholder="Chọn giới tính"
-                            />
-                        </div>
-                        {errors.gender && <Text className="text-red-600 text-xs">{errors.gender}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Giờ làm việc</Text>
-                            <Select
-                                type="single"
-                                options={workingTimeOptions}
-                                value={form.workingTime}
-                                onChange={handleChange("workingTime")}
-                                placeholder="Chọn giờ làm việc"
-                            />
-                        </div>
-                        {errors.workingTime && <Text className="text-red-600 text-xs">{errors.workingTime}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Bằng cấp</Text>
-                            <Select
-                                type="single"
-                                options={degreeOptions}
-                                value={form.degree}
-                                onChange={handleChange("degree")}
-                                placeholder="Chọn bằng cấp"
-                            />
-                        </div>
-                        {errors.degree && <Text className="text-red-600 text-xs">{errors.degree}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Kinh nghiệm</Text>
-                            <Select
-                                type="single"
-                                options={experienceOptions}
-                                value={form.experience}
-                                onChange={handleChange("experience")}
-                                placeholder="Chọn kinh nghiệm"
-                            />
-                        </div>
-                        {errors.experience && <Text className="text-red-600 text-xs">{errors.experience}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Công việc</Text>
-                            <Select
-                                type="single"
-                                options={jobTypeOptions}
-                                value={form.job}
-                                onChange={handleChange("job")}
-                                placeholder="Chọn công việc"
-                            />
-                        </div>
-                        {errors.job && <Text className="text-red-600 text-xs">{errors.job}</Text>}
-                        <Text className="text-sm text-[#141415] ">Địa chỉ công ty</Text>
-                        <textarea
-                            id="company-address-textarea"
-                            placeholder="Nhập địa chỉ công ty"
-                            value={form.companyAddress}
-                            onChange={handleInputChange("companyAddress")}
-                            rows={2}
-                            className="w-full min-h-[40px] resize-vertical rounded-lg p-3 border text-base border-[#141415]/30 border-opacity-35 focus:border-[#3b82f6] hover:border-[#3b82f6] focus:outline-none transition-colors"
-                        />
-                        {errors.companyAddress && <Text className="text-red-600 text-xs">{errors.companyAddress}</Text>}
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Tỉnh/Thành</Text>
-                            <Select
-                                type="single"
-                                options={provinceOptions}
-                                value={selectedProvince}
-                                onChange={val => setSelectedProvince(val)}
-                                placeholder="Chọn tỉnh/thành"
-                            />
-                        </div>
-                        <div>
-                            <Text className="text-sm text-[#141415] mb-2">Phường/Xã</Text>
-                            <Select
-                                type="single"
-                                options={wardsOptions}
-                                value={form.wards}
-                                onChange={handleChange("wards")}
-                                placeholder="Chọn phường/xã"
-                                status={errors.wards ? "error" : "normal"}
-                                errorText={errors.wards}
-                            />
-                        </div>
-                        <Text className="text-sm text-[#141415] ">Quy mô công ty</Text>
-                        <textarea
-                            id="company-scale-textarea"
-                            placeholder="Nhập quy mô công ty"
-                            value={form.companyScale}
-                            onChange={handleInputChange("companyScale")}
-                            rows={2}
-                            className="w-full min-h-[40px] resize-vertical rounded-lg p-3 border text-base border-[#141415]/30 border-opacity-35 focus:border-[#3b82f6] hover:border-[#3b82f6] focus:outline-none transition-colors"
-                        />
-                        {errors.companyScale && <Text className="text-red-600 text-xs">{errors.companyScale}</Text>}
-                        <div style={{ display: "none" }}>
-                            <Text className="text-sm text-[#141415] mb-2">Trạng thái</Text>
-                            <Select
-                                type="single"
-                                options={statusOptions}
-                                value={form.Status}
-                                onChange={handleChange("Status")}
-                                placeholder="Chọn trạng thái"
-                            />
-                        </div>
-                        {message && <Text className="text-green-600">{message}</Text>}
-                        {error && <Text className="text-red-600">{error}</Text>}
-                        <div className="flex justify-start w-full">
-                            <Button
-                                type="highlight"
-                                className="bg-blue-500 text-white w-full px-6 py-2 rounded-md hover:bg-blue-600"
-                                disabled={saving}
-                                htmlType="submit"
-                            >
-                                {saving ? "Đang lưu..." : "Lưu thay đổi"}
-                            </Button>
-                        </div>
-                    </form>
-                </Box>
+                    </div>
+                </div>
+            </div>
+
+            <div className="p-4">
+                <Button
+                    fullWidth
+                    size="large"
+                    onClick={handleSubmit}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-xl p-3 rounded-xl shadow-lg hover:shadow-2xl transition-all"
+                >
+                    Đăng tin tuyển dụng ngay
+                </Button>
             </div>
         </div>
     );

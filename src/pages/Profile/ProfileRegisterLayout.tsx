@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Box, Button, DatePicker, Icon, Input, Text } from "zmp-ui";
+import { Box, Button, DatePicker, Icon, Input, Text, useNavigate } from "zmp-ui";
 import Select from "../../components/Select";
 import { useRegisterForm } from "../../hooks/useRegister";
 import { ZaloAuthContext } from "./ProfileSection";
@@ -224,32 +224,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
     const zaloAuth = useContext(ZaloAuthContext);
     // Always use the token from signIn response for updateProfile
     const signInAccessToken = profileData?.accessToken;
-    const getCompletionPercent = () => {
-        // List all required fields
-        const requiredFields = [
-            'fullName', 'birthDate', 'gender', 'idCard', 'issueDate', 'issuePlace',
-            'phone', 'email', 'ethnicity', 'address', 'educationLevel', 'cmktLevel',
-            'major', 'school', 'desiredJob'
-        ];
-        // Only require summary if effectiveSignInStatus is 'success'
-        if (effectiveSignInStatus === 'success') {
-            requiredFields.push('summary');
-        }
-        let filled = 0;
-        for (const field of requiredFields) {
-            const value = formData[field];
-            if (Array.isArray(value)) {
-                if (value.length > 0) filled++;
-            } else if (value instanceof Date) {
-                if (!Number.isNaN(value.getTime())) filled++;
-            } else if (typeof value === 'string') {
-                if (value.trim() !== '') filled++;
-            } else if (value) {
-                filled++;
-            }
-        }
-        return Math.round((filled / requiredFields.length) * 100);
-    };
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         console.log('[DEBUG] ProfileRegisterLayout props:', { profileData, signInStatus });
@@ -456,6 +431,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 if (res?.StatusResult?.Code === 0) {
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 2000);
+                setTimeout(() => navigate(-1), 1500);
                     // Call logout handler from context after successful sign-up
                     if (zaloAuth && typeof zaloAuth.logout === 'function') {
                         zaloAuth.logout();

@@ -1,6 +1,6 @@
-import { User, ClipboardList, Building2, Camera, MapPin, Phone, Mail, Globe, Users, Edit3 } from "lucide-react";
+import { Building2, Camera, ClipboardList, Edit3, Globe, Mail, MapPin, Phone } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Text, useNavigate } from "zmp-ui";
+import { useNavigate } from "zmp-ui";
 import { getProfileWithToken } from "./api";
 
 const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken }) => {
@@ -32,14 +32,15 @@ const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken 
 
     return (
         <div className="bg-gradient-to-b from-blue-50 to-white">
-            {/* Header với avatar lớn và thông tin công ty */}
             <div className="relative pt-8 pb-12 px-6 bg-gradient-to-br from-blue-600 to-blue-800 rounded-b-3xl shadow-lg">
                 <div className="flex flex-col items-center text-white">
                     <div className="relative mb-4">
-                        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
                             <img
-                                src={profile?.avatar || "/default-company-avatar.png"}
-                                alt="Logo công ty"
+                                src={profile?.avatar
+                                    ? profile.avatar
+                                    : "https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
+                                alt="Ảnh đại diện"
                                 className="w-full h-full object-cover"
                             />
                         </div>
@@ -49,18 +50,28 @@ const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken 
                     </div>
 
                     <h1 className="text-2xl font-bold mt-3">{profile?.companyname || "Tên công ty"}</h1>
+                    {(() => {
+                        if (profile?.isactive === false) {
+                            return <div className="mt-2 py-2 px-3 bg-amber-200 rounded-full font-semibold">
+                                <div className="text-yellow-700">Chờ xét duyệt</div></div>;
+                        } else if (profile?.isactive === true) {
+                            return <div className="mt-2 py-2 px-3 bg-green-200 rounded-full font-semibold">
+                                <div className="text-green-700">Xác thực</div></div>;
+                        } else {
+                            return null;
+                        }
+                    })()}
                 </div>
             </div>
 
-            {/* Thông tin liên hệ - dạng card nổi */}
             <div className="px-6 -mt-8 relative z-10">
                 <div className="bg-white rounded-2xl shadow-xl p-5 border border-gray-100">
                     <div className="space-y-4">
                         {profile?.address && (
                             <div className="flex items-start gap-3">
                                 <MapPin size={20} className="text-gray-500 mt-0.5" />
-                                <div>
-                                    <p className="text-sm text-gray-600">Địa chỉ</p>
+                                <div className="flex gap-1">
+                                    <p className="text-sm text-gray-600">Địa chỉ: </p>
                                     <p className="font-medium">{profile.address}</p>
                                 </div>
                             </div>
@@ -89,10 +100,8 @@ const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken 
                 </div>
             </div>
 
-            {/* Menu chức năng - dạng card lớn đẹp mắt */}
             <div className="px-6 mt-8 pb-10">
                 <div className="grid grid-cols-1 gap-4">
-                    {/* Cập nhật hồ sơ */}
                     <button
                         onClick={() => navigate("/enterprise-updateprofile")}
                         className="bg-white rounded-2xl shadow-lg p-4 flex items-center justify-between hover:shadow-xl transition-all hover:-translate-y-1 border border-gray-100"
@@ -113,10 +122,10 @@ const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken 
                         </div>
                     </button>
 
-                    {/* Danh sách việc làm */}
                     <button
-                        onClick={() => navigate("/enterprise-joblist")}
-                        className="bg-white rounded-2xl shadow-lg p-4 flex items-center justify-between hover:shadow-xl transition-all hover:-translate-y-1 border border-gray-100"
+                        onClick={profile?.isactive === false ? undefined : () => navigate("/enterprise-joblist")}
+                        disabled={profile?.isactive === false}
+                        className={`bg-white rounded-2xl shadow-lg p-4 flex items-center justify-between border border-gray-100 ${profile?.isactive === false ? "opacity-50 cursor-not-allowed" : "hover:shadow-xl transition-all hover:-translate-y-1"}`}
                     >
                         <div className="flex items-center gap-4">
                             <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
@@ -134,10 +143,10 @@ const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken 
                         </div>
                     </button>
 
-                    {/* Đăng tuyển mới */}
                     <button
-                        onClick={() => navigate("/RecruitmentPost")}
-                        className="rounded-2xl shadow-lg p-4 flex items-center justify-between hover:shadow-2xl transition-all hover:scale-105"
+                        onClick={profile?.isactive === false ? undefined : () => navigate("/RecruitmentPost")}
+                        disabled={profile?.isactive === false}
+                        className={`rounded-2xl shadow-lg p-4 flex items-center justify-between ${profile?.isactive === false ? "opacity-50 cursor-not-allowed" : "hover:shadow-2xl transition-all hover:scale-105"}`}
                     >
                         <div className="flex items-center gap-4">
                             <div className="w-14 h-14 bg-orange-400 bg-opacity-20 rounded-xl flex items-center justify-center">
