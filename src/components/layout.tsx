@@ -29,6 +29,8 @@ import EnterpriseSignUpSection from "@/pages/Profile/EnterpriseSignUpSection";
 import EnterpriseUpdateProfile from "@/pages/Profile/EnterpriseUpdateProfile";
 import EnterpriseJobList from "@/pages/Profile/EnterpriseJobList";
 import EnterpriseUpdateJob from "@/pages/Profile/EnterpriseUpdateJob";
+import LaborerUpdateProfile from "@/pages/Profile/LaborerUpdateProfile";
+import LaborerJobList from "@/pages/Profile/LaborerJobList";
 const Layout = () => {
   return (
     <App theme={getSystemInfo().zaloTheme as AppProps["theme"]}>
@@ -58,6 +60,8 @@ const Layout = () => {
               <Route path="/enterprise-updateprofile" element={<EnterpriseUpdateProfile />} />
               <Route path="/enterprise-joblist" element={<EnterpriseJobList />} />
               <Route path="/update-job/:id" element={<EnterpriseUpdateJob />} />
+              <Route path="/laborer-updateprofile" element={<LaborerUpdateProfile />} />
+              <Route path="/laborer-joblist" element={<LaborerJobList />} />
             </AnimationRoutes>
           </MainLayout>
         </ZMPRouter>

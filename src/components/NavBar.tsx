@@ -20,8 +20,8 @@ const Navbar: React.FC = () => {
     const isLaborerPage = currentPath === "/laborer";
     const isLaborerDetailPage = currentPath.startsWith("/laborer/");
     const isHomePage = currentPath === "/home";
-    const isNewsPage = currentPath === "/news" || currentPath.startsWith("/news/");
-    const isProfilePage = currentPath === "/profile";
+    const isNewsPage = currentPath === "/news" || currentPath.startsWith("/news/") || currentPath === "/unemployment-insurance" || currentPath === "/export-labor" || currentPath === "/about";
+    const isProfilePage = currentPath === "/profile" || currentPath === "/profile-register" || currentPath === "/enterprise-signup" || currentPath === "/enterprise-updateprofile" || currentPath === "/enterprise-joblist" || currentPath === "/laborer-updateprofile" || currentPath === "/laborer-joblist";
     const isProfileSubPage = currentPath.startsWith("/profile/");
     const isRecruitmentPostPage = currentPath === "/RecruitmentPost";
     const isRecruitmentPostDetailPage = currentPath.startsWith("/recruitmentForeigners/");

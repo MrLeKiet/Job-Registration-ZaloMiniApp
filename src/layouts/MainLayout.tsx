@@ -32,6 +32,8 @@ const RETURN_ROUTES = [
     "/enterprise-joblist",
     "/update-job/",
     "/RecruitmentPost",
+    "/laborer-updateprofile",
+    "/laborer-joblist",
 ];
 
 
