@@ -43,7 +43,7 @@ const UnemploymentInsuranceSection: React.FC = () => {
                 >
                     <div className="flex flex-col">
                         <div className="card-title font-bold line-clamp-2">{item.title}</div>
-                    <div className="card-meta truncate">Ngày đăng: {item.publishdate}</div>
+                    <div className="card-meta">Ngày đăng: {item.publishdate}</div>
                     </div>
                 </Card>
             ))}

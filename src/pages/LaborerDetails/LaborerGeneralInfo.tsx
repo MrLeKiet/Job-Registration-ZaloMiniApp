@@ -97,7 +97,7 @@ const LaborerGeneralInfo: React.FC = () => {
                     </FieldRow>
                 </div>
             </div>
-            <div className="flex flex-col bg-white p-4 shadow-sm">
+            <div className="flex flex-col bg-white p-4 mb-4 shadow-sm">
                 <span className="text-lg font-bold text-gray-900 mb-3 border-b border-blue-600 w-fit">THÔNG TIN HỒ SƠ</span>
                 <div className="grid grid-cols-2 gap-4">
                     <FieldRow>
@@ -124,9 +124,17 @@ const LaborerGeneralInfo: React.FC = () => {
                         <Label>Vị trí làm việc:</Label>
                         {laborer.locationjob || "Chưa cập nhật"}
                     </FieldRow>
+                    <FieldRow>
+                        <Label>Mức lương mong muốn:</Label>
+                        {laborer.expectedsalary || "Chưa cập nhật"}
+                    </FieldRow>
+                    <FieldRow>
+                        <Label>Trình độ máy tính:</Label>
+                        {laborer.computerproficiency || "Chưa cập nhật"}
+                    </FieldRow>
                 </div>
             </div>
-            <div className="flex gap-3 pb-6 px-4">
+            {/* <div className="flex gap-3 pb-6 px-4">
                 <button
                     className="flex-1 font-bold text-white py-3 shadow-sm rounded-lg flex items-center justify-center gap-2 text-base transition"
                     style={{ background: '#1565C0' }}
@@ -137,7 +145,7 @@ const LaborerGeneralInfo: React.FC = () => {
                 >
                     <p className="text-white">Ứng tuyển ngay</p>
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 };

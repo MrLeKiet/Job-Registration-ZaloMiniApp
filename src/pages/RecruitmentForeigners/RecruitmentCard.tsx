@@ -19,8 +19,8 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ id, title, thumbnail,
     <Card thumbnail={thumbnail} onClick={handleClick}>
       <div className="flex flex-col">
         <div className="card-title line-clamp-2">{title}</div>
-      <div className="card-subtitle truncate line-clamp-2">{company}</div>
-      <span className="card-meta truncate">Ngày đăng: {publishdate}</span>
+      <div className="card-subtitle line-clamp-2">{company}</div>
+      <span className="card-meta">Ngày đăng: {publishdate}</span>
       </div>
     </Card>
   );

@@ -78,7 +78,7 @@ const LaborerList = () => {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto bg-[#fafafa]">
-          <div className="flex flex-col pt-3 pb-3 gap-3"> {/* pb-20 to avoid navbar overlap */}
+          <div className="flex flex-col pt-3 pb-3 gap-3">
             {content}
           </div>
         </div>
