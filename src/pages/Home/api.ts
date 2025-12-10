@@ -49,7 +49,7 @@ export async function getHotNewsList() {
 
 export async function getUrgentJobRecruitment() {
     try {
-        const response = await api.get("/UrgentJobRecruitment", {
+        const response = await api.get("/JobList", {
             params: { rowIndex: 0, pageSize: 5 },
         });
         return response.data;
