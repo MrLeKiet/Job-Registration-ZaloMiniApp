@@ -1,11 +1,10 @@
 import Select from "@/components/Select";
+import { Building2, Calendar, Camera, CheckCircle, Clock, MapPin, Target, Users } from "lucide-react";
 import React, { useState } from "react";
-import { Box, Button, DatePicker, Input, Text } from "zmp-ui";
+import { Button, DatePicker, Input, Text } from "zmp-ui";
 import { useProvinces, useSettings, useWards, useWardsByProvince } from "./useRecruitment";
-import { Users, Briefcase, Building2, MapPin, Calendar, Camera, DollarSign, Clock, GraduationCap, Target, CheckCircle } from "lucide-react";
 
 const RecruitmentPostPage: React.FC = () => {
-    // === TOÀN BỘ LOGIC CỦA BẠN GIỮ NGUYÊN 100% ===
     const [selectedProvince, setSelectedProvince] = useState<string>("");
     const { provinces } = useProvinces();
     const provinceOptions = Array.isArray(provinces)
@@ -49,10 +48,10 @@ const RecruitmentPostPage: React.FC = () => {
                 label: s.label || s.value || s,
                 value: s.value || s.label || s
             })));
-            const choXetDuyet = filtered.find((s: any) => s.label === "Chờ xét duyệt");
-            if (choXetDuyet) {
-                setForm(prev => ({ ...prev, Status: choXetDuyet.value }));
-            }
+            // const choXetDuyet = filtered.find((s: any) => s.label === "Chờ xét duyệt");
+            // if (choXetDuyet) {
+            //     setForm(prev => ({ ...prev, Status: choXetDuyet.value }));
+            // }
         }
     }, [settings]);
 
@@ -91,7 +90,6 @@ const RecruitmentPostPage: React.FC = () => {
         job: string;
         jobName: string;
         companyAddress: string;
-        companyScale: string;
     }>({
         companyName: "",
         content: "Tuyển dụng vị trí lập trình viên React, lương hấp dẫn, môi trường năng động.",
@@ -113,7 +111,6 @@ const RecruitmentPostPage: React.FC = () => {
         job: "",
         jobName: "Lập trình viên React",
         companyAddress: "123 Đường A, Quận B, TP. C",
-        companyScale: "100-200 người",
     });
 
     const [details, setDetails] = useState<Array<{ Gender: string; Quantity: number; Age: string }>>([]);
@@ -164,24 +161,24 @@ const RecruitmentPostPage: React.FC = () => {
         if (!form.content) newErrors.content = "Nội dung tuyển dụng bắt buộc";
         if (!form.requirements) newErrors.requirements = "Yêu cầu tuyển dụng bắt buộc";
         if (!form.companyAddress) newErrors.companyAddress = "Địa chỉ công ty bắt buộc";
-        if (!form.companyScale) newErrors.companyScale = "Quy mô công ty bắt buộc";
         if (!form.quantity) newErrors.quantity = "Số lượng tuyển bắt buộc";
         if (!form.degree) newErrors.degree = "Bằng cấp bắt buộc";
         if (!form.jobType) newErrors.jobType = "Loại công việc bắt buộc";
         if (!form.salary) newErrors.salary = "Mức lương bắt buộc";
         if (!form.position) newErrors.position = "Vị trí bắt buộc";
-        if (!form.gender) newErrors.gender = "Giới tính bắt buộc";
         if (!form.workingTime) newErrors.workingTime = "Giờ làm việc bắt buộc";
         if (!form.experience) newErrors.experience = "Kinh nghiệm bắt buộc";
         if (!form.job) newErrors.job = "Công việc bắt buộc";
-        if (!form.age) newErrors.age = "Độ tuổi bắt buộc";
         if (!form.wards) newErrors.Wards = "Phường/Xã bắt buộc";
         if (!form.Status) newErrors.Status = "Trạng thái bắt buộc";
         const today = new Date();
         const end = form.endDate || new Date();
         if (end <= today) newErrors.endDate = "Ngày kết thúc phải lớn hơn hôm nay";
         setErrors(newErrors);
-        if (Object.keys(newErrors).length > 0) return;
+        if (Object.keys(newErrors).length > 0) {
+            console.log("Validation failed", newErrors, form);
+            return;
+        }
 
         const recruitmentPeriod = `${formatDate(today)}|${formatDate(end)}`;
         const apiData = {
@@ -211,10 +208,13 @@ const RecruitmentPostPage: React.FC = () => {
             const accessToken = localStorage.getItem("accessToken");
             if (!accessToken) {
                 setMessage("Không tìm thấy AccessToken. Vui lòng đăng nhập lại.");
+                console.log("No accessToken");
                 return;
             }
             const { registerRecruitment } = await import("./api");
+            console.log("Submitting apiData", apiData);
             const res = await registerRecruitment(apiData, accessToken);
+            console.log("API response", res);
             if (res?.StatusResult?.Code === 0) {
                 setMessage("Đăng tuyển dụng thành công!");
             } else {
@@ -222,6 +222,7 @@ const RecruitmentPostPage: React.FC = () => {
             }
         } catch (err: any) {
             setMessage(err?.response?.data?.StatusResult?.Message || "Có lỗi xảy ra khi đăng tuyển dụng!");
+            console.log("API error", err);
         }
         setTimeout(() => setMessage(null), 3000);
     };
@@ -236,11 +237,9 @@ const RecruitmentPostPage: React.FC = () => {
     const experienceOptions = settings?.ListExp || [];
     const degreeOptions = settings?.TechnicalLevel || [];
 
-    // === GIAO DIỆN ĐẸP HOÀN TOÀN MỚI ===
     return (
         <div className="bg-gradient-to-b from-blue-50 to-gray-50">
 
-            {/* Header sang trọng */}
             <div className="bg-gradient-to-br from-blue-600 to-blue-800 pt-12 pb-20 px-6 rounded-b-3xl shadow-2xl">
                 <div className="text-center text-white">
                     <h1 className="text-3xl font-bold">Tạo bài đăng tuyển dụng</h1>
@@ -250,47 +249,6 @@ const RecruitmentPostPage: React.FC = () => {
 
             <div className="px-5 -mt-12">
                 <div className="space-y-6">
-
-                    {/* Phần nhân sự */}
-                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-3">
-                                <Users size={28} className="text-blue-600" />
-                                Yêu cầu nhân sự
-                            </h3>
-                            <Button type="highlight" size="small" onClick={() => setShowDetailsModal(true)}>
-                                + Thêm mới
-                            </Button>
-                        </div>
-                        {details.length > 0 && (
-                            <div className="space-y-3">
-                                {details.map((d, i) => (
-                                    <div key={i} className="bg-white border border-blue-100 rounded-xl px-5 py-4 flex items-center justify-between text-sm font-medium text-gray-800">
-                                        <div className="flex items-center gap-6 flex-1">
-                                            <div className="flex items-center gap-4 text-gray-700">
-                                                <span>{genderOptions.find(g => g.value === d.Gender)?.label || d.Gender}</span>
-                                                <span className="text-gray-400">|</span>
-                                                <span>{d.Quantity} người</span>
-                                                <span className="text-gray-400">|</span>
-                                                <span>{ageOptions.find(a => a.value === d.Age)?.label || d.Age}</span>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => setDetails(prev => prev.filter((_, idx) => idx !== i))}
-                                            className="w-9 h-9 bg-red-500 hover:bg-red-600 rounded-lg flex items-center justify-center transition-all shadow-md hover:shadow-lg active:scale-95"
-                                            aria-label="Xóa yêu cầu này"
-                                        >
-                                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Modal thêm nhân sự */}
                     {showDetailsModal && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                             <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
@@ -322,11 +280,7 @@ const RecruitmentPostPage: React.FC = () => {
                             </div>
                         </div>
                     )}
-
-                    {/* Form chính */}
                     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 space-y-6">
-
-                        {/* Tên vị trí & công ty */}
                         <div>
                             <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
                                 <Target size={20} /> Tên vị trí tuyển dụng <span className="text-red-500">*</span>
@@ -345,7 +299,6 @@ const RecruitmentPostPage: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Nội dung & yêu cầu */}
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>
                                 <label className="text-sm font-semibold text-gray-700 mb-2 block">Nội dung tuyển dụng <span className="text-red-500">*</span></label>
@@ -361,7 +314,6 @@ const RecruitmentPostPage: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Ngày kết thúc */}
                         <div>
                             <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
                                 <Calendar size={20} /> Ngày kết thúc nhận hồ sơ <span className="text-red-500">*</span>
@@ -370,7 +322,6 @@ const RecruitmentPostPage: React.FC = () => {
                             {errors.endDate && <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>}
                         </div>
 
-                        {/* Ảnh */}
                         <div>
                             <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
                                 <Camera size={20} /> Hình ảnh tuyển dụng
@@ -390,7 +341,6 @@ const RecruitmentPostPage: React.FC = () => {
                             <input id="image-upload" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                         </div>
 
-                        {/* Các select */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div><Text className="font-medium mb-2">Phúc lợi</Text><Select type="multi" options={benefitsOptions} value={form.benefits} onChange={handleChange("benefits")} placeholder="Chọn phúc lợi" max={5} /></div>
                             <div><Text className="font-medium mb-2">Loại công việc</Text><Select type="single" options={jobTypeOptions} value={form.jobType} onChange={handleChange("jobType")} placeholder="Chọn loại" /></div>
@@ -401,8 +351,43 @@ const RecruitmentPostPage: React.FC = () => {
                             <div><Text className="font-medium mb-2">Kinh nghiệm</Text><Select type="single" options={experienceOptions} value={form.experience} onChange={handleChange("experience")} placeholder="Chọn kinh nghiệm" /></div>
                             <div><Text className="font-medium mb-2">Công việc</Text><Select type="single" options={jobTypeOptions} value={form.job} onChange={handleChange("job")} placeholder="Chọn công việc" /></div>
                         </div>
-
-                        {/* Địa chỉ */}
+                        <div className="">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-3">
+                                    <Users size={28} className="text-blue-600" />
+                                    Yêu cầu nhân sự
+                                </h3>
+                                <Button type="highlight" size="small" onClick={() => setShowDetailsModal(true)}>
+                                    + Thêm mới
+                                </Button>
+                            </div>
+                            {details.length > 0 && (
+                                <div className="space-y-3">
+                                    {details.map((d, i) => (
+                                        <div key={i} className="bg-white border border-blue-100 rounded-xl px-5 py-4 flex items-center justify-between text-sm font-medium text-gray-800">
+                                            <div className="flex items-center gap-6 flex-1">
+                                                <div className="flex items-center gap-4 text-gray-700">
+                                                    <span>{genderOptions.find(g => g.value === d.Gender)?.label || d.Gender}</span>
+                                                    <span className="text-gray-400">|</span>
+                                                    <span>{d.Quantity} người</span>
+                                                    <span className="text-gray-400">|</span>
+                                                    <span>{ageOptions.find(a => a.value === d.Age)?.label || d.Age}</span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => setDetails(prev => prev.filter((_, idx) => idx !== i))}
+                                                className="w-9 h-9 bg-red-500 hover:bg-red-600 rounded-lg flex items-center justify-center transition-all shadow-md hover:shadow-lg active:scale-95"
+                                                aria-label="Xóa yêu cầu này"
+                                            >
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         <div>
                             <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
                                 <MapPin size={20} /> Địa chỉ công ty
@@ -417,17 +402,12 @@ const RecruitmentPostPage: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-700 mb-2 block">Quy mô công ty</label>
-                            <textarea rows={2} value={form.companyScale} onChange={handleInputChange("companyScale")} placeholder="VD: 100-200 nhân viên"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" />
-                        </div>
-
-                        {/* Trạng thái ẩn */}
-                        <div style={{ display: "none" }}>
+                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                                <Clock size={20} /> Trạng thái đăng tuyển <span className="text-red-500">*</span>
+                            </label>
                             <Select type="single" options={statusOptions} value={form.Status} onChange={handleChange("Status")} />
                         </div>
 
-                        {/* Thông báo */}
                         {message && (
                             <div className={`p-4 rounded-xl text-center font-bold text-white shadow-lg ${message.includes("thành công") ? "bg-green-600" : "bg-red-600"}`}>
                                 <CheckCircle size={24} className="inline mr-2" />
@@ -438,7 +418,6 @@ const RecruitmentPostPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Nút đăng tuyển cố định */}
             <div className="p-4">
                 <Button
                     fullWidth

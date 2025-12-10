@@ -58,6 +58,7 @@ export function useRegisterForm() {
         phone: "Vui lòng nhập số điện thoại",
         email: "Vui lòng nhập email",
         desiredJob: "Vui lòng chọn ngành nghề mong muốn",
+        
     };
 
     function validateField(field: string, value: any) {
