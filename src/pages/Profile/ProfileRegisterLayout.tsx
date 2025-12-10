@@ -15,7 +15,7 @@ const PersonalInfoSection: React.FC<any> = ({
     settings,
     errors,
 }) => (
-    <Box className="bg-white flex flex-col gap-3 width-full p-4 rounded-lg shadow-lg mb-4">
+    <Box className=" flex flex-col gap-5 width-full rounded-lg ">
         <Text className="text-lg font-semibold text-gray-700">Thông tin cá nhân</Text>
         {/* Full Name */}
         <Input
@@ -24,12 +24,11 @@ const PersonalInfoSection: React.FC<any> = ({
             onChange={handleInputChange("fullName")}
             onBlur={handleInputBlur("fullName")}
             aria-label="Họ và Tên"
-            helperText="Vui lòng nhập tên người dùng của bạn."
             placeholder="Họ và tên của bạn"
             maxLength={20}
             showCount
-            status={touched?.fullName && errors?.fullName ? "error" : undefined}
-            errorText={touched?.fullName ? errors?.fullName : undefined}
+            status={errors?.fullName ? "error" : undefined}
+            errorText={errors?.fullName}
         />
 
         {/* Birth Date */}
@@ -38,6 +37,7 @@ const PersonalInfoSection: React.FC<any> = ({
             onChange={handleDateChange("birthDate")}
             label="Chọn ngày sinh"
             aria-label="Ngày sinh"
+            helperText="Vui lòng chọn ngày sinh của bạn."
             status={touched?.birthDate && errors?.birthDate ? "error" : undefined}
             errorText={touched?.birthDate ? errors?.birthDate : undefined}
         />
@@ -431,7 +431,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                 if (res?.StatusResult?.Code === 0) {
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 2000);
-                setTimeout(() => navigate(-1), 1500);
+                    setTimeout(() => navigate(-1), 1500);
                     // Call logout handler from context after successful sign-up
                     if (zaloAuth && typeof zaloAuth.logout === 'function') {
                         zaloAuth.logout();
@@ -451,7 +451,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
     };
 
     return (
-        <div className="bg-gray-100 min-h-screen">
+        <div className="bg-gray-100 p-4 min-h-screen">
             <div className="max-w-md mx-auto pt">
                 <form>
                     <PersonalInfoSection
@@ -483,7 +483,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         </Button>
                     ) : (
                         <Button
-                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-2 mb-8"
+                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-4 mb-4"
                             loading={laboreSignUpLoading}
                             onClick={e => {
                                 console.log('[DEBUG] Button clicked');
@@ -494,7 +494,7 @@ const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle'
                         </Button>
                     )}
                 </form>
-                
+
             </div>
         </div>
     );

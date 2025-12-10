@@ -1,6 +1,6 @@
-import { User, ClipboardList, Building2, Camera, MapPin, Phone, Mail, Globe, Users, Edit3 } from "lucide-react";
+import { ClipboardList, Building2, Camera, MapPin, Phone, Mail, Globe, Users, Edit3 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Text, useNavigate } from "zmp-ui";
+import { useNavigate } from "zmp-ui";
 import { getProfileWithToken } from "./api";
 
 const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) => {
@@ -50,6 +50,17 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                     </div>
 
                     <h1 className="text-2xl font-bold mt-3">{profile?.fullname}</h1>
+                    {(() => {
+                        if (profile?.isactive === false) {
+                            return <div className="mt-2 py-2 px-3 bg-amber-200 rounded-full font-semibold">
+                                <div className="text-yellow-700">Chờ xét duyệt</div></div>;
+                        } else if (profile?.isactive === true) {
+                            return <div className="mt-2 py-2 px-3 bg-green-200 rounded-full font-semibold">
+                                <div className="text-green-700">Xác thực</div></div>;
+                        } else {
+                            return null;
+                        }
+                    })()}
                 </div>
             </div>
 
@@ -112,7 +123,7 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                     </button>
 
                     <button
-                        onClick={() => navigate("/enterprise-joblist")}
+                        onClick={() => navigate("/laborer-joblist")}
                         className="bg-white rounded-2xl shadow-lg p-4 flex items-center justify-between hover:shadow-xl transition-all hover:-translate-y-1 border border-gray-100"
                     >
                         <div className="flex items-center gap-4">
@@ -120,8 +131,8 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                                 <ClipboardList size={28} className="text-green-600" />
                             </div>
                             <div className="text-left">
-                                <p className="font-semibold text-lg text-gray-800">Danh sách tin tuyển dụng</p>
-                                <p className="text-sm text-gray-500">Quản lý, chỉnh sửa, gia hạn tin đăng</p>
+                                <p className="font-semibold text-lg text-gray-800">Danh sách việc tuyển dụng</p>
+                                <p className="text-sm text-gray-500">Quản lý việc đang xin tuyển</p>
                             </div>
                         </div>
                         <div className="text-green-600">
@@ -131,7 +142,7 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                         </div>
                     </button>
 
-                    <button
+                    {/* <button
                         onClick={() => navigate("/RecruitmentPost")}
                         className="rounded-2xl shadow-lg p-4 flex items-center justify-between hover:shadow-2xl transition-all hover:scale-105"
                     >
@@ -148,7 +159,7 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                             </svg>
                         </div>
-                    </button>
+                    </button> */}
                 </div>
             </div>
         </div>

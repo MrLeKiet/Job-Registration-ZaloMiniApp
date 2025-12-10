@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Button, DatePicker, Input } from "zmp-ui";
+import { getMajors } from "../../api/majorsApi";
 import Select from "../../components/Select";
 import { getProfileWithToken } from "./api";
 import { useProfile } from "./useProfile";
@@ -28,9 +29,11 @@ const sectionDefs = [
     { key: "idcard", title: "CCCD / CMND", icon: IdCard, defaultOpen: true },
     { key: "education", title: "Học vấn & Chuyên môn", icon: GraduationCap, defaultOpen: false },
     { key: "career", title: "Mục tiêu nghề nghiệp", icon: Target, defaultOpen: false },
+    { key: "experience", title: "Bằng cấp", icon: Briefcase, defaultOpen: false },
     { key: "summary", title: "Giới thiệu bản thân", icon: BookOpen, defaultOpen: false },
     { key: "cv", title: "CV đính kèm", icon: FileText, defaultOpen: false },
 ];
+
 
 const LaborerUpdateProfile: React.FC = () => {
     const [showToast, setShowToast] = useState(false);
@@ -40,6 +43,82 @@ const LaborerUpdateProfile: React.FC = () => {
     const [expanded, setExpanded] = useState(() => sectionDefs.map(s => s.defaultOpen));
     const [saving, setSaving] = useState(false);
     const { settings } = useProfile();
+
+    // EducationQualifications array state
+    const [educationQualifications, setEducationQualifications] = useState<any[]>([]);
+    // Majors label mapping for preview
+    const [majorsLabelMap, setMajorsLabelMap] = useState<Record<string, string>>({});
+    // Modal state for EducationQualifications
+    const [showEduModal, setShowEduModal] = useState(false);
+    const [eduForm, setEduForm] = useState({ TrainingFacilities: "", Degrees: "", Majors: "", Achievements: "" });
+    const [selectedDegree, setSelectedDegree] = useState("");
+    const [majorsOptions, setMajorsOptions] = useState<{ label: string; value: string }[]>([]);
+    const [majorsLoading, setMajorsLoading] = useState(false);
+    const [eduEditIndex, setEduEditIndex] = useState<number | null>(null);
+    // Modal handlers for EducationQualifications
+    const openEduModal = (idx: number | null = null) => {
+        if (idx !== null && educationQualifications[idx]) {
+            setEduForm({ ...educationQualifications[idx] });
+            setSelectedDegree(educationQualifications[idx].Degrees || "");
+            setEduEditIndex(idx);
+        } else {
+            setEduForm({ TrainingFacilities: "", Degrees: "", Majors: "", Achievements: "" });
+            setSelectedDegree("");
+            setEduEditIndex(null);
+        }
+        setShowEduModal(true);
+    };
+
+    const closeEduModal = () => {
+        setShowEduModal(false);
+        setEduForm({ TrainingFacilities: "", Degrees: "", Majors: "", Achievements: "" });
+        setSelectedDegree("");
+        setMajorsOptions([]);
+        setEduEditIndex(null);
+    };
+
+    // Fetch majors when selectedDegree changes
+    useEffect(() => {
+        if (!showEduModal || !selectedDegree) {
+            setMajorsOptions([]);
+            return;
+        }
+        setMajorsLoading(true);
+        getMajors(selectedDegree)
+            .then((data: any) => {
+                setMajorsOptions(Array.isArray(data) ? data : []);
+            })
+            .catch(() => setMajorsOptions([]))
+            .finally(() => setMajorsLoading(false));
+    }, [selectedDegree, showEduModal]);
+
+    const handleEduFormChange = (field: string, value: any) => {
+        if (field === "Degrees") {
+            setSelectedDegree(value);
+            setEduForm(prev => ({ ...prev, Degrees: value, Majors: "" }));
+        } else if (field === "Majors") {
+            // Always store as value (string), use type assertion for safety
+            setEduForm(prev => ({ ...prev, Majors: typeof value === "object" && (value as any)?.value ? (value as any).value : value }));
+        } else {
+            setEduForm(prev => ({ ...prev, [field]: value }));
+        }
+    };
+
+    const saveEduQualification = () => {
+        if (!eduForm.TrainingFacilities || !eduForm.Degrees || !eduForm.Majors || !eduForm.Achievements) return;
+        // Always save Majors as string value, use type assertion for safety
+        const normalized = { ...eduForm, Majors: typeof eduForm.Majors === "object" && (eduForm.Majors as any)?.value ? (eduForm.Majors as any).value : eduForm.Majors };
+        if (eduEditIndex !== null) {
+            setEducationQualifications(prev => prev.map((q, i) => i === eduEditIndex ? { ...normalized } : q));
+        } else {
+            setEducationQualifications(prev => [...prev, { ...normalized }]);
+        }
+        closeEduModal();
+    };
+
+    const removeEduQualification = (idx: number) => {
+        setEducationQualifications(prev => prev.filter((_, i) => i !== idx));
+    };
 
     const [cvFile, setCvFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -56,9 +135,31 @@ const LaborerUpdateProfile: React.FC = () => {
             setProfile(data);
             setEditProfile(data);
             setAvatarPreview(data.avatar || null);
+            setEducationQualifications(data.educationqualifications || []);
         }
         if (accessToken) fetchProfile();
     }, [accessToken]);
+
+    // Fetch majors labels for all qualifications for preview
+    useEffect(() => {
+        async function fetchMajorsLabels() {
+            const map: Record<string, string> = {};
+            await Promise.all(
+                educationQualifications.map(async (eq) => {
+                    if (eq.Degrees && eq.Majors) {
+                        try {
+                            const majorsList = await getMajors(eq.Degrees);
+                            const found = majorsList.find(m => m.value === eq.Majors);
+                            if (found) map[eq.Majors] = found.label;
+                        } catch { }
+                    }
+                })
+            );
+            setMajorsLabelMap(map);
+        }
+        if (educationQualifications.length > 0) fetchMajorsLabels();
+        else setMajorsLabelMap({});
+    }, [educationQualifications]);
 
     const toggleSection = (idx: number) => {
         setExpanded(prev => prev.map((v, i) => (i === idx ? !v : v)));
@@ -129,9 +230,15 @@ const LaborerUpdateProfile: React.FC = () => {
                 DesiredCareer: Array.isArray(editProfile?.desiredcareer) ? editProfile.desiredcareer : [],
                 Summary: editProfile?.summary || "",
                 interviewformat: editProfile?.interviewformat || "",
+                Expenrience: editProfile?.experience || "",
                 ExperienceSummary: editProfile?.experienceSummary || "",
                 Salary: editProfile?.salary || "",
                 avatar: avatarPreview || editProfile?.avatar || "",
+                EducationQualifications: educationQualifications.map(eq => ({
+                    ...eq,
+                    Degrees: eq.Degrees?.value || eq.Degrees,
+                    Majors: eq.Majors?.value || eq.Majors,
+                })),
             };
 
             const res = await updateProfile(payload, accessToken);
@@ -142,6 +249,7 @@ const LaborerUpdateProfile: React.FC = () => {
                 const fresh = await getProfileWithToken(accessToken);
                 setProfile(fresh?.Data);
                 setEditProfile(fresh?.Data);
+                setEducationQualifications(fresh?.Data?.EducationQualifications || []);
                 if (avatarPreview) localStorage.setItem("laborer_avatar", avatarPreview);
             } else {
                 setErrorMessage(res?.StatusResult?.Message || "Cập nhật thất bại!");
@@ -154,7 +262,7 @@ const LaborerUpdateProfile: React.FC = () => {
     };
 
     return (
-        <div className="bg-gradient-to-b from-blue-50 via-white to-gray-50 pb-16">
+        <div className="bg-gradient-to-b from-blue-50 via-white to-gray-50">
             <div className="bg-gradient-to-br from-blue-600 to-blue-800 pt-12 pb-20 px-6 rounded-b-3xl shadow-2xl">
                 <div className="text-center text-white">
                     <div className="relative inline-block">
@@ -188,6 +296,49 @@ const LaborerUpdateProfile: React.FC = () => {
 
             <div className="px-5 -mt-12">
                 <div className="space-y-5 max-w-2xl mx-auto">
+                    {/* EducationQualifications Modal */}
+                    {showEduModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+                                <h3 className="text-xl font-bold mb-5 text-center">{eduEditIndex !== null ? "Chỉnh sửa bằng cấp" : "Thêm bằng cấp"}</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="font-medium mb-2 block">Trường</label>
+                                        <Input value={eduForm.TrainingFacilities} onChange={e => handleEduFormChange("TrainingFacilities", e.target.value)} placeholder="Nhập tên trường" />
+                                    </div>
+                                    <div>
+                                        <label className="font-medium mb-2 block">Bằng cấp</label>
+                                        <Select
+                                            type="single"
+                                            options={settings?.ListStudy || []}
+                                            value={eduForm.Degrees}
+                                            onChange={opt => handleEduFormChange("Degrees", opt?.value ?? opt)}
+                                            placeholder="Chọn bằng cấp"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="font-medium mb-2 block">Chuyên ngành</label>
+                                        <Select
+                                            type="single"
+                                            options={majorsOptions}
+                                            value={eduForm.Majors}
+                                            onChange={opt => handleEduFormChange("Majors", opt)}
+                                            placeholder="Chọn chuyên ngành"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="font-medium mb-2 block">Thành tích</label>
+                                        <Input value={eduForm.Achievements} onChange={e => handleEduFormChange("Achievements", e.target.value)} placeholder="Thành tích, năm tốt nghiệp..." />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 mt-6">
+                                    <Button fullWidth type="highlight" onClick={saveEduQualification} disabled={!eduForm.TrainingFacilities || !eduForm.Degrees || !eduForm.Majors || !eduForm.Achievements}>Lưu</Button>
+                                    <Button fullWidth type="neutral" onClick={closeEduModal}>Hủy</Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {sectionDefs.map((section, idx) => {
                         const Icon = section.icon;
                         return (
@@ -222,6 +373,11 @@ const LaborerUpdateProfile: React.FC = () => {
                                             setCvFile={setCvFile}
                                             fileInputRef={fileInputRef}
                                             handleUploadCV={handleCVUpload}
+                                            educationQualifications={educationQualifications}
+                                            openEduModal={openEduModal}
+                                            majorsLabelMap={majorsLabelMap}
+                                            majorsOptions={majorsOptions}
+                                            removeEduQualification={removeEduQualification}
                                         />
                                     </div>
                                 )}
@@ -230,7 +386,6 @@ const LaborerUpdateProfile: React.FC = () => {
                     })}
                 </div>
             </div>
-
             {showToast && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-bounce">
                     <div className="bg-green-600 text-white px-8 py-5 rounded-2xl shadow-2xl flex items-center gap-3 font-semibold text-lg">
@@ -249,7 +404,7 @@ const LaborerUpdateProfile: React.FC = () => {
                 </div>
             )}
 
-            <div className=" p-4 border-gray-200 shadow-2xl pb-10">
+            <div className=" p-4 border-gray-200 shadow-2xl pb-4">
                 <Button
                     fullWidth
                     size="large"
@@ -264,8 +419,7 @@ const LaborerUpdateProfile: React.FC = () => {
     );
 };
 
-// Component con - SectionContent (đã làm đẹp cực kỳ)
-function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, onDateChange, settings, cvFile, setCvFile, fileInputRef, handleUploadCV }) {
+function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, onDateChange, settings, cvFile, setCvFile, fileInputRef, handleUploadCV, educationQualifications, openEduModal, majorsLabelMap, majorsOptions, removeEduQualification }) {
     const parseDate = (str: string) => {
         if (!str) return undefined;
         const match = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
@@ -336,7 +490,7 @@ function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, on
                 <div className="space-y-5">
                     <div className="flex flex-col gap-1">
                         <label className="text-sm font-semibold text-gray-700 flex items-center gap-2"><BookOpen size={18} /> Học vấn</label>
-                        <Select type="single" options={settings?.ListEducation || []} value={profile.recruitmentType} onChange={onSelect("recruitmentType")} placeholder="Chọn học vấn" />
+                        <Select type="single" options={settings?.ListStudy || []} value={profile.recruitmentType} onChange={onSelect("recruitmentType")} placeholder="Chọn học vấn" />
                     </div>
                     <div className="flex flex-col gap-1">
                         <label className="text-sm font-semibold text-gray-700">Trình độ CMKT</label>
@@ -377,6 +531,36 @@ function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, on
                         <Select type="single" options={settings?.ListSalary || []} value={profile.salary} onChange={onSelect("salary")} />
                     </div>
                 </div>
+            );
+
+        case "experience":
+            return (
+                <div className="">
+                        <div className="flex items-center justify-between border-b border-gray-100">
+                            <Button size="small" onClick={() => openEduModal(null)} className="bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700">+ Thêm</Button>
+                        </div>
+                        <div className="pt-2">
+                            {educationQualifications.length === 0 && <div className="text-gray-500 italic">Chưa có thông tin bằng cấp.</div>}
+                            {educationQualifications.length > 0 && (
+                                <div className="space-y-3">
+                                    {educationQualifications.map((q, i) => (
+                                        <div key={i} className="bg-gray-50 border border-blue-100 rounded-xl px-5 py-4 flex items-center justify-between text-sm font-medium text-gray-800">
+                                            <div className="flex flex-col gap-1 flex-1">
+                                                <div><span className="font-semibold">Trường:</span> {q.TrainingFacilities}</div>
+                                                <div><span className="font-semibold">Bằng cấp:</span> {(settings?.ListStudy || []).find(o => o.value === q.Degrees)?.label || q.Degrees}</div>
+                                                <div><span className="font-semibold">Chuyên ngành:</span> {majorsLabelMap[q.Majors] || majorsOptions.find(o => o.value === q.Majors)?.label || q.Majors}</div>
+                                                <div><span className="font-semibold">Thành tích:</span> {q.Achievements}</div>
+                                            </div>
+                                            <div className="flex flex-col gap-2 ml-4">
+                                                <Button size="small" onClick={() => openEduModal(i)} className="bg-yellow-400 text-white rounded-lg">Sửa</Button>
+                                                <Button size="small" onClick={() => removeEduQualification(i)} className="bg-red-500 text-white rounded-lg">Xóa</Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
             );
 
         case "summary":
