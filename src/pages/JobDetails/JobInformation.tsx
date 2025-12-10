@@ -44,23 +44,23 @@ const JobInformation: React.FC = () => {
             </h2>
 
             <ul className="text-base text-gray-700 space-y-2 flex flex-col gap-2 px-2">
-                <InfoItem icon={<CalendarDays />} label="Ngày đăng tin" value={job.publishdate} />
-                <InfoItem icon={<MapPin />} label="Vị trí (mới)" value={job.location} />
-                <InfoItem icon={<User />} label="Cấp bậc" value={job.position} />
-                <InfoItem icon={<FileText />} label="Yêu cầu giới tính" value={job.gender || "Không yêu cầu giới tính"} />
-                <InfoItem icon={<Users />} label="Số lượng tuyển" value={job.numofrecruitment} />
-                <InfoItem icon={<Clock />} label="Thời gian làm việc" value={job.workingtime || "Giờ hành chính"} />
-                <InfoItem icon={<GraduationCap />} label="Yêu cầu bằng cấp" value={job.degreerequired || "Không yêu cầu"} />
-                <InfoItem icon={<Briefcase />} label="Kinh nghiệm" value={job.experience || "Không yêu cầu kinh nghiệm"} />
-                <InfoItem icon={<Building2 />} label="Ngành nghề" value={job.job} />
-                <InfoItem icon={<Building2 />} label="Tên công ty" value={job.companyname} />
-                <InfoItem icon={<MapPin />} label="Địa chỉ" value={job.companyaddress} />
-                <InfoItem icon={<Users />} label="Quy mô" value={job.companyscale} />
+                <InfoItem icon={<CalendarDays />} label="Ngày đăng tin" value={job?.publishdate || "Chưa cập nhật"} />
+                <InfoItem icon={<MapPin />} label="Vị trí (mới)" value={job?.location || "Chưa cập nhật"} />
+                <InfoItem icon={<User />} label="Cấp bậc" value={job?.position || "Chưa cập nhật"} />
+                <InfoItem icon={<FileText />} label="Yêu cầu giới tính" value={job?.gender || "Không yêu cầu giới tính"} />
+                <InfoItem icon={<Users />} label="Số lượng tuyển" value={job?.numofrecruitment || "1"} />
+                <InfoItem icon={<Clock />} label="Thời gian làm việc" value={job?.workingtime || "Giờ hành chính"} />
+                <InfoItem icon={<GraduationCap />} label="Yêu cầu bằng cấp" value={job?.degreerequired || "Không yêu cầu"} />
+                <InfoItem icon={<Briefcase />} label="Kinh nghiệm" value={job?.experience || "Không yêu cầu kinh nghiệm"} />
+                <InfoItem icon={<Building2 />} label="Ngành nghề" value={job?.job || "Không xác định"} />
+                <InfoItem icon={<Building2 />} label="Tên công ty" value={job?.companyname || "Chưa cập nhật"} />
+                <InfoItem icon={<MapPin />} label="Địa chỉ" value={job?.companyaddress || "Chưa cập nhật"} />
+                <InfoItem icon={<Users />} label="Quy mô" value={job?.companyscale || "Chưa cập nhật"} />
             </ul>
 
             <div className="mt-4 bg-blue-100 text-blue-800 rounded-lg p-4 text-center font-semibold flex items-center justify-center gap-2">
                 <CalendarDays className="text-blue-700" size={18} />
-                <span>Hạn nộp hồ sơ: {job.deadline}</span>
+                <span>Hạn nộp hồ sơ: {job?.deadline || "Chưa cập nhật"}</span>
             </div>
         </aside>
     );

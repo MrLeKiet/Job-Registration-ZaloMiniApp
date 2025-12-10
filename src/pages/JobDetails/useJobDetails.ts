@@ -1,6 +1,30 @@
+import { useMemo } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "zmp-ui";
-import { getJobDetails } from "./api";
+import { getEnterpriseJobApplyList, getJobDetails } from "./api";
+
+export function useEnterpriseJobApplyList(rowIndex = 0, pageSize = 5) {
+    const accessToken = useMemo(() => localStorage.getItem("accessToken") || "", []);
+    const fetchAppliedList = () => {
+        if (!accessToken) return Promise.resolve([]);
+        return getEnterpriseJobApplyList(accessToken, rowIndex, pageSize);
+    };
+    const { data, isLoading, error } = useQuery([
+        "enterprise-job-apply-list",
+        accessToken,
+        rowIndex,
+        pageSize
+    ], fetchAppliedList, {
+        enabled: !!accessToken,
+        staleTime: 2 * 60 * 1000,
+        cacheTime: 10 * 60 * 1000,
+    });
+    return {
+        appliedList: data?.Data?.Data || [],
+        loading: isLoading,
+        error,
+    };
+}
 
 function mapLocalJobToApiFormat(localJob: any) {
     if (!localJob) return null;
@@ -74,7 +98,7 @@ export function useJobDetail() {
     );
     if (localJob) {
         const mappedJob = mapLocalJobToApiFormat(localJob);
-        return { job: mappedJob, loading: false, error: null };
+        return { job: mappedJob, loading: false, error: null, rawData: null };
     }
-    return { job: data?.Data?.Data || null, loading, error };
+    return { job: data?.Data?.Data || null, loading, error, rawData: data };
 }
