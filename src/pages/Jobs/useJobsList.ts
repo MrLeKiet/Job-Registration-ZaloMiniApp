@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { getJobList, getSettings, getWards } from "./api";
+import { getJobList, getRecruitmentForeignersJobs, getSettings, getWards } from "./api";
 
 export function useJobsList(filters: any) {
     const params: Record<string, string> = {};
@@ -47,4 +47,21 @@ export function useWards() {
         }
     );
     return { wards: data || [], loading, error };
+}
+
+export function useRecruitmentJobs() {
+    try {
+        const { data } = useQuery(
+            ["recruitment-foreigners-jobs"],
+            () => getRecruitmentForeignersJobs({}),
+            {
+                keepPreviousData: true,
+                staleTime: 5 * 60 * 1000,
+                cacheTime: 30 * 60 * 1000,
+            }
+        );
+        return { jobs: data || [], loading: false, error: null };
+    } catch (err) {
+        return { jobs: [], loading: false, error: err };
+    }
 }

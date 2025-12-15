@@ -98,9 +98,9 @@ const JobsFilter = ({ filters, setFilters, mode, setMode }: JobsFilterProps) => 
         <button
           type="button"
           onClick={() => setMode('job')}
-          className={`flex-1 py-2 px-6 font-semibold text-base transition-all relative
+          className={`flex-1 py-1 px-4 font-semibold text-sm transition-all relative
           ${mode === 'job'
-              ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-600'
+              ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600'
               : 'text-gray-500 hover:text-gray-700'
             }`}
         >
@@ -109,9 +109,9 @@ const JobsFilter = ({ filters, setFilters, mode, setMode }: JobsFilterProps) => 
         <button
           type="button"
           onClick={() => setMode('foreigner')}
-          className={`flex-1 py-2 px-6 font-semibold text-base transition-all relative
+          className={`flex-1 py-1 px-4 font-semibold text-sm transition-all relative
           ${mode === 'foreigner'
-              ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-blue-600'
+              ? 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600'
               : 'text-gray-500 hover:text-gray-700'
             }`}
         >
@@ -160,7 +160,7 @@ const JobsFilter = ({ filters, setFilters, mode, setMode }: JobsFilterProps) => 
                     <div className="flex">
                       <button
                         type="button"
-                        className="flex p-3 mb-4 mt-2 mr-4 rounded-md border border-[#141415]/30 text-sm bg-gray-200"
+                        className="flex px-2 py-1 mb-4 mt-2 mr-4 rounded-md border border-[#141415]/30 text-sm bg-gray-200"
                         onClick={handleOpen}
                       >
                         <span className={filters[sel.key] ? "text-blue-600 font-semibold" : "text-gray-500"}>

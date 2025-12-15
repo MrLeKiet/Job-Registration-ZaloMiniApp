@@ -17,6 +17,16 @@ export async function getJobList(filters = {}) {
   }
 }
 
+export async function getRecruitmentForeignersJobs(params: { search?: string; enterprise?: string }) {
+    try {
+        const response = await api.get("/RecruitmentForeigners", { params });
+        return response.data?.Data?.Data || [];
+    } catch (error) {
+        console.error("Error fetching recruitment foreigners jobs:", error);
+        throw error;
+    }
+}
+
 export async function getSettings() {
     try {
         const res = await api.get("/Settings");

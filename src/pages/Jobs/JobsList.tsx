@@ -64,15 +64,15 @@ const JobsList = ({ filters, setFilters }) => {
       >
         <div className="flex flex-col">
           <div className="card-title font-bold line-clamp-2">{job.title}</div>
-        <div className="card-meta">Địa chỉ: {job.location || "Thỏa thuận"}</div>
-        <div className="card-meta">Lương: {job.salary || "Thỏa thuận"}</div>
+          <div className="card-meta">Địa chỉ: {job.location || "Thỏa thuận"}</div>
+          <div className="card-meta">Lương: {job.salary || "Thỏa thuận"}</div>
         </div>
       </Card>
     ));
   }
 
   return (
-    <div className="p-4 flex flex-col gap-2 mb-2">
+    <div className="p-4 flex flex-col gap-3 mb-2 overflow-auto">
       {content}
     </div>
   );

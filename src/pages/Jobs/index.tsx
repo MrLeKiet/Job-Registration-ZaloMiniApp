@@ -1,16 +1,19 @@
 
 import React from "react";
-import { useLocation } from "zmp-ui";
-import RecruitmentCard from "../RecruitmentForeigners/RecruitmentCard";
-import Searchbar from "@/components/Searchbar";
-import Select from "@/components/Select";
-import { useRecruitmentForeignersJobs } from "./useRecruitmentForeignersJobs";
+import { useLocation, useNavigate } from "zmp-ui";
+import { useRecruitmentJobs } from "./useJobsList";
 import JobsFilter from "./JobsFilter";
 import JobsList from "./JobsList";
+import Card from "@/components/Card";
 
 export default function JobsPage() {
     const location = useLocation();
     const [mode, setMode] = React.useState<'job' | 'foreigner'>('job');
+    const navigate = useNavigate();
+
+    function handleClick(job: any): void {
+        navigate(`/recruitmentForeigners/${job.id}`);
+    }
     // Parse query string for keyword
     const getInitialFilters = () => {
         const params = new URLSearchParams(location.search);
@@ -30,10 +33,7 @@ export default function JobsPage() {
         const params = new URLSearchParams(location.search);
         setFilters(f => ({ ...f, keyword: params.get("keyword") || "" }));
     }, [location.search]);
-
-    // Foreigners jobs logic
-    const foreigners = useRecruitmentForeignersJobs();
-
+    const foreigners = useRecruitmentJobs();
     return (
         <div className="flex flex-col h-full">
             <JobsFilter mode={mode} setMode={setMode} filters={filters} setFilters={setFilters} />
@@ -59,14 +59,17 @@ export default function JobsPage() {
                     ) : foreigners.jobs.length > 0 ? (
                         <ul className="space-y-3">
                             {foreigners.jobs.map((job: any) => (
-                                <RecruitmentCard
+                                <Card
                                     key={job.id}
-                                    id={job.id}
-                                    title={job.title}
                                     thumbnail={job.thumbnail}
-                                    company={job.company}
-                                    publishdate={job.publishdate}
-                                />
+                                    onClick={() => handleClick(job)}
+                                >
+                                    <div className="flex flex-col">
+                                        <div className="card-title font-bold line-clamp-2">{job.title}</div>
+                                        <div className="card-meta">Địa chỉ: {job.location || "Thỏa thuận"}</div>
+                                        <div className="card-meta">Lương: {job.salary || "Thỏa thuận"}</div>
+                                    </div>
+                                </Card>
                             ))}
                         </ul>
                     ) : (
