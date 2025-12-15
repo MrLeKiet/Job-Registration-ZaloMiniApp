@@ -121,19 +121,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 </div>
                 <div
                     className="bg-[#fafafa] flex-1 flex flex-col overflow-y-auto"
-                    style={{
-                        maxHeight: isReturn
-                            ? "calc(100vh - var(--safe-top) - var(--return-header-height) - var(--header-height) + 35px )"
-                            : "calc(100vh - var(--safe-top) - var(--navbar-height) - var(--header-height) + 10px)",
-                    }}
                 >
                     {children}
                 </div>
-                {(isMain || isReturn) && showNavbar && (
-                    <div>
-                        <Navbar />
-                    </div>
-                )}
+                <div>
+                    <Navbar />
+                </div>
             </div>
         </NavbarVisibilityContext.Provider>
     );
