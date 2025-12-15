@@ -1,6 +1,7 @@
 import Select from "@/components/Select";
 import { Building2, Calendar, Camera, CheckCircle, Clock, MapPin, Target, Users } from "lucide-react";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, DatePicker, Input, Text } from "zmp-ui";
 import { useProvinces, useSettings, useWards, useWardsByProvince } from "./useRecruitment";
 
@@ -56,6 +57,7 @@ const RecruitmentPostPage: React.FC = () => {
     }, [settings]);
 
     const [profileCompanyName, setProfileCompanyName] = useState("");
+    const navigate = useNavigate();
     React.useEffect(() => {
         const accessToken = localStorage.getItem("accessToken");
         if (accessToken) {
@@ -217,14 +219,19 @@ const RecruitmentPostPage: React.FC = () => {
             console.log("API response", res);
             if (res?.StatusResult?.Code === 0) {
                 setMessage("Đăng tuyển dụng thành công!");
+                setTimeout(() => {
+                    setMessage(null);
+                    navigate(-1); // Go back to previous page
+                }, 1500);
             } else {
                 setMessage(res?.StatusResult?.Message || "Đăng tuyển dụng thất bại.");
+                setTimeout(() => setMessage(null), 3000);
             }
         } catch (err: any) {
             setMessage(err?.response?.data?.StatusResult?.Message || "Có lỗi xảy ra khi đăng tuyển dụng!");
             console.log("API error", err);
+            setTimeout(() => setMessage(null), 3000);
         }
-        setTimeout(() => setMessage(null), 3000);
     };
 
     const jobTypeOptions = settings?.ListJob || [];
@@ -282,7 +289,7 @@ const RecruitmentPostPage: React.FC = () => {
                     )}
                     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 space-y-6">
                         <div>
-                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                            <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                                 <Target size={20} /> Tên vị trí tuyển dụng <span className="text-red-500">*</span>
                             </label>
                             <input type="text" placeholder="VD: Lập trình viên React" value={form.jobName} onChange={handleInputChange("jobName")}
@@ -291,7 +298,7 @@ const RecruitmentPostPage: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                            <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                                 <Building2 size={20} /> Tên công ty
                             </label>
                             <div className="w-full px-4 py-3 bg-gray-100 rounded-xl font-medium text-gray-800">
@@ -315,7 +322,7 @@ const RecruitmentPostPage: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                            <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                                 <Calendar size={20} /> Ngày kết thúc nhận hồ sơ <span className="text-red-500">*</span>
                             </label>
                             <DatePicker value={form.endDate} onChange={handleChange("endDate")} label="Chọn ngày" startDate={new Date()} />
@@ -323,7 +330,7 @@ const RecruitmentPostPage: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                            <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                                 <Camera size={20} /> Hình ảnh tuyển dụng
                             </label>
                             <label htmlFor="image-upload" className="block cursor-pointer">
@@ -389,7 +396,7 @@ const RecruitmentPostPage: React.FC = () => {
                             )}
                         </div>
                         <div>
-                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                            <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                                 <MapPin size={20} /> Địa chỉ công ty
                             </label>
                             <textarea rows={2} value={form.companyAddress} onChange={handleInputChange("companyAddress")} placeholder="Số nhà, đường..."
@@ -402,10 +409,28 @@ const RecruitmentPostPage: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="text-sm font-semibold text-gray-700 mb-2 block flex items-center gap-2">
+                            <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                                 <Clock size={20} /> Trạng thái đăng tuyển <span className="text-red-500">*</span>
                             </label>
-                            <Select type="single" options={statusOptions} value={form.Status} onChange={handleChange("Status")} />
+                            <div className="flex gap-4 mt-2">
+                                {statusOptions.map(option => (
+                                    <button
+                                        key={option.value}
+                                        type="button"
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all font-semibold text-sm
+                                            ${form.Status === option.value ? "bg-blue-500 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300"}`}
+                                        onClick={() => setForm(prev => ({ ...prev, Status: option.value }))}
+                                    >
+                                        <span className={`w-4 h-4 rounded-full border flex items-center justify-center mr-2
+                                            ${form.Status === option.value ? "bg-white border-2 border-blue-600" : "bg-gray-200 border-gray-400"}`}
+                                        >
+                                            {form.Status === option.value && <span className="block w-2 h-2 bg-blue-600 rounded-full" />}
+                                        </span>
+                                        {option.label}
+                                    </button>
+                                ))}
+                            </div>
+                            {errors.Status && <p className="text-red-500 text-xs mt-1">{errors.Status}</p>}
                         </div>
 
                         {message && (
