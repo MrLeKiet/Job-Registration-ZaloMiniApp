@@ -8,15 +8,8 @@ interface ReturnHeaderProps {
 
 const ReturnHeader: React.FC<ReturnHeaderProps> = ({ title = "Quay lại" }) => {
     const navigate = useNavigate();
-    const returnHeaderRef = React.useRef<HTMLDivElement>(null);
-    React.useEffect(() => {
-        if (returnHeaderRef.current) {
-            const height = returnHeaderRef.current.offsetHeight;
-            document.documentElement.style.setProperty('--return-header-height', height + 'px');
-        }
-    });
     return (
-        <div ref={returnHeaderRef} className="px-4 flex items-center" style={{ paddingTop: 'var(--safe-top)', paddingBottom: '10px' }}>
+        <div className="px-4 flex items-center" style={{ paddingTop: 'var(--safe-top)', paddingBottom: '12px' }}>
             <button
                 className="flex items-center text-gray-600 hover:text-blue-500 focus:outline-none"
                 onClick={() => navigate(-1)}

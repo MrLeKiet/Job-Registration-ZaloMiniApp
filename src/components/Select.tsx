@@ -57,9 +57,11 @@ const Select: React.FC<SelectProps> = ({
     const [showModal, setShowModal] = useState(false);
     const [search, setSearch] = useState("");
     const navbarCtx = useContext(NavbarVisibilityContext);
-    const headerRef = useRef<HTMLDivElement>(null);
 
+    const headerRef = useRef<HTMLDivElement>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+    const listRef = useRef<HTMLUListElement>(null);
+    const selectedOptionRef = useRef<HTMLButtonElement>(null);
 
     // Height offset for modal
     const [heightOffset, setHeightOffset] = useState(100);
@@ -86,6 +88,18 @@ const Select: React.FC<SelectProps> = ({
         }
     }, [value, type, open]);
 
+
+    // Filtering logic (move up for useEffect dependency)
+    const filteredOptions = useMemo(() => {
+        if (type === "single") {
+            return options.filter(option => option.label.toLowerCase().includes(search.toLowerCase()));
+        }
+        if (type === "multi") {
+            return options.filter(option => option.label.toLowerCase().includes(search.toLowerCase()));
+        }
+        return [];
+    }, [search, options, type]);
+
     // Shared open/close logic
     const handleOpen = () => {
         setShowModal(true);
@@ -93,6 +107,13 @@ const Select: React.FC<SelectProps> = ({
         if (navbarCtx) navbarCtx.setShowNavbar(false);
         if (typeof onOpen === "function") onOpen();
     };
+
+    // Scroll to selected option when modal opens
+    useEffect(() => {
+        if (open && listRef.current && selectedOptionRef.current) {
+            selectedOptionRef.current.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+        }
+    }, [open, search, filteredOptions]);
     const handleClose = () => {
         setOpen(false);
         if (navbarCtx) navbarCtx.setShowNavbar(true);
@@ -129,16 +150,6 @@ const Select: React.FC<SelectProps> = ({
     handleClose();
     };
 
-    // Filtering logic
-    const filteredOptions = useMemo(() => {
-        if (type === "single") {
-            return options.filter(option => option.label.toLowerCase().includes(search.toLowerCase()));
-        }
-        if (type === "multi") {
-            return options.filter(option => option.label.toLowerCase().includes(search.toLowerCase()));
-        }
-        return [];
-    }, [search, options, type]);
 
     // Render main button label
     let buttonLabel = placeholder || "Chọn";
@@ -229,13 +240,18 @@ const Select: React.FC<SelectProps> = ({
                                             onChange={e => setSearch(e.target.value)}
                                         />
                                     </div>
-                                    <ul className="space-y-1 overflow-y-auto h-[50vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
+                                    <ul
+                                        ref={listRef}
+                                        className="space-y-1 overflow-y-auto h-[50vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+                                        style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}
+                                    >
                                         {filteredOptions.map(option => {
                                             const isSelected = internalSingle === option.value;
                                             return (
                                                 <button
                                                     type="button"
                                                     key={option.value}
+                                                    ref={isSelected ? selectedOptionRef : undefined}
                                                     className={`w-full text-left py-3 px-2 rounded flex items-center justify-between gap-4 transition-colors ${isSelected ? "text-blue-600 font-semibold bg-blue-50" : "cursor-pointer hover:bg-gray-100"}`}
                                                     onClick={() => handleSingleSelect(option.value)}
                                                     tabIndex={0}
@@ -267,14 +283,21 @@ const Select: React.FC<SelectProps> = ({
                                             onChange={e => setSearch(e.target.value)}
                                         />
                                     </div>
-                                    <ul className="space-y-1 overflow-y-auto h-[45vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}>
+                                    <ul
+                                        ref={listRef}
+                                        className="space-y-1 overflow-y-auto h-[45vh] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+                                        style={{ maxHeight: `calc(50vh - ${heightOffset}px)` }}
+                                    >
                                         {filteredOptions.map(option => {
                                             const isSelected = pendingMulti.includes(option.value);
                                             const isDisabled = !isSelected && pendingMulti.length >= max;
+                                            // Only scroll to the first selected in multi
+                                            const refToUse = isSelected && pendingMulti[0] === option.value ? selectedOptionRef : undefined;
                                             return (
                                                 <button
                                                     type="button"
                                                     key={option.value}
+                                                    ref={refToUse}
                                                     className={`w-full text-left py-3 px-2 rounded flex items-center justify-between gap-4 transition-colors ${isSelected ? "text-blue-600 font-semibold bg-blue-50" : "cursor-pointer hover:bg-gray-100"} ${isDisabled ? "text-gray-400 bg-gray-100 cursor-not-allowed" : ""}`}
                                                     onClick={() => !isDisabled && handleMultiSelect(option.value)}
                                                     disabled={isDisabled}

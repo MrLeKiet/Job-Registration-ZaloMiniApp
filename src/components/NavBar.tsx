@@ -26,19 +26,12 @@ const Navbar: React.FC = () => {
     const isRecruitmentPostPage = currentPath === "/RecruitmentPost";
     const isRecruitmentPostDetailPage = currentPath.startsWith("/recruitmentForeigners/");
 
-    const navRef = React.useRef<HTMLDivElement>(null);
-    React.useEffect(() => {
-        if (navRef.current) {
-            const height = navRef.current.offsetHeight;
-            document.documentElement.style.setProperty('--navbar-height', height + 'px');
-        }
-    });
     return (
         <div
-            className="fixed bottom-0 left-0 right-0 bg-white shadow border-t"
+            className=" bg-white shadow border-t"
             style={{ paddingBottom: 'var(--safe-bottom)', paddingTop: '10px' }}
         >
-            <div ref={navRef} className="max-w-screen-xl mx-auto flex justify-around items-center h-12 xs:h-14 sm:h-16 px-1 xs:px-2 sm:px-4">
+            <div className="max-w-screen-xl mx-auto flex justify-around items-center h-12 xs:h-14 sm:h-16 px-1 xs:px-2 sm:px-4">
                 {NAV_ITEMS.map((item) => {
                     let isActive = false;
                     if (

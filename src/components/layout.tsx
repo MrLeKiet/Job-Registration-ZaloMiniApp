@@ -19,7 +19,6 @@ import NewsDetailPage from "@/pages/NewDetail";
 import ProfilePage from "@/pages/Profile";
 import RegisterPage from "@/pages/Register";
 import RecruitmentPostPage from "@/pages/RecruitmentPost";
-import RecruitmentForeignersPage from "@/pages/RecruitmentForeigners";
 import RecruitmentForeignersJobDetailPage from "@/pages/RecruitmentForeignersJobDetail";
 import UnemploymentInsurancePage from "@/pages/UnemploymentInsurance";
 import OverseasJobsPage from "@/pages/OverseasJobs";
@@ -51,7 +50,6 @@ const Layout = () => {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/RecruitmentPost" element={<RecruitmentPostPage />} />
               <Route path="/recruitmentForeigners/:id" element={<RecruitmentForeignersJobDetailPage />} />
-              <Route path="/RecruitmentForeigners" element={<RecruitmentForeignersPage />} />
               <Route path="/unemployment-insurance" element={<UnemploymentInsurancePage />} />
               <Route path="/export-labor" element={<OverseasJobsPage />} />
               <Route path="/about" element={<AboutUsPage />} />
