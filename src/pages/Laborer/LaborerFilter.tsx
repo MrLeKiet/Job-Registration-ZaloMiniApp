@@ -65,7 +65,7 @@ const LaborerFilter = ({ filters, setFilters }: Props) => {
     const scrollRef = React.useRef<HTMLDivElement>(null);
 
     return (
-        <div className="flex flex-col gap-2 bg-white pt-2 pl-4">
+        <div className="flex flex-col bg-white pt-2 pl-4 shadow-lg border-b border-gray-200">
             <div className="relative pr-4">
                 <Input
                     type="text"
@@ -73,7 +73,7 @@ const LaborerFilter = ({ filters, setFilters }: Props) => {
                     autoComplete="off"
                     value={searchValue}
                     onChange={handleSearchChange}
-                    className="h-11 pr-6"
+                    className="h-10 pr-6"
                     prefix={<Box pl={3} className="text-gray-600"><Icon icon="zi-search" /></Box>}
                 />
                         {(searchValue || filters.job || filters.ward || filters.age || filters.gender) && (
@@ -107,7 +107,7 @@ const LaborerFilter = ({ filters, setFilters }: Props) => {
                                     placeholder={sel.placeholder}
                                     open={open}
                                     onClick={handleOpen}
-                                    className="flex p-3 mb-4 mt-2 mr-4 rounded-md border border-[#141415]/30 text-sm bg-gray-200"
+                                    className="flex px-2 py-1 mb-4 mt-2 mr-4 rounded-md border border-[#141415]/30 text-sm bg-gray-200"
                                     chevronSize={16}
                                     chevronColor="gray"
                                     labelClassName={filters[sel.key] ? "text-blue-600 font-semibold" : "text-gray-500"}

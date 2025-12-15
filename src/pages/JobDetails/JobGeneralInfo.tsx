@@ -7,22 +7,14 @@ import { useNavigate } from "zmp-ui";
 import { useJobDetail } from "./useJobDetails";
 
 const JobGeneralInfo: React.FC = () => {
-    const { job, loading, error, rawData } = useJobDetail();
-    const [hideApply, setHideApply] = React.useState(false);
+    const { job, loading, error } = useJobDetail();
+    const [hideApply, setHideApply] = React.useState(true); // hide by default
     const [applyListNotFound, setApplyListNotFound] = React.useState(false);
     const [applying, setApplying] = React.useState(false);
     const [applyResult, setApplyResult] = React.useState<{ type: 'success' | 'error' | 'warning', message: string } | null>(null);
     const [alreadyApplied, setAlreadyApplied] = React.useState(false);
     const accessToken = localStorage.getItem("accessToken") || "";
     const navigate = useNavigate()
-    // Hide apply button if job not found (Code 7)
-    React.useEffect(() => {
-        if (rawData && rawData.StatusResult && rawData.StatusResult.Code === 7) {
-            setHideApply(true);
-        } else {
-            setHideApply(false);
-        }
-    }, [rawData]);
 
     React.useEffect(() => {
         async function checkApplied() {
@@ -32,6 +24,7 @@ const JobGeneralInfo: React.FC = () => {
                 if (res?.StatusResult?.Code === 7) {
                     setApplyListNotFound(true);
                     setAlreadyApplied(false);
+                    setHideApply(true); // still hide if not found
                     return;
                 } else {
                     setApplyListNotFound(false);
@@ -39,15 +32,17 @@ const JobGeneralInfo: React.FC = () => {
                 const appliedList = res?.Data?.Data || [];
                 const found = appliedList.some((item: any) => String(item.id) === String(job.id));
                 setAlreadyApplied(found);
+                setHideApply(false); // show only if success
             } catch {
                 setApplyListNotFound(true);
                 setAlreadyApplied(false);
+                setHideApply(true); // hide on error
             }
         }
         checkApplied();
     }, [job?.id, accessToken]);
     const handleApply = async () => {
-        if (!job?.id ) return;
+        if (!job?.id) return;
         setApplying(true);
         setApplyResult(null);
         try {
@@ -64,7 +59,7 @@ const JobGeneralInfo: React.FC = () => {
         } finally {
             setApplying(false);
         }
-        
+
     };
     if (loading) return (
         <div className="bg-white shadow rounded-xl p-6 flex flex-col gap-2 mb-2">
@@ -95,7 +90,7 @@ const JobGeneralInfo: React.FC = () => {
                 ) : null}
                 <div className="flex-1">
                     <div className="font-bold text-xl text-gray-900 mb-1">{job?.title || "Không có tiêu đề"}</div>
-                    <div className="text-gray-600 text-base font-bold">{job?.companyname || "Chưa cập nhật"}</div>
+                    <div className="text-gray-600 text-base font-semibold">{job?.companyname || "Chưa cập nhật"}</div>
                 </div>
             </div>
             <div className="border-b border-gray-200 mb-3" />
@@ -132,14 +127,14 @@ const JobGeneralInfo: React.FC = () => {
             <div className="flex items-center gap-6 mb-4">
                 <div className="flex items-center gap-1 text-gray-700">
                     <MapPin size={16} />
-                    <span className="font-bold whitespace-nowrap">Vị trí:</span>
+                    <span className="font-semibold whitespace-nowrap">Vị trí:</span>
                     <span className="font-normal text-gray-900 pl-1">{job?.location || "Chưa cập nhật"}</span>
                 </div>
             </div>
             <div className="flex items-center gap-6 mb-4">
                 <div className="flex items-center gap-1 text-gray-700">
                     <Clock size={16} />
-                    <span className="font-bold">Hạn nộp hồ sơ:</span>
+                    <span className="font-semibold">Hạn nộp hồ sơ:</span>
                     <span className="font-normal text-gray-900">{job?.deadline || "Chưa cập nhật"}</span>
                 </div>
                 <div className="flex items-center gap-1 text-gray-700">
@@ -149,28 +144,28 @@ const JobGeneralInfo: React.FC = () => {
             </div>
             <div className="flex gap-3 mt-2">
                 {!(hideApply || applyListNotFound) && (
-                  alreadyApplied ? (
-                    <button
-                        className="flex-1 font-bold py-3 rounded-lg flex items-center justify-center gap-2 text-base transition bg-gray-300 text-gray-700 cursor-not-allowed"
-                        disabled
-                    >
-                        <CheckCircle2 size={20} className="text-green-600" />
-                        Đã ứng tuyển
-                    </button>
-                  ) : (
-                    <button
-                        className="flex-1 font-bold text-white py-3 rounded-lg flex items-center justify-center gap-2 text-base transition"
-                        style={{background:'#1565C0'}}
-                        onMouseOver={e => e.currentTarget.style.background='#0d47a1'}
-                        onFocus={e => e.currentTarget.style.background='#0d47a1'}
-                        onMouseOut={e => e.currentTarget.style.background='#1565C0'}
-                        onBlur={e => e.currentTarget.style.background='#1565C0'}
-                        onClick={handleApply}
-                        disabled={applying}
-                    >
-                        <p className="text-white">{applying ? "Đang ứng tuyển..." : "Ứng tuyển ngay"}</p>
-                    </button>
-                  )
+                    alreadyApplied ? (
+                        <button
+                            className="flex-1 font-bold py-3 rounded-lg flex items-center justify-center gap-2 text-base transition bg-gray-300 text-gray-700 cursor-not-allowed"
+                            disabled
+                        >
+                            <CheckCircle2 size={20} className="text-green-600" />
+                            Đã ứng tuyển
+                        </button>
+                    ) : (
+                        <button
+                            className="flex-1 font-bold text-white py-3 rounded-lg flex items-center justify-center gap-2 text-base transition"
+                            style={{ background: '#1565C0' }}
+                            onMouseOver={e => e.currentTarget.style.background = '#0d47a1'}
+                            onFocus={e => e.currentTarget.style.background = '#0d47a1'}
+                            onMouseOut={e => e.currentTarget.style.background = '#1565C0'}
+                            onBlur={e => e.currentTarget.style.background = '#1565C0'}
+                            onClick={handleApply}
+                            disabled={applying}
+                        >
+                            <p className="text-white">{applying ? "Đang ứng tuyển..." : "Ứng tuyển ngay"}</p>
+                        </button>
+                    )
                 )}
             </div>
             {applyResult && (

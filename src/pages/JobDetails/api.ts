@@ -32,12 +32,17 @@ export const applyForJob = async (jobId: string, accessToken) => {
 };
 
 export const getEnterpriseJobApplyList = async (token: string, rowIndex = 0, pageSize = 5) => {
-    const response = await api.get("/EnterpriseJobApplyList", {
-        params: { rowIndex, pageSize },
-        headers: {
-            "Accept-Language": "2",
-            "Authorization": `Bearer ${token}`,
-        },
-    });
-    return response.data;
+    try {
+        const response = await api.get("/EnterpriseJobApplyList", {
+            params: { rowIndex, pageSize },
+            headers: {
+                "Accept-Language": "2",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching enterprise job apply list:", error);
+        throw error;
+    }
 };

@@ -1,27 +1,18 @@
 
-import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { fetchOverseasJobs } from "./api";
 
 export function useOverseasJobs() {
-    const [items, setItems] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const {
+        data,
+        isLoading: loading,
+        error,
+    } = useQuery(["overseasJobs", 0, 5], () => fetchOverseasJobs(0, 5), {
+        staleTime: 2 * 60 * 1000,
+        cacheTime: 10 * 60 * 1000,
+    });
 
-    useEffect(() => {
-        setLoading(true);
-        setError(null);
-        fetchOverseasJobs(0, 5)
-            .then((res) => {
-                const data = res?.Data?.Data || [];
-                setItems(data);
-            })
-            .catch(() => {
-                setError("Không thể tải dữ liệu việc làm ngoài nước.");
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, []);
+    const items = data?.Data?.Data || [];
 
     return { items, loading, error };
 }

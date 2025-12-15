@@ -1,26 +1,18 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { fetchAboutUs } from "./api";
 
 export function useAboutUs() {
-    const [info, setInfo] = useState<{ title: string; description: string } | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const {
+        data,
+        isLoading: loading,
+        error,
+    } = useQuery(["aboutUs"], fetchAboutUs, {
+        staleTime: 2 * 60 * 1000,
+        cacheTime: 10 * 60 * 1000,
+    });
 
-    useEffect(() => {
-        setLoading(true);
-        setError(null);
-        fetchAboutUs()
-            .then(res => {
-                const data = res?.Data?.Data;
-                setInfo(data || null);
-            })
-            .catch(() => {
-                setError("Không thể tải nội dung giới thiệu.");
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, []);
+    // Map the API response to expected info format
+    const info = data?.Data?.Data || null;
 
     return { info, loading, error };
 }

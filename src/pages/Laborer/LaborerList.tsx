@@ -72,12 +72,12 @@ const LaborerList = () => {
   return (
       <div className="flex flex-col h-full">
         {/* Fixed Top */}
-        <div className="shrink-0">
+        <div className="">
             <LaborerFilter filters={filters} setFilters={setFilters} />
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto bg-[#fafafa]">
+        <div className="flex-1 px-4 overflow-y-auto bg-[#fafafa]">
           <div className="flex flex-col pt-3 pb-3 gap-3">
             {content}
           </div>

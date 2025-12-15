@@ -19,7 +19,9 @@ const AboutUsPage: React.FC = () => {
         return <div className="p-4">Đang tải...</div>;
     }
     if (error) {
-        return <div className="p-4 text-red-500">{error}</div>;
+        // react-query error can be unknown, so cast to any for message
+        const errorMessage = typeof error === "string" ? error : (error as any)?.message || "Có lỗi xảy ra.";
+        return <div className="p-4 text-red-500">{errorMessage}</div>;
     }
     if (!info) {
         return <div className="p-4">Không có nội dung giới thiệu.</div>;
