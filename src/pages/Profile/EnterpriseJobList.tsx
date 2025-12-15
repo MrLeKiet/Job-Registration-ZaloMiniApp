@@ -122,7 +122,7 @@ const EnterpriseJobList: React.FC = () => {
                                     e.stopPropagation();
                                     handleUpdate(job);
                                 }}
-                                className="p-3 bg-blue-600 text-white rounded-xl font-medium shadow-md hover:bg-blue-700 hover:shadow-lg transition-all flex items-center gap-2 active:scale-95"
+                                className="p-3 bg-blue-500 text-white rounded-xl font-medium shadow-md hover:bg-blue-700 hover:shadow-lg transition-all flex items-center gap-2 active:scale-95"
                             >
                                 <Edit3 size={18} />
                             </button>

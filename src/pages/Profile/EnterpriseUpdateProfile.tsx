@@ -106,9 +106,7 @@ const EnterpriseUpdateProfile: React.FC = () => {
                     <div className="relative">
                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
                             <img
-                                src={profile?.avatar
-                                    ? profile.avatar
-                                    : "https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
+                                src={"https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
                                 alt="Ảnh đại diện"
                                 className="w-full h-full object-cover"
                             />
@@ -227,14 +225,14 @@ function SectionContent({ section, profile, onInput, fieldErrors, settings }) {
         case "contact":
             return (
                 <Box className="flex flex-col gap-5">
-                    <Input
-                        label="Email cá nhân liên hệ"
-                        value={profile?.email || ""}
-                        onChange={e => onInput("email", e.target.value)}
-                        placeholder="Email cá nhân liên hệ"
-                        status={fieldErrors.email ? "error" : undefined}
-                        errorText={fieldErrors.email}
-                    />
+                    <div>
+                        <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            Email cá nhân liên hệ
+                        </label>
+                        <div className="w-full px-4 py-3 bg-gray-100 rounded-xl font-medium text-gray-800">
+                            {profile?.email || "Chưa cập nhật"}
+                        </div>
+                    </div>
                     <Input
                         label="Địa chỉ doanh nghiệp"
                         value={profile?.address || ""}

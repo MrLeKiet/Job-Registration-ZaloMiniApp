@@ -1,500 +1,342 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { Box, Button, DatePicker, Icon, Input, Text, useNavigate } from "zmp-ui";
 import Select from "../../components/Select";
 import { useRegisterForm } from "../../hooks/useRegister";
 import { ZaloAuthContext } from "./ProfileSection";
 import { useProfile } from "./useProfile";
 
-const PersonalInfoSection: React.FC<any> = ({
-    formData,
-    touched,
-    handleInputChange,
-    handleInputBlur,
-    handleSelectChange,
-    handleDateChange,
-    settings,
-    errors,
-}) => (
-    <Box className=" flex flex-col gap-5 width-full rounded-lg ">
-        <Text className="text-lg font-semibold text-gray-700">Thông tin cá nhân</Text>
-        {/* Full Name */}
-        <Input
-            label="Nhập họ và tên"
-            value={formData.fullName}
-            onChange={handleInputChange("fullName")}
-            onBlur={handleInputBlur("fullName")}
-            aria-label="Họ và Tên"
-            placeholder="Họ và tên của bạn"
-            maxLength={20}
-            showCount
-            status={errors?.fullName ? "error" : undefined}
-            errorText={errors?.fullName}
-        />
+const steps = [
+    "Thông tin cá nhân",
+    "Căn cước công dân",
+    "Liên hệ & dân tộc",
+    "Học vấn & chuyên môn",
+    "Ngành nghề mong muốn",
+] as const;
 
-        {/* Birth Date */}
-        <DatePicker
-            value={formData.birthDate}
-            onChange={handleDateChange("birthDate")}
-            label="Chọn ngày sinh"
-            aria-label="Ngày sinh"
-            helperText="Vui lòng chọn ngày sinh của bạn."
-            status={touched?.birthDate && errors?.birthDate ? "error" : undefined}
-            errorText={touched?.birthDate ? errors?.birthDate : undefined}
-        />
+interface FieldMapping {
+    backend: string;
+    frontend: keyof ReturnType<typeof useRegisterForm>["formData"];
+    step: number;
+    label: string;
+}
 
-        {/* Gender */}
-        <div>
-            <Text className="text-sm text-[#141415] mb-2">Chọn giới tính</Text>
-            <Select
-                type="single"
-                options={settings?.ListGenderUser || []}
-                value={formData.gender}
-                onChange={(option) => handleSelectChange("gender")(option?.label ?? option)}
-                placeholder="Giới tính"
-                status={touched?.gender && errors?.gender ? "error" : undefined}
-                errorText={touched?.gender ? errors?.gender : undefined}
-            />
-        </div>
+const fieldMapping = [
+    { backend: "FullName", frontend: "fullName" as const, step: 0, label: "Họ và tên" },
+    { backend: "DateOfBirth", frontend: "birthDate" as const, step: 0, label: "Ngày sinh" },
+    { backend: "Gender", frontend: "gender" as const, step: 0, label: "Giới tính" },
+    { backend: "CID", frontend: "idCard" as const, step: 1, label: "Số CCCD/CMND" },
+    { backend: "CIDDate", frontend: "issueDate" as const, step: 1, label: "Ngày cấp CCCD" },
+    { backend: "CIDAddress", frontend: "issuePlace" as const, step: 1, label: "Nơi cấp CCCD" },
+    { backend: "Phone", frontend: "phone" as const, step: 2, label: "Số điện thoại" },
+    { backend: "Email", frontend: "email" as const, step: 2, label: "Email" },
+    { backend: "Ethnicity", frontend: "ethnicity" as const, step: 2, label: "Dân tộc" },
+    { backend: "Address", frontend: "address" as const, step: 2, label: "Địa chỉ thường trú" },
+    { backend: "Study", frontend: "educationLevel" as const, step: 3, label: "Trình độ học vấn" },
+    { backend: "TechnicalLevel", frontend: "cmktLevel" as const, step: 3, label: "Trình độ CMKT" },
+    { backend: "TrainingMajor", frontend: "major" as const, step: 3, label: "Chuyên ngành đào tạo" },
+    { backend: "GraduateSchool", frontend: "school" as const, step: 3, label: "Tên trường tốt nghiệp" },
+    { backend: "DesiredCareer", frontend: "desiredJob" as const, step: 4, label: "Ngành nghề mong muốn" },
+] as const;
 
-        {/* ID Card */}
-        <Input
-            label="Nhập số CCCD"
-            value={formData.idCard}
-            onChange={handleInputChange("idCard")}
-            onBlur={handleInputBlur("idCard")}
-            inputMode="numeric"
-            pattern="[0-9]*"
-            maxLength={15}
-            aria-label="Căn Cước Công Dân"
-            placeholder="Số căn cước công dân"
-            status={touched?.idCard && errors?.idCard ? "error" : undefined}
-            errorText={touched?.idCard ? errors?.idCard : undefined}
-            onFocus={e => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-            helperText="Vui lòng nhập số CCCD gồm 9 hoặc 12 chữ số."
-        />
-
-        {/* Issue Date */}
-        <DatePicker
-            value={formData.issueDate}
-            onChange={handleDateChange("issueDate")}
-            label="Chọn ngày cấp"
-            aria-label="Ngày cấp"
-            status={touched?.issueDate && errors?.issueDate ? "error" : undefined}
-            errorText={touched?.issueDate ? errors?.issueDate : undefined}
-            helperText="Vui lòng chọn ngày cấp căn cước công dân."
-        />
-
-        {/* Issue Place */}
-        <Input
-            label="Nhập nơi cấp"
-            value={formData.issuePlace}
-            onChange={handleInputChange("issuePlace")}
-            onBlur={handleInputBlur("issuePlace")}
-            aria-label="Nơi cấp"
-            placeholder="Nơi cấp căn cước"
-            status={touched?.issuePlace && errors?.issuePlace ? "error" : undefined}
-            errorText={touched?.issuePlace ? errors?.issuePlace : undefined}
-            helperText="Vui lòng nhập nơi cấp căn cước công dân."
-        />
-        {/* Phone */}
-        <Input
-            label="Nhập số điện thoại"
-            value={formData.phone}
-            onChange={handleInputChange("phone")}
-            onBlur={handleInputBlur("phone")}
-            inputMode="tel"
-            pattern="[0-9]*"
-            maxLength={15}
-            aria-label="Số điện thoại"
-            placeholder="Số điện thoại liên hệ"
-            status={touched?.phone && errors?.phone ? "error" : undefined}
-            errorText={touched?.phone ? errors?.phone : undefined}
-            helperText="Vui lòng nhập số điện thoại liên hệ."
-            prefix={<Box pl={4}><Icon icon="zi-call" /></Box>}
-        />
-
-        {/* Email */}
-        <Input
-            label="Nhập email"
-            value={formData.email}
-            onChange={handleInputChange("email")}
-            onBlur={handleInputBlur("email")}
-            aria-label="Email"
-            placeholder="Email của bạn"
-            status={touched?.email && errors?.email ? "error" : undefined}
-            errorText={touched?.email ? errors?.email : undefined}
-            helperText="Vui lòng nhập địa chỉ email hợp lệ."
-        />
-        {/* Ethnicity */}
-        <div>
-            <Text className="text-sm text-[#141415] mb-2">Chọn dân tộc</Text>
-            <Select
-                type="single"
-                options={settings?.ListEthnicity || []}
-                value={formData.ethnicity}
-                onChange={(option) => handleSelectChange("ethnicity")(option?.label ?? option)}
-                placeholder="Dân tộc"
-                status={touched?.ethnicity && errors?.ethnicity ? "error" : undefined}
-                errorText={touched?.ethnicity ? errors?.ethnicity : undefined}
-            />
-        </div>
-
-        {/* Address */}
-        <Input
-            label="Nhập địa chỉ liên lạc"
-            value={formData.address}
-            onChange={handleInputChange("address")}
-            onBlur={handleInputBlur("address")}
-            aria-label="Địa chỉ liên lạc"
-            placeholder="Địa chỉ liên lạc"
-            status={touched?.address && errors?.address ? "error" : undefined}
-            errorText={touched?.address ? errors?.address : undefined}
-        />
-
-        {/* Education Level */}
-        <Input
-            label="Nhập trình độ học vấn"
-            value={formData.educationLevel}
-            onChange={handleInputChange("educationLevel")}
-            onBlur={handleInputBlur("educationLevel")}
-            aria-label="Trình độ học vấn"
-            placeholder="Trình độ học vấn"
-            status={touched?.educationLevel && errors?.educationLevel ? "error" : undefined}
-            errorText={touched?.educationLevel ? errors?.educationLevel : undefined}
-        />
-
-        {/* CMKT Level */}
-        <div>
-            <Text className="text-sm text-[#141415] mb-2">Chọn trình độ CMKT</Text>
-            <Select
-                type="single"
-                options={settings?.TechnicalLevel || []}
-                value={formData.cmktLevel}
-                onChange={(option) => handleSelectChange("cmktLevel")(option?.label ?? option)}
-                placeholder="Trình độ CMKT"
-                status={touched?.cmktLevel && errors?.cmktLevel ? "error" : undefined}
-                errorText={touched?.cmktLevel ? errors?.cmktLevel : undefined}
-            />
-        </div>
-        {/* Major */}
-        <Input
-            label="Nhập chuyên ngành đào tạo"
-            value={formData.major}
-            onChange={handleInputChange("major")}
-            onBlur={handleInputBlur("major")}
-            aria-label="Chuyên ngành đào tạo"
-            placeholder="Chuyên ngành đào tạo"
-            status={touched?.major && errors?.major ? "error" : undefined}
-            errorText={touched?.major ? errors?.major : undefined}
-        />
-
-        {/* School */}
-        <Input
-            label="Nhập tên trường tốt nghiệp"
-            value={formData.school}
-            onChange={handleInputChange("school")}
-            onBlur={handleInputBlur("school")}
-            aria-label="Tên trường tốt nghiệp"
-            placeholder="Tên trường tốt nghiệp"
-            status={touched?.school && errors?.school ? "error" : undefined}
-            errorText={touched?.school ? errors?.school : undefined}
-        />
-
-        {/* Desired Job */}
-        <div>
-            <Text className="text-sm text-[#141415] mb-2">Chọn ngành nghề (tối đa 2)</Text>
-            <Select
-                type="multi"
-                options={settings?.ListJob || []}
-                value={formData.desiredJob}
-                onChange={(selected) => handleSelectChange("desiredJob")(selected)}
-                max={2}
-                placeholder="Ngành nghề"
-                status={touched?.desiredJob && errors?.desiredJob ? "error" : undefined}
-                errorText={touched?.desiredJob ? errors?.desiredJob : undefined}
-            />
-        </div>
-    </Box>
-);
-
-const ProfileRegisterLayout: React.FC<{ profileData?: any; signInStatus?: 'idle' | 'success' | 'fail' }> = ({ profileData, signInStatus }) => {
-    // Default signInStatus to 'fail' if not provided
-    const effectiveSignInStatus = signInStatus ?? 'fail';
-    // Get Zalo auth context at top level (fix hook error)
-    const zaloAuth = useContext(ZaloAuthContext);
-    // Always use the token from signIn response for updateProfile
-    const signInAccessToken = profileData?.accessToken;
+const ProfileRegisterLayout: React.FC = () => {
     const navigate = useNavigate();
+    const zaloAuth = useContext(ZaloAuthContext);
+    const { settings } = useProfile();
 
-    React.useEffect(() => {
-        console.log('[DEBUG] ProfileRegisterLayout props:', { profileData, signInStatus });
-    }, [profileData, signInStatus]);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [showToast, setShowToast] = useState(false);
+    const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
+    const [globalError, setGlobalError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const {
         formData,
         touched,
-        errors,
+        errors: clientErrors,
         handleInputChange,
         handleInputBlur,
         handleSelectChange,
         handleDateChange,
         setTouched,
-        setFormData,
-        validateForm,
     } = useRegisterForm();
 
-    const [showToast, setShowToast] = React.useState(false);
-    const [errorMessage, setErrorMessage] = React.useState("");
-    const [laboreSignUpLoading, setLaboreSignUpLoading] = React.useState(false);
-    const { settings } = useProfile();
+    // Gộp lỗi client + server
+    const allErrors = { ...clientErrors, ...serverErrors };
 
-    // Autofill from profileData after sign in
-    React.useEffect(() => {
-        if (effectiveSignInStatus === 'success' && profileData) {
-            console.log('[DEBUG] Autofilling form with profileData:', profileData);
-            // Convert DD/MM/YYYY to YYYY-MM-DD for ciddate
-            const parseDDMMYYYY = (str: string) => {
-                if (!str || typeof str !== 'string') return null;
-                const match = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-                if (match) {
-                    const [_, dd, mm, yyyy] = match;
-                    return `${yyyy}-${mm}-${dd}`;
+    // Khi có lỗi server → nhảy về bước lỗi đầu tiên + scroll
+    useEffect(() => {
+        if (Object.keys(serverErrors).length === 0) return;
+
+        const errorSteps = fieldMapping
+            .filter((m) => serverErrors[m.frontend])
+            .map((m) => m.step);
+
+        if (errorSteps.length > 0) {
+            const firstErrorStep = Math.min(...errorSteps);
+            setCurrentStep(firstErrorStep);
+
+            setTimeout(() => {
+                const firstField = fieldMapping.find((m) => serverErrors[m.frontend])?.frontend;
+                if (firstField) {
+                    const el = document.querySelector(`[data-field="${firstField}"]`) as HTMLElement;
+                    el?.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
-                return str; // fallback to original string
-            };
-            let parsedIssueDate: string | null = null;
-            let parsedBirthDate: string | null = null;
-            if (profileData.ciddate) {
-                parsedIssueDate = parseDDMMYYYY(profileData.ciddate);
-            }
-            if (profileData.dateofbirth) {
-                parsedBirthDate = parseDDMMYYYY(profileData.dateofbirth);
-            }
-            setFormData((prev: any) => ({
-                ...prev,
-                fullName: profileData.fullname || prev.fullName,
-                birthDate:
-                    parsedBirthDate && typeof parsedBirthDate === 'string'
-                        ? new Date(parsedBirthDate)
-                        : prev.birthDate,
-                gender: profileData.gender || prev.gender,
-                idCard: profileData.cid || prev.idCard,
-                issueDate:
-                    parsedIssueDate && typeof parsedIssueDate === 'string'
-                        ? new Date(parsedIssueDate)
-                        : prev.issueDate,
-                issuePlace: profileData.cidaddress || prev.issuePlace,
-                phone: profileData.phone || prev.phone,
-                email: profileData.email || prev.email,
-                ethnicity: profileData.ethnicity || prev.ethnicity,
-                address: profileData.address || prev.address,
-                educationLevel: profileData.traininglevel || prev.educationLevel,
-                cmktLevel: profileData.highestlevelofexpertise || prev.cmktLevel,
-                major: profileData.trainingmajor || prev.major,
-                school: profileData.schoolgraduate || prev.school,
-                desiredJob: profileData.desiredcareer || prev.desiredJob,
-                summary: profileData.summary || prev.summary,
-            }));
+            }, 300);
         }
-    }, [effectiveSignInStatus, profileData, setFormData]);
+    }, [serverErrors]);
 
-    const handleLaboreSignUp = async (e: React.FormEvent) => {
+    const validateCurrentStep = () => {
+        const fieldsInCurrentStep = fieldMapping
+            .filter((m) => m.step <= currentStep)
+            .map((m) => m.frontend);
+
+        const newTouched = { ...touched };
+        let valid = true;
+
+        fieldsInCurrentStep.forEach((field) => {
+            newTouched[field] = true;
+            if (clientErrors[field]) valid = false;
+        });
+
+        setTouched(newTouched);
+        return valid;
+    };
+
+    const nextStep = () => {
+        if (!validateCurrentStep()) return;
+        if (currentStep < steps.length - 1) setCurrentStep((prev) => prev + 1);
+    };
+
+    const prevStep = () => setCurrentStep((prev) => Math.max(0, prev - 1));
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('[DEBUG] handleLaboreSignUp called with formData:', formData);
-        const isValid = validateForm();
-        if (!isValid) {
-            setTouched((prev) => {
-                const allTouched: { [key: string]: boolean } = { ...prev };
-                const fields = [
-                    "fullName", "birthDate", "gender", "idCard", "issueDate", "issuePlace", "phone", "email", "ethnicity", "address", "educationLevel", "cmktLevel", "major", "school", "desiredJob"
-                ];
-                // Only require summary if effectiveSignInStatus is 'success'
-                if (effectiveSignInStatus === 'success') {
-                    fields.push("summary");
-                }
-                for (const field of fields) {
-                    allTouched[field] = true;
-                }
-                return allTouched;
-            });
-            setShowToast(false);
-            return;
-        }
-        setLaboreSignUpLoading(true);
-        setErrorMessage("");
-        let apiError = "";
+        if (!validateCurrentStep()) return;
+
+        setLoading(true);
+        setServerErrors({});
+        setGlobalError("");
+
         try {
-            // Map frontend fields to backend fields for update
-            const safeDateString = (val: any) => {
+            const safeDateString = (val: any): string | null => {
                 if (!val) return null;
                 if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
                 const d = new Date(val);
                 return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
             };
-            const safeString = (val: any) => {
-                if (val === undefined || val === null || (typeof val === "string" && val.trim() === "")) return null;
-                return val;
-            };
-            const updatePayloadRaw = {
-                FullName: formData.fullName,
+
+            const payload: any = {
+                FullName: formData.fullName?.trim() || null,
                 DateOfBirth: safeDateString(formData.birthDate),
-                Gender: formData.gender,
-                CID: formData.idCard,
+                Gender: formData.gender || null,
+                CID: formData.idCard || null,
                 CIDDate: safeDateString(formData.issueDate),
-                CIDAddress: formData.issuePlace,
-                Phone: formData.phone,
-                Email: typeof formData.email === 'string' ? formData.email.toLowerCase() : formData.email,
-                Ethnicity: formData.ethnicity,
-                Address: formData.address,
-                Study: formData.educationLevel,
-                TechnicalLevel: formData.cmktLevel,
-                TrainingMajor: formData.major,
-                GraduateSchool: formData.school,
+                CIDAddress: formData.issuePlace || null,
+                Phone: formData.phone || null,
+                Email: formData.email?.toLowerCase().trim() || null,
+                Ethnicity: formData.ethnicity || null,
+                Address: formData.address || null,
+                Study: formData.educationLevel || null,
+                TechnicalLevel: formData.cmktLevel || null,
+                TrainingMajor: formData.major || null,
+                GraduateSchool: formData.school || null,
                 DesiredCareer: Array.isArray(formData.desiredJob)
-                    ? formData.desiredJob.map((job: any) => typeof job === 'object' ? (job.value || job.label || job) : job)
+                    ? formData.desiredJob.map((item: any) => (typeof item === "object" ? item.value || item.label || item : item))
                     : [],
-                // Add other fields if present in formData
-                Summary: safeString(formData.summary),
-                Salary: formData.salary || "",
-                Experience: formData.experience || 0,
-                EducationQualifications: formData.educationQualifications || [],
-                Skills: formData.skills || [],
-                CPSkill: formData.cpSkill || "",
-                FLanguages: formData.fLanguages || [],
-                ExperienceSummary: formData.experienceSummary || "",
-                InterviewFormat: formData.interviewFormat || "",
-                Benefits: formData.benefits || [],
-                CVPath: formData.cvPath || "",
             };
-            // Remove CIDDate and Summary if they are null or empty
-            const updatePayload = { ...updatePayloadRaw };
-            if (updatePayload.CIDDate === null || updatePayload.CIDDate === "") {
-                delete (updatePayload as any).CIDDate;
-            }
-            // Always include Summary as null if not provided
-            if (updatePayload.Summary === null || updatePayload.Summary === "") {
-                updatePayload.Summary = null;
+
+            if (!payload.CIDDate) delete payload.CIDDate;
+
+            const { getAccessToken, getPhoneNumber, getUserID } = await import("zmp-sdk/apis");
+            const Accesstoken = await getAccessToken();
+            const phoneRes = await getPhoneNumber();
+            const Code = phoneRes?.token || "";
+            const ZaloId = await getUserID();
+
+            const { laborerSignUp } = await import("@/api/registerApi");
+            const res = await laborerSignUp({ Accesstoken, Code, ZaloId, ...payload });
+
+            // === XỬ LÝ THÀNH CÔNG ===
+            if (res?.StatusResult?.Code === 0) {
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 2000);
+                setTimeout(() => navigate(-1), 1500);
+                zaloAuth?.logout?.();
+                return;
             }
 
-            if (effectiveSignInStatus === 'success') {
-                // Always use the token from signIn response for updateProfile
-                const Accesstoken = signInAccessToken;
-                // Map frontend fields to backend fields for sign up
-                const payload = {
-                    Accesstoken,
-                    ...updatePayload,
-                };
-                const { updateProfile } = await import('@/api/registerApi');
-                const res = await updateProfile(payload, Accesstoken);
-                if (res?.StatusResult?.Code === 0) {
-                    setShowToast(true);
-                    setErrorMessage("");
-                    setTimeout(() => setShowToast(false), 2000);
-                    const { getProfileWithToken } = await import('./api');
-                    await getProfileWithToken(Accesstoken || '');
-                } else {
-                    console.error('[DEBUG] updateProfile API error:', res);
-                    apiError = res?.StatusResult?.Message || "Cập nhật thông tin thất bại.";
-                    // If token expired, show specific message
-                    if (apiError.includes('hết hạn') || apiError.toLowerCase().includes('expired')) {
-                        setErrorMessage('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-                    } else {
-                        setErrorMessage(apiError);
+            // === XỬ LÝ LỖI VALIDATION (Code 3) ===
+            if (res?.StatusResult?.Code === 3 && Array.isArray(res.Errors) && res.Errors.length > 0) {
+                const errors: Record<string, string> = {};
+                res.Errors.forEach((e: { Field: string; Message: string }) => {
+                    const mapping = fieldMapping.find((m) => m.backend === e.Field);
+                    if (mapping) {
+                        errors[mapping.frontend] = e.Message;
                     }
-                }
+                });
+                setServerErrors(errors);
+                return;
             }
 
-            // Only run LaboreSignUp if effectiveSignInStatus is 'fail'
-            if (effectiveSignInStatus === 'fail') {
-                // Always fetch fresh Zalo credentials before sign up
-                const { getAccessToken, getPhoneNumber, getUserID } = await import('zmp-sdk/apis');
-                const Accesstoken = await getAccessToken();
-                const phoneRes = await getPhoneNumber();
-                const Code = phoneRes?.token || "";
-                const ZaloId = await getUserID();
-                // Optionally update context if needed
-                if (zaloAuth && zaloAuth.Accesstoken !== Accesstoken) {
-                    zaloAuth.Accesstoken = Accesstoken;
-                    zaloAuth.Code = Code;
-                    zaloAuth.ZaloId = ZaloId;
-                }
-                // Map frontend fields to backend fields for sign up
-                const payload = {
-                    Accesstoken,
-                    Code,
-                    ZaloId,
-                    ...updatePayload,
-                };
-                const { laborerSignUp } = await import('@/api/registerApi');
-                const res = await laborerSignUp(payload);
-                console.log("LaboreSignUp response:", res);
-                if (res?.StatusResult?.Code === 0) {
-                    setShowToast(true);
-                    setTimeout(() => setShowToast(false), 2000);
-                    setTimeout(() => navigate(-1), 1500);
-                    // Call logout handler from context after successful sign-up
-                    if (zaloAuth && typeof zaloAuth.logout === 'function') {
-                        zaloAuth.logout();
+            // === LỖI KHÁC ===
+            setGlobalError(res?.StatusResult?.Message || "Đăng ký thất bại. Vui lòng thử lại.");
+
+        } catch (err: any) {
+            console.error("Signup error:", err);
+
+            // Trường hợp Axios không throw response (rất hay xảy ra trong Zalo)
+            const responseData = err?.response?.data || err?.data || null;
+
+            if (responseData?.StatusResult?.Code === 3 && Array.isArray(responseData.Errors)) {
+                const errors: Record<string, string> = {};
+                responseData.Errors.forEach((e: { Field: string; Message: string }) => {
+                    const mapping = fieldMapping.find((m) => m.backend === e.Field);
+                    if (mapping) {
+                        errors[mapping.frontend] = e.Message;
                     }
-                } else {
-                    setShowToast(false);
-                    setErrorMessage(res?.StatusResult?.Message || "Đăng ký thất bại.");
-                }
+                });
+                setServerErrors(errors);
+            } else {
+                setGlobalError("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
             }
-        } catch (err) {
-            console.error('[DEBUG] handleLaboreSignUp error:', err);
-            setShowToast(false);
-            setErrorMessage(apiError || "Có lỗi xảy ra. Vui lòng thử lại.");
         } finally {
-            setLaboreSignUpLoading(false);
+            setLoading(false);
         }
     };
 
-    return (
-        <div className="bg-gray-100 p-4 min-h-screen">
-            <div className="max-w-md mx-auto pt">
-                <form>
-                    <PersonalInfoSection
-                        formData={formData}
-                        touched={touched}
-                        handleInputChange={handleInputChange}
-                        handleInputBlur={handleInputBlur}
-                        handleSelectChange={handleSelectChange}
-                        handleDateChange={handleDateChange}
-                        settings={settings}
-                        errors={errors}
-                    />
-                    {showToast && (
-                        <div className="text-green-600 text-center mb-2 font-semibold">Đăng ký tài khoản thành công</div>
-                    )}
-                    {errorMessage && (
-                        <div className="text-red-600 text-center mb-2 font-semibold">{errorMessage}</div>
-                    )}
-                    {effectiveSignInStatus === 'success' ? (
-                        <Button
-                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-6"
-                            loading={laboreSignUpLoading}
-                            onClick={e => {
-                                console.log('[DEBUG] Button clicked');
-                                handleLaboreSignUp(e);
-                            }}
-                        >
-                            Cập nhật hồ sơ cá nhân
-                        </Button>
-                    ) : (
-                        <Button
-                            className="bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-4 mb-4"
-                            loading={laboreSignUpLoading}
-                            onClick={e => {
-                                console.log('[DEBUG] Button clicked');
-                                handleLaboreSignUp(e);
-                            }}
-                        >
-                            Tạo tài khoản
-                        </Button>
-                    )}
-                </form>
+    // Render lỗi đẹp + chỉ hiện lỗi của bước hiện tại
+    const renderErrors = () => {
+        const errorsToShow: string[] = [];
 
+        if (globalError) {
+            errorsToShow.push(globalError);
+        }
+
+        fieldMapping.forEach(({ frontend, label, step }) => {
+            const errorMsg = allErrors[frontend];
+            if (errorMsg && step === currentStep) {
+                errorsToShow.push(`• ${label}: ${errorMsg}`);
+            }
+        });
+
+        if (errorsToShow.length === 0) return null;
+
+        return (
+            <Box mt={3} mb={4} className="bg-red-50 border border-red-300 rounded-xl p-4">
+                <Text className="text-red-800 font-semibold flex items-center gap-2 mb-3">
+                    <Icon icon="zi-warning" className="text-xl" />
+                    Vui lòng sửa các lỗi sau:
+                </Text>
+                <div className="space-y-1 text-sm text-red-700">
+                    {errorsToShow.map((err, i) => (
+                        <div key={i}>{err}</div>
+                    ))}
+                </div>
+            </Box>
+        );
+    };
+
+    return (
+        <div className="">
+            <div className=" p-4">
+                <Box mt={6} mb={6} className="text-center">
+                    <Text.Header className="text-2xl font-bold text-blue-600">{steps[currentStep]}</Text.Header>
+                    <Text className="text-gray-500 mt-1">Bước {currentStep + 1} / {steps.length}</Text>
+                </Box>
+
+                <form onSubmit={handleSubmit}>
+                    {/* Bước 1 */}
+                    {currentStep === 0 && (
+                        <Box className="bg-white rounded-2xl shadow-lg border p-5 flex flex-col gap-4">
+                            <Input data-field="fullName" label="Họ và tên *" placeholder="Nguyễn Văn A" value={formData.fullName} onChange={handleInputChange("fullName")} status={allErrors.fullName ? "error" : undefined} errorText={allErrors.fullName} />
+                            <DatePicker data-field="birthDate" label="Ngày sinh *" value={formData.birthDate} onChange={handleDateChange("birthDate")} status={allErrors.birthDate ? "error" : undefined} errorText={allErrors.birthDate} />
+                            <div>
+                                <Text className="text-sm text-gray-700 mb-2">Giới tính *</Text>
+                                <div data-field="gender">
+                                    <Select type="single" options={settings?.ListGenderUser || []} value={formData.gender} onChange={(opt) => handleSelectChange("gender")(opt?.label ?? opt)} placeholder="Chọn giới tính" status={allErrors.gender ? "error" : undefined} errorText={allErrors.gender} />
+                                </div>
+                            </div>
+                        </Box>
+                    )}
+
+                    {/* Bước 2 */}
+                    {currentStep === 1 && (
+                        <Box className="bg-white rounded-2xl shadow-lg border p-5 flex flex-col gap-4">
+                            <Input data-field="idCard" label="Số CCCD/CMND *" placeholder="012345678910" value={formData.idCard} onChange={handleInputChange("idCard")} maxLength={15} inputMode="numeric" status={allErrors.idCard ? "error" : undefined} errorText={allErrors.idCard} />
+                            <DatePicker data-field="issueDate" label="Ngày cấp" value={formData.issueDate} onChange={handleDateChange("issueDate")} status={allErrors.issueDate ? "error" : undefined} errorText={allErrors.issueDate} />
+                            <Input data-field="issuePlace" label="Nơi cấp" placeholder="Công an tỉnh..." value={formData.issuePlace} onChange={handleInputChange("issuePlace")} status={allErrors.issuePlace ? "error" : undefined} errorText={allErrors.issuePlace} />
+                        </Box>
+                    )}
+
+                    {/* Bước 3 */}
+                    {currentStep === 2 && (
+                        <Box className="bg-white rounded-2xl shadow-lg border p-5 flex flex-col gap-4">
+                            <Input data-field="phone" label="Số điện thoại *" placeholder="0901234567" value={formData.phone} onChange={handleInputChange("phone")} prefix={<Icon icon="zi-call" />} status={allErrors.phone ? "error" : undefined} errorText={allErrors.phone} />
+                            <Input data-field="email" label="Email" placeholder="example@gmail.com" value={formData.email} onChange={handleInputChange("email")} onBlur={handleInputBlur("email")} status={allErrors.email ? "error" : undefined} errorText={allErrors.email} />
+                            <div>
+                                <Text className="text-sm text-gray-700 mb-2">Dân tộc</Text>
+                                <div data-field="ethnicity">
+                                    <Select type="single" options={settings?.ListEthnicity || []} value={formData.ethnicity} onChange={(opt) => handleSelectChange("ethnicity")(opt?.label ?? opt)} placeholder="Kinh, Tày, Thái..." status={allErrors.ethnicity ? "error" : undefined} errorText={allErrors.ethnicity} />
+                                </div>
+                            </div>
+                            <Input data-field="address" label="Địa chỉ thường trú" placeholder="Số nhà, đường, xã/phường..." value={formData.address} onChange={handleInputChange("address")} status={allErrors.address ? "error" : undefined} errorText={allErrors.address} />
+                        </Box>
+                    )}
+
+                    {/* Bước 4 */}
+                    {currentStep === 3 && (
+                        <Box className="bg-white rounded-2xl shadow-lg border p-5 flex flex-col gap-4">
+                            <Input data-field="educationLevel" label="Trình độ học vấn" placeholder="THPT, Cao đẳng, Đại học..." value={formData.educationLevel} onChange={handleInputChange("educationLevel")} status={allErrors.educationLevel ? "error" : undefined} errorText={allErrors.educationLevel} />
+                            <div>
+                                <Text className="text-sm text-gray-700 mb-2">Trình độ CMKT</Text>
+                                <div data-field="cmktLevel">
+                                    <Select type="single" options={settings?.TechnicalLevel || []} value={formData.cmktLevel} onChange={(opt) => handleSelectChange("cmktLevel")(opt?.label ?? opt)} placeholder="Chọn trình độ" status={allErrors.cmktLevel ? "error" : undefined} errorText={allErrors.cmktLevel} />
+                                </div>
+                            </div>
+                            <Input data-field="major" label="Chuyên ngành đào tạo" placeholder="Công nghệ thông tin..." value={formData.major} onChange={handleInputChange("major")} status={allErrors.major ? "error" : undefined} errorText={allErrors.major} />
+                            <Input data-field="school" label="Tên trường tốt nghiệp" placeholder="ĐH Bách Khoa Hà Nội..." value={formData.school} onChange={handleInputChange("school")} status={allErrors.school ? "error" : undefined} errorText={allErrors.school} />
+                        </Box>
+                    )}
+
+                    {/* Bước 5 */}
+                    {currentStep === 4 && (
+                        <Box className="bg-white rounded-2xl shadow-lg border p-5 flex flex-col gap-4">
+                            <div>
+                                <Text className="text-sm text-gray-700 mb-2">Ngành nghề mong muốn (tối đa 2)</Text>
+                                <div data-field="desiredJob">
+                                    <Select
+                                        type="multi"
+                                        options={settings?.ListJob || []}
+                                        value={formData.desiredJob}
+                                        onChange={(selected) => handleSelectChange("desiredJob")(selected)}
+                                        max={2}
+                                        placeholder="Chọn ngành nghề"
+                                        status={allErrors.desiredJob ? "error" : undefined}
+                                        errorText={allErrors.desiredJob}
+                                    />
+                                </div>
+                            </div>
+                        </Box>
+                    )}
+
+                    {showToast && <Text className="text-center text-green-600 font-bold text-lg my-5">Đăng ký thành công!</Text>}
+
+                    <Box mt={8} className="flex gap-3">
+                        {currentStep > 0 && (
+                            <Button variant="secondary" onClick={prevStep} className="flex-1">
+                                Quay lại
+                            </Button>
+                        )}
+                        <Button
+                            className="flex-1 text-lg font-medium"
+                            variant="primary"
+                            onClick={currentStep === steps.length - 1 ? handleSubmit : nextStep}
+                            loading={loading}
+                        >
+                            {currentStep === steps.length - 1 ? "Hoàn thành" : "Tiếp tục"}
+                        </Button>
+                    </Box>
+                </form>
             </div>
         </div>
     );

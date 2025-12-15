@@ -37,9 +37,7 @@ const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken 
                     <div className="relative mb-4">
                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
                             <img
-                                src={profile?.avatar
-                                    ? profile.avatar
-                                    : "https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
+                                src={"https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
                                 alt="Ảnh đại diện"
                                 className="w-full h-full object-cover"
                             />
@@ -82,19 +80,14 @@ const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken 
                                 <span className="font-medium text-blue-600">{profile.email}</span>
                             </div>
                         )}
-                        {profile?.phone && (
+                        {profile?.companyphone && (
                             <div className="flex items-center gap-3">
                                 <Phone size={20} className="text-gray-500" />
-                                <span className="font-medium">{profile.phone}</span>
+                                <span className="font-medium">{profile.companyphone}</span>
                             </div>
                         )}
-                        {profile?.website && (
-                            <div className="flex items-center gap-3">
-                                <Globe size={20} className="text-gray-500" />
-                                <a href={profile.website} className="text-blue-600 underline font-medium">
-                                    {profile.website.replace(/^https?:\/\//, '')}
-                                </a>
-                            </div>
+                        {profile?.isactive === false && (
+                            <div className="text-xs text-yellow-600 mt-1">Liên hệ với ***@gmail.com để xác thực tài khoản</div>
                         )}
                     </div>
                 </div>
@@ -121,7 +114,6 @@ const ProfileEnterpriseMenu: React.FC<{ accessToken: string }> = ({ accessToken 
                             </svg>
                         </div>
                     </button>
-
                     <button
                         onClick={profile?.isactive === false ? undefined : () => navigate("/enterprise-joblist")}
                         disabled={profile?.isactive === false}

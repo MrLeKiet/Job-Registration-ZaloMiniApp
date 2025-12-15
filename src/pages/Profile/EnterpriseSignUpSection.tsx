@@ -82,13 +82,13 @@ const EnterpriseSignUpSection: React.FC = () => {
 
     return (
         <div className="">
-            <div className="max-w-md mx-auto pt-6">
+            <div className="max-w-md mx-auto">
                 <Box className=" flex flex-col gap-3 width-full p-4 rounded-lgmb-4">
                     <Text className="text-lg font-semibold text-gray-700 mb-2 flex items-center">
                         <span className="mr-2"><User size={20} /></span>{" "}
                         Thông tin doanh nghiệp
                     </Text>
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-3+">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                         <Input
                             label="Email"
                             name="Email"
@@ -155,7 +155,7 @@ const EnterpriseSignUpSection: React.FC = () => {
                         )}
                         <button
                             type="submit"
-                            className={`bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 mt-3 flex items-center justify-center ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            className={`bg-blue-500 text-white w-full py-3 rounded-md hover:bg-blue-600 mt-4 mb-4 ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
                             disabled={loading}
                         >
                             {loading && (

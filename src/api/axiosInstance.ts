@@ -29,6 +29,9 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    if (error.response) {
+      return error.response; // QUAN TRỌNG: Không reject, trả về response
+    }
     if (error.response?.status === 401) {
       // TODO: Implement your refreshToken logic here
       // await refreshToken();

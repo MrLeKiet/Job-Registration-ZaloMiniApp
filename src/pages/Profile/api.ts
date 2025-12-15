@@ -24,6 +24,16 @@ export async function getProfileWithToken(token) {
 }
 
 export async function getSettings() {
-    const response = await api.get("/Settings");
-    return response.data.Data;
+    try {
+        const response = await api.get("/GetSettings", {
+            headers: {
+                "Accept": "application/json",
+                "Accept-Language": "2",
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("[DEBUG] /api/v1/GetSettings error:", error);
+        throw error;
+    }
 }

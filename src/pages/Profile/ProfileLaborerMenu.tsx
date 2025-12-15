@@ -37,9 +37,7 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                     <div className="relative mb-4">
                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl">
                             <img
-                                src={profile?.avatar
-                                    ? profile.avatar
-                                    : "https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
+                                src={"https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
                                 alt="Ảnh đại diện"
                                 className="w-full h-full object-cover"
                             />
@@ -95,6 +93,9 @@ const ProfileLaborerMenu: React.FC<{ accessToken: string }> = ({ accessToken }) 
                                     {profile.website.replace(/^https?:\/\//, '')}
                                 </a>
                             </div>
+                        )}
+                        {profile?.isactive === false && (
+                            <div className="text-xs text-yellow-600 mt-1">Liên hệ với ***@gmail.com để xác thực tài khoản</div>
                         )}
                     </div>
                 </div>

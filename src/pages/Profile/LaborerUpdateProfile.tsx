@@ -46,6 +46,40 @@ const LaborerUpdateProfile: React.FC = () => {
 
     // EducationQualifications array state
     const [educationQualifications, setEducationQualifications] = useState<any[]>([]);
+    // FLanguages array state
+    const [fLanguages, setFLanguages] = useState<any[]>([]);
+    // Modal state for FLanguages
+    const [showLangModal, setShowLangModal] = useState(false);
+    const [langForm, setLangForm] = useState({ Language: "", Level: "" });
+    const [langEditIndex, setLangEditIndex] = useState<number | null>(null);
+    // Modal handlers for FLanguages
+    const openLangModal = (idx: number | null = null) => {
+        if (idx !== null && fLanguages[idx]) {
+            setLangForm({ ...fLanguages[idx] });
+            setLangEditIndex(idx);
+        } else {
+            setLangForm({ Language: "", Level: "" });
+            setLangEditIndex(null);
+        }
+        setShowLangModal(true);
+    };
+    const closeLangModal = () => {
+        setShowLangModal(false);
+        setLangForm({ Language: "", Level: "" });
+        setLangEditIndex(null);
+    };
+    const saveLanguage = () => {
+        if (!langForm.Language || !langForm.Level) return;
+        if (langEditIndex !== null) {
+            setFLanguages(prev => prev.map((l, i) => i === langEditIndex ? { ...langForm } : l));
+        } else {
+            setFLanguages(prev => [...prev, { ...langForm }]);
+        }
+        closeLangModal();
+    };
+    const removeLanguage = (idx: number) => {
+        setFLanguages(prev => prev.filter((_, i) => i !== idx));
+    };
     // Majors label mapping for preview
     const [majorsLabelMap, setMajorsLabelMap] = useState<Record<string, string>>({});
     // Modal state for EducationQualifications
@@ -136,6 +170,7 @@ const LaborerUpdateProfile: React.FC = () => {
             setEditProfile(data);
             setAvatarPreview(data.avatar || null);
             setEducationQualifications(data.educationqualifications || []);
+            setFLanguages(data.flanguages || []);
         }
         if (accessToken) fetchProfile();
     }, [accessToken]);
@@ -239,6 +274,11 @@ const LaborerUpdateProfile: React.FC = () => {
                     Degrees: eq.Degrees?.value || eq.Degrees,
                     Majors: eq.Majors?.value || eq.Majors,
                 })),
+                FLanguages: fLanguages.map(fLanguages => ({
+                    ...fLanguages,
+                    Language: fLanguages.Language?.value || fLanguages.Language,
+                    Level: fLanguages.Level?.value || fLanguages.Level,
+                })),
             };
 
             const res = await updateProfile(payload, accessToken);
@@ -268,9 +308,7 @@ const LaborerUpdateProfile: React.FC = () => {
                     <div className="relative inline-block">
                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl mx-auto">
                             <img
-                                src={profile?.avatar
-                                    ? profile.avatar
-                                    : "https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
+                                src={"https://ttld.sweetsoft.vn/ImageHandler.aspx?id=fc6d0935-3e70-4d39-b295-3c23f552e86d&t=StaffImage&def=/Images/img/no_avatar.jpg&cache=1&quality=100"}
                                 alt="Ảnh đại diện"
                                 className="w-full h-full object-cover"
                             />
@@ -338,6 +376,40 @@ const LaborerUpdateProfile: React.FC = () => {
                             </div>
                         </div>
                     )}
+                    {/* FLanguages Modal */}
+                    {showLangModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+                                <h3 className="text-xl font-bold mb-5 text-center">{langEditIndex !== null ? "Chỉnh sửa ngoại ngữ" : "Thêm ngoại ngữ"}</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="font-medium mb-2 block">Ngoại ngữ</label>
+                                        <Select
+                                            type="single"
+                                            options={settings?.FLanguages || []}
+                                            value={langForm.Language}
+                                            onChange={opt => setLangForm(f => ({ ...f, Language: opt?.value ?? opt }))}
+                                            placeholder="Chọn ngoại ngữ"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="font-medium mb-2 block">Trình độ</label>
+                                        <Select
+                                            type="single"
+                                            options={settings?.FlanguageLevel || []}
+                                            value={langForm.Level}
+                                            onChange={opt => setLangForm(f => ({ ...f, Level: opt?.value ?? opt }))}
+                                            placeholder="Chọn trình độ"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 mt-6">
+                                    <Button fullWidth type="highlight" onClick={saveLanguage} disabled={!langForm.Language || !langForm.Level}>Lưu</Button>
+                                    <Button fullWidth type="neutral" onClick={closeLangModal}>Hủy</Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {sectionDefs.map((section, idx) => {
                         const Icon = section.icon;
@@ -378,6 +450,10 @@ const LaborerUpdateProfile: React.FC = () => {
                                             majorsLabelMap={majorsLabelMap}
                                             majorsOptions={majorsOptions}
                                             removeEduQualification={removeEduQualification}
+                                            openLangModal={openLangModal}
+                                            fLanguages={fLanguages}
+                                            setFLanguages={setFLanguages}
+                                            removeLanguage={removeLanguage}
                                         />
                                     </div>
                                 )}
@@ -419,7 +495,7 @@ const LaborerUpdateProfile: React.FC = () => {
     );
 };
 
-function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, onDateChange, settings, cvFile, setCvFile, fileInputRef, handleUploadCV, educationQualifications, openEduModal, majorsLabelMap, majorsOptions, removeEduQualification }) {
+function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, onDateChange, settings, cvFile, setCvFile, fileInputRef, handleUploadCV, educationQualifications, openEduModal, majorsLabelMap, majorsOptions, removeEduQualification, openLangModal, fLanguages, setFLanguages, removeLanguage }) {
     const parseDate = (str: string) => {
         if (!str) return undefined;
         const match = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
@@ -535,20 +611,25 @@ function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, on
 
         case "experience":
             return (
-                <div className="">
+                <div className="space-y-8">
+                    {/* Education Qualifications */}
+                    <div>
                         <div className="flex items-center justify-between border-b border-gray-100">
-                            <Button size="small" onClick={() => openEduModal(null)} className="bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700">+ Thêm</Button>
+                            <Button size="small" onClick={() => openEduModal(null)} className="bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700">+ Thêm bằng cấp</Button>
                         </div>
                         <div className="pt-2">
                             {educationQualifications.length === 0 && <div className="text-gray-500 italic">Chưa có thông tin bằng cấp.</div>}
                             {educationQualifications.length > 0 && (
                                 <div className="space-y-3">
-                                    {educationQualifications.map((q, i) => (
+                                    {educationQualifications.map((q, i) => {
+                                        const degreeLabel = (settings?.ListStudy || []).find(o => o.value === q.Degrees)?.label || q.Degrees;
+                                        const majorsLabel = majorsLabelMap[q.Majors] || majorsOptions.find(o => o.value === q.Majors)?.label || q.Majors;
+                                        return (
                                         <div key={i} className="bg-gray-50 border border-blue-100 rounded-xl px-5 py-4 flex items-center justify-between text-sm font-medium text-gray-800">
                                             <div className="flex flex-col gap-1 flex-1">
                                                 <div><span className="font-semibold">Trường:</span> {q.TrainingFacilities}</div>
-                                                <div><span className="font-semibold">Bằng cấp:</span> {(settings?.ListStudy || []).find(o => o.value === q.Degrees)?.label || q.Degrees}</div>
-                                                <div><span className="font-semibold">Chuyên ngành:</span> {majorsLabelMap[q.Majors] || majorsOptions.find(o => o.value === q.Majors)?.label || q.Majors}</div>
+                                                <div><span className="font-semibold">Bằng cấp:</span> {degreeLabel}</div>
+                                                <div><span className="font-semibold">Chuyên ngành:</span> {majorsLabel}</div>
                                                 <div><span className="font-semibold">Thành tích:</span> {q.Achievements}</div>
                                             </div>
                                             <div className="flex flex-col gap-2 ml-4">
@@ -556,11 +637,42 @@ function SectionContent({ section, profile, onInput, onSelect, onMultiSelect, on
                                                 <Button size="small" onClick={() => removeEduQualification(i)} className="bg-red-500 text-white rounded-lg">Xóa</Button>
                                             </div>
                                         </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
                     </div>
+                    {/* FLanguages */}
+                    <div>
+                        <div className="flex items-center justify-between border-b border-gray-100 mt-8">
+                            <Button size="small" onClick={() => openLangModal(null)} className="bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700">+ Thêm ngoại ngữ</Button>
+                        </div>
+                        <div className="pt-2">
+                            {(!fLanguages || fLanguages.length === 0) && <div className="text-gray-500 italic">Chưa có thông tin ngoại ngữ.</div>}
+                            {fLanguages && fLanguages.length > 0 && (
+                                <div className="space-y-3">
+                                    {fLanguages.map((l, i) => {
+                                        const langLabel = (settings?.FLanguages || []).find(opt => opt.value === (l.Language?.value || l.Language))?.label || l.Language?.label || l.Language;
+                                        const levelLabel = (settings?.FlanguageLevel || []).find(opt => opt.value === (l.Level?.value || l.Level))?.label || l.Level?.label || l.Level;
+                                        return (
+                                            <div key={i} className="bg-gray-50 border border-blue-100 rounded-xl px-5 py-4 flex items-center justify-between text-sm font-medium text-gray-800">
+                                                <div className="flex flex-col gap-1 flex-1">
+                                                    <div><span className="font-semibold">Ngoại ngữ:</span> {langLabel}</div>
+                                                    <div><span className="font-semibold">Trình độ:</span> {levelLabel}</div>
+                                                </div>
+                                                <div className="flex flex-col gap-2 ml-4">
+                                                    <Button size="small" onClick={() => openLangModal(i)} className="bg-yellow-400 text-white rounded-lg">Sửa</Button>
+                                                    <Button size="small" onClick={() => removeLanguage(i)} className="bg-red-500 text-white rounded-lg">Xóa</Button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             );
 
         case "summary":

@@ -58,7 +58,12 @@ export function useRegisterForm() {
         phone: "Vui lòng nhập số điện thoại",
         email: "Vui lòng nhập email",
         desiredJob: "Vui lòng chọn ngành nghề mong muốn",
-        
+        ethnicity: "Vui lòng nhập dân tộc",
+        address: "Vui lòng nhập địa chỉ thường trú",
+        educationLevel: "Vui lòng chọn trình độ học vấn",
+        cmktLevel: "Vui lòng chọn trình độ CMKT",
+        major: "Vui lòng nhập chuyên ngành",
+        school: "Vui lòng nhập trường học",
     };
 
     function validateField(field: string, value: any) {
